@@ -1,0 +1,46 @@
+services:
+
+  # ── FastAPI + static frontend ─────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./data:/app/data        # shares DuckDB Gold layer with Airflow output
+    environment:
+      - USDA_PSD_KEY=${USDA_PSD_KEY}
+      - DATA_DIR=/app/data
+    restart: unless-stopped
+
+  # ── Airflow (LocalExecutor, single container) ─────────────────────────
+  airflow:
+    image: apache/airflow:2.9.0-python3.11
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__WEBSERVER__SECRET_KEY: "change-me-in-production"
+      USDA_PSD_KEY: ${USDA_PSD_KEY}
+      DATA_DIR: /opt/airflow/data
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src           # DAG imports from wasde package
+      - ./data:/opt/airflow/data         # shared data volume
+      - airflow_logs:/opt/airflow/logs
+    ports:
+      - "8080:8080"
+    command: >
+      bash -c "
+        pip install -e /opt/airflow/src/.. --quiet &&
+        airflow db migrate &&
+        airflow users create --username admin --password admin
+          --firstname Admin --lastname User --role Admin --email admin@local.dev &&
+        airflow webserver &
+        airflow scheduler
+      "
+    restart: unless-stopped
+
+volumes:
+  airflow_logs:

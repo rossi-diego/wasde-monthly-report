@@ -1,0 +1,43 @@
+/* WASDE Dashboard — custom styles (Tailwind handles the rest) */
+
+.card {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+}
+.card-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #6b7280;
+  margin-bottom: 0.4rem;
+}
+.card-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #f9fafb;
+  font-variant-numeric: tabular-nums;
+}
+
+.chart-panel {
+  background: #111827;
+  border: 1px solid #1f2937;
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+.chart-title {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #9ca3af;
+  margin-bottom: 1rem;
+}
+
+select {
+  outline: none;
+  color: #f3f4f6;
+}
+select:focus {
+  border-color: #10b981;
+}

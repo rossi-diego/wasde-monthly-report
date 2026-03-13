@@ -1,0 +1,55 @@
+name: Monthly Data Update
+
+on:
+  schedule:
+    - cron: "0 14 12 * *"    # 12th of each month, 14:00 UTC
+  workflow_dispatch:           # also allow manual trigger from GitHub UI
+
+jobs:
+  update:
+    name: Fetch & Update Data
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e "."
+
+      - name: Run Bronze → Silver → Gold pipeline
+        env:
+          USDA_PSD_KEY: ${{ secrets.USDA_PSD_KEY }}
+        run: |
+          python - <<'EOF'
+          from datetime import date
+          from pathlib import Path
+          from wasde.config import settings
+          from wasde.pipelines.bronze.psd import extract_psd
+          from wasde.pipelines.silver.psd import transform_psd
+          from wasde.pipelines.gold.metrics import build_gold
+          import os
+
+          api_key = os.environ["USDA_PSD_KEY"]
+          run_date = date.today()
+
+          # Bronze
+          bronze_psd = extract_psd(api_key, run_date, settings.bronze_dir / "psd")
+
+          # Silver
+          transform_psd(bronze_psd, settings.silver_dir / "psd.parquet")
+
+          # Gold
+          build_gold()
+          print("Pipeline complete.")
+          EOF
+
+      - name: Commit updated DuckDB
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/wasde.duckdb data/silver/ || true
+          git diff --staged --quiet || git commit -m "data: monthly WASDE update $(date +%Y-%m)"
+          git push
