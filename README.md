@@ -1,62 +1,99 @@
-# WASDE Report Viewer
+# WASDE Dashboard
 
-This project aims to simplify and automate the download and exploration of WASDE reports published monthly by the USDA (United States Department of Agriculture). The XML files are automatically fetched from the official source and transformed into a clean, structured dataset.
+Production-grade data pipeline and REST API for USDA agricultural supply & demand data.
 
-## 🔍 Features
-- Automated download of WASDE XML and XLS files
-- Structured extraction of supply and demand data by commodity
-- Automatic classification of crop stage (Outlook, Current, Next)
-- Consolidated CSV file generation for analysis
-- Power BI file included for interactive visualization
+Ingests three data sources monthly — USDA FAS PSD (supply/demand), NOPA crush reports, and USDA export sales — through a Bronze → Silver → Gold medallion architecture, storing the final layer in DuckDB and serving it via FastAPI.
 
-## 📊 Power BI
-A `.pbix` file is available in the project root. To use it:
-1. Open the file using Power BI Desktop
-2. Update the data source path to point to `data/raw_data/wasde_commodities_timeseries.csv` on your local machine
+## Stack
 
-## 🚀 How to Use
+| Layer | Technology |
+|---|---|
+| Orchestration | Apache Airflow (TaskFlow API) |
+| Storage | Parquet (Bronze/Silver) + DuckDB (Gold) |
+| API | FastAPI |
+| Frontend | HTML + Tailwind CSS + Chart.js |
+| Containerisation | Docker Compose |
+| CI | GitHub Actions |
 
-1. Clone this repository:
+## Data Sources
+
+| Source | What | Frequency |
+|---|---|---|
+| USDA FAS PSD API | Supply & demand for wheat, corn, soybeans, soybean meal, soybean oil | Monthly |
+| NOPA | US soybean crush volume + oil stocks | Monthly |
+| USDA FAS Export Sales | Weekly export sales by commodity + destination | Weekly |
+
+## Setup
+
+### 1. Clone
+
 ```bash
-git clone https://github.com/your-user/your-repo.git
-cd your-repo
+git clone https://github.com/rossi-diego/wasde-monthly-report.git
+cd wasde-monthly-report
 ```
 
-2. Create and activate a virtual environment:
+### 2. Install
+
 ```bash
-python -m venv venv
-source venv/bin/activate  # or venv\Scripts\activate on Windows
+pip install uv
+uv pip install -e ".[dev,pipelines]"
 ```
 
-3. Install dependencies:
+### 3. Configure
+
 ```bash
-pip install -r requirements.txt
+cp .env.example .env
+# Add your USDA_PSD_KEY (free at https://api.data.gov/signup/)
 ```
 
-4. Add your USDA API token to a `.env` file:
-```env
-WASDE_JWT=your_token_here
+### 4. Run locally
+
+```bash
+make run-api        # starts FastAPI on http://localhost:8000
+make up             # starts Airflow + FastAPI via Docker Compose
 ```
-To generate your token, visit:  
-👉 https://usda.library.cornell.edu/apidoc/index.html#/account/getUserToken  
-Sign in or register, and then copy the token shown in the **"Authorize"** section.
 
-5. Run the notebook or scripts inside the `notebooks/` folder.
+### 5. Trigger the pipeline
 
----
+```bash
+# Via Airflow UI at http://localhost:8080
+# Or manually:
+python -c "from wasde.pipelines.gold.metrics import build_gold; ..."
+```
 
-### 📁 Project Structure
+## Project Structure
 
 ```
-├── data/
-│   ├── wasde_files/
-│   ├── raw_data/
-├── notebooks/
-├── src/
-│   ├── config.py
-│   └── wasde_downloader.py
-├── wasde.pbix
-├── .env
-├── requirements.txt
-├── README.md
+dags/                   Airflow DAG
+src/wasde/
+  config.py             Pydantic settings
+  models/               Pydantic schemas (PSD, NOPA, exports)
+  pipelines/
+    bronze/             Raw ingestion → Parquet
+    silver/             Validation + cleaning → Parquet
+    gold/               Aggregation → DuckDB
+  api/                  FastAPI app + routers
+frontend/               Single-page HTML/JS dashboard
+tests/                  Unit + integration tests
+data/                   Local only (gitignored) — rebuilt by pipeline
 ```
+
+## API
+
+Interactive docs available at `http://localhost:8000/docs` when running locally.
+
+Key endpoints:
+
+```
+GET /health
+GET /v1/supply-demand?commodity=Soybeans&marketing_year=2024
+GET /v1/supply-demand/stock-to-use?commodity=Soybeans
+GET /v1/supply-demand/revisions?commodity=Soybeans&marketing_year=2024
+GET /v1/nopa/crush?months=24
+GET /v1/nopa/crush-margin?months=24
+GET /v1/exports/pace?commodity=Soybeans&marketing_year=2024
+```
+
+## Author
+
+Diego Rossi Santanna — [linkedin.com/in/diego-rossi-santanna](https://www.linkedin.com/in/diego-rossi-santanna/)
