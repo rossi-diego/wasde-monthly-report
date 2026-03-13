@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+
+# Environment
+.env
+
+# Data (rebuilt by pipeline — never commit raw/processed data)
+data/bronze/
+data/silver/
+data/raw_data/
+data/processed_data/
+data/wasde_files/
+*.parquet
+*.duckdb
+*.db
+*.csv
+!data/.gitkeep
+
+# Power BI
+*.pbix
+
+# Airflow
+logs/
+airflow.db
+airflow.cfg
+airflow-webserver.pid
+standalone_admin_password.txt
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Notebooks
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
