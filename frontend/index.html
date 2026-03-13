@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WASDE Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="bg-gray-950 text-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <header class="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
+    <div>
+      <h1 class="text-xl font-semibold tracking-tight">WASDE Dashboard</h1>
+      <p class="text-xs text-gray-400 mt-0.5">USDA Agricultural Supply &amp; Demand</p>
+    </div>
+    <span id="last-update" class="text-xs text-gray-500"></span>
+  </header>
+
+  <!-- Filters -->
+  <div class="px-6 py-4 border-b border-gray-800 flex flex-wrap gap-4 items-center">
+    <div class="flex flex-col gap-1">
+      <label class="text-xs text-gray-400 uppercase tracking-widest">Commodity</label>
+      <select id="filter-commodity" class="bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm">
+        <option value="Soybeans">Soybeans</option>
+        <option value="Corn">Corn</option>
+        <option value="Wheat">Wheat</option>
+        <option value="Soybean Meal">Soybean Meal</option>
+        <option value="Soybean Oil">Soybean Oil</option>
+      </select>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-xs text-gray-400 uppercase tracking-widest">Country</label>
+      <select id="filter-country" class="bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm">
+        <option value="World">World</option>
+        <option value="United States">United States</option>
+        <option value="Brazil">Brazil</option>
+        <option value="Argentina">Argentina</option>
+        <option value="China">China</option>
+      </select>
+    </div>
+    <div class="flex flex-col gap-1">
+      <label class="text-xs text-gray-400 uppercase tracking-widest">Marketing Year</label>
+      <select id="filter-year" class="bg-gray-800 border border-gray-700 rounded px-3 py-1.5 text-sm">
+        <option value="2025">2025</option>
+        <option value="2024" selected>2024</option>
+        <option value="2023">2023</option>
+        <option value="2022">2022</option>
+      </select>
+    </div>
+    <button onclick="loadAll()" class="mt-5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded text-sm font-medium transition-colors">
+      Refresh
+    </button>
+  </div>
+
+  <!-- Metric cards -->
+  <div class="px-6 py-6 grid grid-cols-2 md:grid-cols-4 gap-4" id="metric-cards">
+    <div class="card" id="card-production">
+      <div class="card-label">Production</div>
+      <div class="card-value" id="val-production">—</div>
+    </div>
+    <div class="card" id="card-ending-stocks">
+      <div class="card-label">Ending Stocks</div>
+      <div class="card-value" id="val-ending-stocks">—</div>
+    </div>
+    <div class="card" id="card-exports">
+      <div class="card-label">Exports</div>
+      <div class="card-value" id="val-exports">—</div>
+    </div>
+    <div class="card" id="card-stu">
+      <div class="card-label">Stock-to-Use</div>
+      <div class="card-value" id="val-stu">—</div>
+    </div>
+  </div>
+
+  <!-- Charts grid -->
+  <div class="px-6 pb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Supply & Demand time series -->
+    <div class="chart-panel">
+      <h2 class="chart-title">Ending Stocks — Historical</h2>
+      <canvas id="chart-ending-stocks"></canvas>
+    </div>
+
+    <!-- Stock-to-Use ratio -->
+    <div class="chart-panel">
+      <h2 class="chart-title">Stock-to-Use Ratio (%)</h2>
+      <canvas id="chart-stu"></canvas>
+    </div>
+
+    <!-- Revision tracker -->
+    <div class="chart-panel">
+      <h2 class="chart-title">Ending Stocks Revisions (Selected Year)</h2>
+      <canvas id="chart-revisions"></canvas>
+    </div>
+
+    <!-- NOPA Crush -->
+    <div class="chart-panel">
+      <h2 class="chart-title">NOPA Soybean Crush (million bu)</h2>
+      <canvas id="chart-nopa"></canvas>
+    </div>
+
+    <!-- Export Pace (full width) -->
+    <div class="chart-panel lg:col-span-2">
+      <h2 class="chart-title">Export Pace vs. USDA Target (%)</h2>
+      <canvas id="chart-exports"></canvas>
+    </div>
+
+  </div>
+
+  <script src="charts.js"></script>
+</body>
+</html>
