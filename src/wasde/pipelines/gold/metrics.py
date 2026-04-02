@@ -34,10 +34,14 @@ def build_gold(cfg: Settings | None = None) -> None:
     cfg.duckdb_path.parent.mkdir(parents=True, exist_ok=True)
     con = duckdb.connect(str(cfg.duckdb_path))
 
+    silver_wasde = cfg.silver_dir / "wasde.parquet"
+
     try:
         _build_supply_demand(con, silver_psd)
         _build_nopa_crush(con, silver_nopa)
         _build_export_pace(con, silver_exports, silver_psd)
+        _build_wasde_revisions(con, silver_wasde)
+        _build_wasde_latest(con, silver_wasde)
         logger.info("Gold layer materialised at %s", cfg.duckdb_path)
     finally:
         con.close()
@@ -168,3 +172,80 @@ def _build_export_pace(
         """)
 
     logger.info("gold_export_pace built")
+
+
+def _build_wasde_revisions(con: duckdb.DuckDBPyConnection, silver_path: Path) -> None:
+    """Build gold_wasde_revisions — month-over-month revision tracking."""
+    if not silver_path.exists():
+        logger.warning("Silver WASDE not found: %s — skipping gold_wasde_revisions", silver_path)
+        return
+
+    con.execute(f"""
+        CREATE OR REPLACE TABLE gold_wasde_revisions AS
+        WITH base AS (
+            SELECT * FROM read_parquet('{silver_path}')
+            WHERE value IS NOT NULL
+        )
+        SELECT
+            commodity,
+            region,
+            marketing_year,
+            marketing_year_start,
+            attribute,
+            unit,
+            forecast_year,
+            forecast_month,
+            value,
+            LAG(value) OVER w AS prev_value,
+            value - LAG(value) OVER w AS mom_change,
+            FIRST_VALUE(value) OVER w AS first_estimate,
+            value - FIRST_VALUE(value) OVER w AS cumulative_revision,
+            ROW_NUMBER() OVER w AS revision_number
+        FROM base
+        WINDOW w AS (
+            PARTITION BY commodity, region, marketing_year, attribute
+            ORDER BY forecast_year, forecast_month
+        )
+        ORDER BY commodity, marketing_year, forecast_year, forecast_month
+    """)
+    logger.info("gold_wasde_revisions built")
+
+
+def _build_wasde_latest(con: duckdb.DuckDBPyConnection, silver_path: Path) -> None:
+    """Build gold_wasde_latest — latest pivoted S&D balance sheet."""
+    if not silver_path.exists():
+        logger.warning("Silver WASDE not found: %s — skipping gold_wasde_latest", silver_path)
+        return
+
+    con.execute(f"""
+        CREATE OR REPLACE TABLE gold_wasde_latest AS
+        WITH ranked AS (
+            SELECT *, ROW_NUMBER() OVER (
+                PARTITION BY commodity, region, marketing_year, attribute
+                ORDER BY forecast_year DESC, forecast_month DESC
+            ) AS rn
+            FROM read_parquet('{silver_path}')
+            WHERE value IS NOT NULL
+        )
+        SELECT
+            commodity,
+            region,
+            marketing_year,
+            marketing_year_start,
+            unit,
+            forecast_year AS latest_report_year,
+            forecast_month AS latest_report_month,
+            MAX(CASE WHEN attribute = 'Production' THEN value END) AS production,
+            MAX(CASE WHEN attribute = 'Beginning Stocks' THEN value END) AS beginning_stocks,
+            MAX(CASE WHEN attribute = 'Imports' THEN value END) AS imports,
+            MAX(CASE WHEN attribute = 'Exports' THEN value END) AS exports,
+            MAX(CASE WHEN attribute = 'Ending Stocks' THEN value END) AS ending_stocks,
+            MAX(CASE WHEN attribute IN ('Domestic', 'Total Use', 'Dom. Consumption')
+                THEN value END) AS domestic_use,
+            MAX(CASE WHEN attribute = 'Total Supply' THEN value END) AS total_supply
+        FROM ranked
+        WHERE rn = 1
+        GROUP BY commodity, region, marketing_year, marketing_year_start, unit,
+                 forecast_year, forecast_month
+    """)
+    logger.info("gold_wasde_latest built")

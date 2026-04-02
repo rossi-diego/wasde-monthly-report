@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     app_name: str = "WASDE Dashboard"
     data_dir: Path = Path("data")
     log_level: str = "INFO"
+    wasde_backfill_start_year: int = 2010
 
     @property
     def bronze_dir(self) -> Path:
@@ -24,6 +25,10 @@ class Settings(BaseSettings):
     @property
     def duckdb_path(self) -> Path:
         return self.data_dir / "wasde.duckdb"
+
+    @property
+    def wasde_manifest_path(self) -> Path:
+        return self.bronze_dir / "wasde" / "_manifest.json"
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
