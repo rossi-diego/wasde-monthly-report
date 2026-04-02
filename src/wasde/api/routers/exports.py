@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
 
+from wasde.config import settings
 from wasde.models.exports import ExportPaceResponse
 
 router = APIRouter()
@@ -56,10 +57,11 @@ def get_export_destinations(
     """Top export destinations for a commodity by cumulative volume."""
     db = _db(request)
     try:
+        silver_exports = str(settings.silver_dir / "exports.parquet")
         rows = db.execute(
-            """
+            f"""
             SELECT destination, SUM(net_sales_mt) AS total_mt
-            FROM silver_exports
+            FROM read_parquet('{silver_exports}')
             WHERE commodity = ?
             GROUP BY destination
             ORDER BY total_mt DESC

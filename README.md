@@ -23,42 +23,42 @@ Ingests three data sources monthly — USDA FAS PSD (supply/demand), NOPA crush 
 | NOPA | US soybean crush volume + oil stocks | Monthly |
 | USDA FAS Export Sales | Weekly export sales by commodity + destination | Weekly |
 
-## Setup
+## Quick Start
 
-### 1. Clone
+The easiest way to get started — downloads data, builds tables, and starts the API:
 
 ```bash
 git clone https://github.com/rossi-diego/wasde-monthly-report.git
 cd wasde-monthly-report
+python run.py
 ```
 
-### 2. Install
+> On Windows you can also double-click `iniciar.bat`.
+
+The script automatically installs dependencies, downloads WASDE reports from the USDA (public data, no API key needed), processes them through the Bronze → Silver → Gold pipeline, and optionally starts the API server.
+
+## Manual Setup
+
+### 1. Install
 
 ```bash
 pip install uv
 uv pip install -e ".[dev,pipelines]"
 ```
 
-### 3. Configure
+### 2. Configure (optional)
 
 ```bash
 cp .env.example .env
 # Add your USDA_PSD_KEY (free at https://api.data.gov/signup/)
+# Only needed for the PSD pipeline — WASDE works without it
 ```
 
-### 4. Run locally
+### 3. Run
 
 ```bash
 make run-api        # starts FastAPI on http://localhost:8000
 make up             # starts Airflow + FastAPI via Docker Compose
-```
-
-### 5. Trigger the pipeline
-
-```bash
-# Via Airflow UI at http://localhost:8080
-# Or manually:
-python -c "from wasde.pipelines.gold.metrics import build_gold; ..."
 ```
 
 ## Project Structure

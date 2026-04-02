@@ -17,7 +17,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from wasde.api.routers import exports, nopa, supply_demand
+from wasde.api.routers import exports, nopa, supply_demand, wasde
 from wasde.config import configure_logging, settings
 
 configure_logging()
@@ -55,6 +55,7 @@ app.add_middleware(
 app.include_router(supply_demand.router, prefix="/v1/supply-demand", tags=["Supply & Demand"])
 app.include_router(nopa.router, prefix="/v1/nopa", tags=["NOPA Crush"])
 app.include_router(exports.router, prefix="/v1/exports", tags=["Export Sales"])
+app.include_router(wasde.router, prefix="/v1/wasde", tags=["WASDE"])
 
 
 @app.get("/health", tags=["Health"])
