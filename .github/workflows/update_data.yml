@@ -27,7 +27,7 @@ jobs:
           USDA_PSD_KEY: ${{ secrets.USDA_PSD_KEY }}
         run: |
           python - <<'PIPELINE'
-          import logging, os
+          import logging, os, sys
           from datetime import date
           from wasde.config import settings, configure_logging
 
@@ -39,51 +39,112 @@ jobs:
           settings.bronze_dir.mkdir(parents=True, exist_ok=True)
           settings.silver_dir.mkdir(parents=True, exist_ok=True)
 
-          # ── Bronze ────────────────────────────────────────────────
-          from wasde.pipelines.bronze.wasde_csv import extract_wasde_latest
-          log.info("Bronze: WASDE CSV")
-          wasde_bz = extract_wasde_latest(output_dir=settings.bronze_dir / "wasde")
+          succeeded = []
+          failed = []
 
+          # ── Bronze ────────────────────────────────────────────────
+
+          # WASDE CSV (no API key needed)
+          wasde_bz = None
+          try:
+              from wasde.pipelines.bronze.wasde_csv import extract_wasde_latest
+              log.info("Bronze: WASDE CSV")
+              wasde_bz = extract_wasde_latest(output_dir=settings.bronze_dir / "wasde")
+              succeeded.append("wasde")
+          except Exception as e:
+              log.warning("Bronze WASDE failed: %s", e)
+              failed.append("wasde")
+
+          # PSD (requires USDA API key)
           psd_bz = None
           if api_key:
-              from wasde.pipelines.bronze.psd import extract_psd
-              log.info("Bronze: PSD")
-              psd_bz = extract_psd(api_key, run_date, settings.bronze_dir / "psd")
+              try:
+                  from wasde.pipelines.bronze.psd import extract_psd
+                  log.info("Bronze: PSD")
+                  psd_bz = extract_psd(api_key, run_date, settings.bronze_dir / "psd")
+                  succeeded.append("psd")
+              except Exception as e:
+                  log.warning("Bronze PSD failed: %s", e)
+                  failed.append("psd")
           else:
               log.warning("Skipping PSD — USDA_PSD_KEY not set")
+              failed.append("psd")
 
-          from wasde.pipelines.bronze.nopa import extract_nopa
-          log.info("Bronze: NOPA")
-          nopa_bz = extract_nopa(run_date, settings.bronze_dir / "nopa")
+          # NOPA (web scrape — URL may change)
+          nopa_bz = None
+          try:
+              from wasde.pipelines.bronze.nopa import extract_nopa
+              log.info("Bronze: NOPA")
+              nopa_bz = extract_nopa(run_date, settings.bronze_dir / "nopa")
+              if nopa_bz:
+                  succeeded.append("nopa")
+              else:
+                  failed.append("nopa")
+          except Exception as e:
+              log.warning("Bronze NOPA failed: %s", e)
+              failed.append("nopa")
 
-          from wasde.pipelines.bronze.exports import extract_exports
-          log.info("Bronze: Exports")
-          exports_bz = extract_exports(run_date, settings.bronze_dir / "exports")
+          # Exports (USDA FAS — no key needed)
+          exports_bz = None
+          try:
+              from wasde.pipelines.bronze.exports import extract_exports
+              log.info("Bronze: Exports")
+              exports_bz = extract_exports(run_date, settings.bronze_dir / "exports")
+              succeeded.append("exports")
+          except Exception as e:
+              log.warning("Bronze Exports failed: %s", e)
+              failed.append("exports")
+
+          log.info("Bronze results — succeeded: %s, failed: %s", succeeded, failed)
+
+          if not succeeded:
+              log.error("ALL bronze extractors failed — aborting pipeline")
+              sys.exit(1)
 
           # ── Silver ────────────────────────────────────────────────
-          from wasde.pipelines.silver.wasde_csv import transform_wasde
-          log.info("Silver: WASDE")
-          transform_wasde(settings.bronze_dir / "wasde", settings.silver_dir / "wasde.parquet")
+
+          if wasde_bz or (settings.bronze_dir / "wasde").exists():
+              try:
+                  from wasde.pipelines.silver.wasde_csv import transform_wasde
+                  log.info("Silver: WASDE")
+                  transform_wasde(settings.bronze_dir / "wasde", settings.silver_dir / "wasde.parquet")
+              except Exception as e:
+                  log.warning("Silver WASDE failed: %s", e)
 
           if psd_bz:
-              from wasde.pipelines.silver.psd import transform_psd
-              log.info("Silver: PSD")
-              transform_psd(psd_bz, settings.silver_dir / "psd.parquet")
+              try:
+                  from wasde.pipelines.silver.psd import transform_psd
+                  log.info("Silver: PSD")
+                  transform_psd(psd_bz, settings.silver_dir / "psd.parquet")
+              except Exception as e:
+                  log.warning("Silver PSD failed: %s", e)
 
-          from wasde.pipelines.silver.nopa import transform_nopa
-          log.info("Silver: NOPA")
-          transform_nopa(nopa_bz, settings.silver_dir / "nopa.parquet")
+          if nopa_bz:
+              try:
+                  from wasde.pipelines.silver.nopa import transform_nopa
+                  log.info("Silver: NOPA")
+                  transform_nopa(nopa_bz, settings.silver_dir / "nopa.parquet")
+              except Exception as e:
+                  log.warning("Silver NOPA failed: %s", e)
 
-          from wasde.pipelines.silver.exports import transform_exports
-          log.info("Silver: Exports")
-          transform_exports(exports_bz, settings.silver_dir / "exports.parquet")
+          if exports_bz:
+              try:
+                  from wasde.pipelines.silver.exports import transform_exports
+                  log.info("Silver: Exports")
+                  transform_exports(exports_bz, settings.silver_dir / "exports.parquet")
+              except Exception as e:
+                  log.warning("Silver Exports failed: %s", e)
 
           # ── Gold ──────────────────────────────────────────────────
-          from wasde.pipelines.gold.metrics import build_gold
-          log.info("Gold: building DuckDB")
-          build_gold()
 
-          log.info("Pipeline complete.")
+          try:
+              from wasde.pipelines.gold.metrics import build_gold
+              log.info("Gold: building DuckDB")
+              build_gold()
+          except Exception as e:
+              log.warning("Gold build failed: %s", e)
+
+          log.info("Pipeline complete. Succeeded: %s, Failed: %s", succeeded, failed)
           PIPELINE
 
       - name: Commit updated data
