@@ -5,6 +5,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
+from wasde.api.download import stream_download
 from wasde.models.psd import SupplyDemandResponse
 
 router = APIRouter()
@@ -105,5 +106,38 @@ def get_revisions(
             }
             for r in rows
         ]
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/download")
+def download_supply_demand(
+    request: Request,
+    commodity: str = "Soybeans",
+    country: str = "World",
+    marketing_year: int | None = None,
+    format: str = "csv",
+):
+    """Download supply & demand data as CSV or XLSX."""
+    db = _db(request)
+    try:
+        where = "WHERE commodity = ? AND country = ?"
+        params: list[object] = [commodity, country]
+        if marketing_year is not None:
+            where += " AND marketing_year = ?"
+            params.append(marketing_year)
+
+        rows = db.execute(
+            f"""
+            SELECT * FROM gold_supply_demand
+            {where}
+            ORDER BY report_date DESC, marketing_year DESC
+            """,
+            params,
+        ).fetchall()
+        cols = [d[0] for d in db.description]
+        data = [dict(zip(cols, row)) for row in rows]
+        fname = f"supply_demand_{commodity}_{marketing_year or 'all'}"
+        return stream_download(data, filename=fname, fmt=format)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
