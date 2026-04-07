@@ -225,6 +225,93 @@ async function loadExports() {
   }
 }
 
+// ── Data Table ────────────────────────────────────────────────────────
+
+const TABLE_COLS = [
+  { key: "report_date", label: "Report Date" },
+  { key: "commodity", label: "Commodity" },
+  { key: "country", label: "Country" },
+  { key: "marketing_year", label: "MY" },
+  { key: "production", label: "Production" },
+  { key: "beginning_stocks", label: "Beg. Stocks" },
+  { key: "imports", label: "Imports" },
+  { key: "domestic_total", label: "Dom. Use" },
+  { key: "exports", label: "Exports" },
+  { key: "ending_stocks", label: "End. Stocks" },
+  { key: "stock_to_use_pct", label: "S/U %" },
+];
+
+let tableData = [];
+let tableSortKey = "report_date";
+let tableSortAsc = false;
+
+function renderTable() {
+  const head = document.getElementById("data-table-head");
+  const body = document.getElementById("data-table-body");
+  const status = document.getElementById("table-status");
+
+  // Header
+  head.innerHTML = `<tr>${TABLE_COLS.map(c =>
+    `<th class="text-left py-2 px-2 border-b border-gray-800 text-gray-400 font-medium cursor-pointer hover:text-gray-200 whitespace-nowrap select-none"
+         onclick="sortTable('${c.key}')">${c.label}${tableSortKey === c.key ? (tableSortAsc ? " ▲" : " ▼") : ""}</th>`
+  ).join("")}</tr>`;
+
+  // Sort
+  const sorted = [...tableData].sort((a, b) => {
+    const va = a[tableSortKey], vb = b[tableSortKey];
+    if (va == null && vb == null) return 0;
+    if (va == null) return 1;
+    if (vb == null) return -1;
+    if (typeof va === "string") return tableSortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+    return tableSortAsc ? va - vb : vb - va;
+  });
+
+  // Rows
+  body.innerHTML = sorted.map(row =>
+    `<tr class="border-b border-gray-800/50 hover:bg-gray-800/30">${TABLE_COLS.map(c => {
+      const v = row[c.key];
+      const isNum = typeof v === "number";
+      return `<td class="py-1.5 px-2 ${isNum ? "text-right tabular-nums" : ""} whitespace-nowrap">${
+        v == null ? "—" : isNum ? fmt(v, c.key === "stock_to_use_pct" ? 1 : 0) : v
+      }</td>`;
+    }).join("")}</tr>`
+  ).join("");
+
+  status.textContent = `${sorted.length} rows`;
+}
+
+function sortTable(key) {
+  if (tableSortKey === key) {
+    tableSortAsc = !tableSortAsc;
+  } else {
+    tableSortKey = key;
+    tableSortAsc = true;
+  }
+  renderTable();
+}
+
+async function loadTable() {
+  const commodity = document.getElementById("filter-commodity").value;
+  const country = document.getElementById("filter-country").value;
+  try {
+    tableData = await apiFetch(
+      `/v1/supply-demand/?commodity=${encodeURIComponent(commodity)}&country=${encodeURIComponent(country)}`
+    );
+    renderTable();
+  } catch (e) {
+    console.error("Table load error:", e);
+    document.getElementById("table-status").textContent = "Failed to load data";
+  }
+}
+
+function downloadData(format) {
+  const commodity = document.getElementById("filter-commodity").value;
+  const country = document.getElementById("filter-country").value;
+  const year = document.getElementById("filter-year").value;
+  const url = `${API}/v1/supply-demand/download?commodity=${encodeURIComponent(commodity)}&country=${encodeURIComponent(country)}&marketing_year=${year}&format=${format}`;
+  window.open(url, "_blank");
+}
+
 // ── Main ───────────────────────────────────────────────────────────────
 
 async function loadAll() {
@@ -234,6 +321,7 @@ async function loadAll() {
     loadRevisions(),
     loadNOPA(),
     loadExports(),
+    loadTable(),
   ]);
 }
 
