@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
 
+from wasde.api.download import stream_download
 from wasde.config import settings
 from wasde.models.exports import ExportPaceResponse
 
@@ -70,5 +71,34 @@ def get_export_destinations(
             [commodity, top_n],
         ).fetchall()
         return [{"destination": r[0], "total_mt": r[1]} for r in rows]
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/pace/download")
+def download_export_pace(
+    request: Request,
+    commodity: str | None = None,
+    format: str = "csv",
+):
+    """Download export pace data as CSV or XLSX."""
+    db = _db(request)
+    try:
+        where = "WHERE commodity = ?" if commodity else ""
+        params: list[object] = [commodity] if commodity else []
+        rows = db.execute(
+            f"""
+            SELECT commodity, marketing_year, cumulative_exports_mt,
+                   usda_target_mt, pace_pct, as_of_date
+            FROM gold_export_pace
+            {where}
+            ORDER BY pace_pct DESC NULLS LAST
+            """,
+            params,
+        ).fetchall()
+        cols = [d[0] for d in db.description]
+        data = [dict(zip(cols, row)) for row in rows]
+        fname = f"export_pace_{commodity or 'all'}"
+        return stream_download(data, filename=fname, fmt=format)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc

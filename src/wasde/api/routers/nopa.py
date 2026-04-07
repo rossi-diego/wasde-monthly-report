@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException, Request
 
+from wasde.api.download import stream_download
 from wasde.models.nopa import NOPACrushResponse
 
 router = APIRouter()
@@ -68,5 +69,31 @@ def get_rolling_crush(
             }
             for r in rows
         ]
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/crush/download")
+def download_crush(
+    request: Request,
+    months: int = 120,
+    format: str = "csv",
+):
+    """Download NOPA crush data as CSV or XLSX."""
+    db = _db(request)
+    try:
+        rows = db.execute(
+            """
+            SELECT report_date, crush_million_bu, oil_stocks_million_lbs,
+                   crush_margin_usd_per_bu, rolling_12m_crush
+            FROM gold_nopa_crush
+            ORDER BY report_date DESC
+            LIMIT ?
+            """,
+            [months],
+        ).fetchall()
+        cols = [d[0] for d in db.description]
+        data = [dict(zip(cols, row)) for row in rows]
+        return stream_download(data, filename="nopa_crush", fmt=format)
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
