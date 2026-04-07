@@ -94,6 +94,17 @@ GET /v1/nopa/crush-margin?months=24
 GET /v1/exports/pace?commodity=Soybeans&marketing_year=2024
 ```
 
+## Deploy to Render
+
+1. Go to [render.com](https://render.com) → **New Web Service** → connect `rossi-diego/wasde-monthly-report`
+2. Render auto-detects `Dockerfile.api`. Set:
+   - **Dockerfile Path:** `./Dockerfile.api`
+   - **Plan:** Free
+3. Add environment variable: `USDA_PSD_KEY` = your key from [api.data.gov](https://api.data.gov/signup/)
+4. Deploy. The dashboard + API will be live at `https://wasde-dashboard.onrender.com`
+
+The `render.yaml` Blueprint in the repo also supports one-click deployment via Render's Blueprint feature.
+
 ## Author
 
 Diego Rossi Santanna — [linkedin.com/in/diego-rossi-santanna](https://www.linkedin.com/in/diego-rossi-santanna/)
