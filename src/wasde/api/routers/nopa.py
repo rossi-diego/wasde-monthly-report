@@ -61,7 +61,11 @@ def get_rolling_crush(
             [months],
         ).fetchall()
         return [
-            {"report_date": str(r[0]), "crush_million_bu": r[1], "rolling_12m_crush": r[2]}
+            {
+                "report_date": str(r[0]),
+                "crush_million_bu": r[1],
+                "rolling_12m_crush": r[2],
+            }
             for r in rows
         ]
     except Exception as exc:

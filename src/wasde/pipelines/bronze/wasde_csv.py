@@ -13,6 +13,7 @@ Data sources:
       oce-wasde-report-data-2010-04-to-2015-12.zip
       oce-wasde-report-data-2016-01-to-2020-12.zip
 """
+
 from __future__ import annotations
 
 import io
@@ -20,7 +21,7 @@ import json
 import logging
 import re
 import zipfile
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from pathlib import Path
 
 import httpx
@@ -150,7 +151,7 @@ def _validate_columns(df: pd.DataFrame, url: str) -> bool:
 def _process_csv(df: pd.DataFrame, url: str) -> pd.DataFrame:
     """Add metadata columns and keep only the expected schema columns."""
     df["_source_url"] = url
-    df["_ingested_at"] = datetime.now(timezone.utc).isoformat()
+    df["_ingested_at"] = datetime.now(UTC).isoformat()
     return df
 
 
@@ -182,7 +183,7 @@ def _update_manifest(
     manifest[key] = {
         "wasde_number": wasde_number,
         "rows": len(df),
-        "ingested_at": datetime.now(timezone.utc).isoformat(),
+        "ingested_at": datetime.now(UTC).isoformat(),
     }
     _save_manifest(manifest_path, manifest)
 

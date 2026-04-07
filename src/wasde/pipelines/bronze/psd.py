@@ -5,6 +5,7 @@ Fetches raw supply & demand data for 5 commodities and saves it
 as a dated Parquet file in data/bronze/psd/.  The raw JSON is
 preserved exactly as received — no transformations here.
 """
+
 from __future__ import annotations
 
 import logging
@@ -41,7 +42,9 @@ def _fetch_commodity(api_key: str, commodity_code: str) -> list[dict]:
     return list(data)
 
 
-def extract_psd(api_key: str, run_date: date | None = None, output_dir: Path | None = None) -> Path:
+def extract_psd(
+    api_key: str, run_date: date | None = None, output_dir: Path | None = None
+) -> Path:
     """Fetch all 5 commodities from PSD API and save raw Parquet.
 
     Args:

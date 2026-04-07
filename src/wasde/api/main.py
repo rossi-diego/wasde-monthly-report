@@ -7,10 +7,12 @@ Shutdown: closes the connection cleanly.
 Static frontend (frontend/) is served at the root path.
 Interactive API docs are available at /docs.
 """
+
 from __future__ import annotations
 
+import os
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 import duckdb
 from fastapi import FastAPI
@@ -52,7 +54,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(supply_demand.router, prefix="/v1/supply-demand", tags=["Supply & Demand"])
+app.include_router(
+    supply_demand.router, prefix="/v1/supply-demand", tags=["Supply & Demand"]
+)
 app.include_router(nopa.router, prefix="/v1/nopa", tags=["NOPA Crush"])
 app.include_router(exports.router, prefix="/v1/exports", tags=["Export Sales"])
 app.include_router(wasde.router, prefix="/v1/wasde", tags=["WASDE"])
@@ -64,7 +68,6 @@ def health() -> dict[str, str]:
 
 
 # Serve static frontend at root (must be last — catches all unmatched paths)
-import os
 _frontend_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", "frontend")
 if os.path.isdir(_frontend_dir):
     app.mount("/", StaticFiles(directory=_frontend_dir, html=True), name="frontend")

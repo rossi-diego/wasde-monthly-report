@@ -1,5 +1,6 @@
 # src/wasde/models/wasde.py
 """Pydantic models for WASDE CSV data."""
+
 from __future__ import annotations
 
 from datetime import date
@@ -26,8 +27,13 @@ class WASDERecord(BaseModel):
     annual_quarter_flag: str
 
     @field_validator(
-        "report_title", "commodity", "region", "attribute",
-        "unit", "proj_est_flag", "annual_quarter_flag",
+        "report_title",
+        "commodity",
+        "region",
+        "attribute",
+        "unit",
+        "proj_est_flag",
+        "annual_quarter_flag",
         mode="before",
     )
     @classmethod

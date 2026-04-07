@@ -5,6 +5,7 @@ Reads all Bronze WASDE Parquet files, validates each row with Pydantic,
 filters out non-S&D rows (reliability projections, empty commodities),
 and writes a cumulative Silver Parquet deduped by natural key.
 """
+
 from __future__ import annotations
 
 import logging

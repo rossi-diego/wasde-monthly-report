@@ -6,6 +6,7 @@ Three tables are created/replaced on every run:
   gold_nopa_crush     — NOPA monthly crush + crush margin
   gold_export_pace    — ESR weekly pace vs. USDA annual target
 """
+
 from __future__ import annotations
 
 import logging
@@ -13,7 +14,8 @@ from pathlib import Path
 
 import duckdb
 
-from wasde.config import Settings, settings as default_settings
+from wasde.config import Settings
+from wasde.config import settings as default_settings
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +51,9 @@ def build_gold(cfg: Settings | None = None) -> None:
 
 def _build_supply_demand(con: duckdb.DuckDBPyConnection, silver_path: Path) -> None:
     if not silver_path.exists():
-        logger.warning("Silver PSD not found: %s — skipping gold_supply_demand", silver_path)
+        logger.warning(
+            "Silver PSD not found: %s — skipping gold_supply_demand", silver_path
+        )
         return
 
     con.execute(f"""
@@ -88,7 +92,9 @@ def _build_supply_demand(con: duckdb.DuckDBPyConnection, silver_path: Path) -> N
 
 def _build_nopa_crush(con: duckdb.DuckDBPyConnection, silver_path: Path) -> None:
     if not silver_path.exists():
-        logger.warning("Silver NOPA not found: %s — skipping gold_nopa_crush", silver_path)
+        logger.warning(
+            "Silver NOPA not found: %s — skipping gold_nopa_crush", silver_path
+        )
         return
 
     # Crush margin = (meal_price * meal_yield) + (oil_price * oil_yield) - soy_price
@@ -177,7 +183,9 @@ def _build_export_pace(
 def _build_wasde_revisions(con: duckdb.DuckDBPyConnection, silver_path: Path) -> None:
     """Build gold_wasde_revisions — month-over-month revision tracking."""
     if not silver_path.exists():
-        logger.warning("Silver WASDE not found: %s — skipping gold_wasde_revisions", silver_path)
+        logger.warning(
+            "Silver WASDE not found: %s — skipping gold_wasde_revisions", silver_path
+        )
         return
 
     con.execute(f"""
@@ -214,7 +222,9 @@ def _build_wasde_revisions(con: duckdb.DuckDBPyConnection, silver_path: Path) ->
 def _build_wasde_latest(con: duckdb.DuckDBPyConnection, silver_path: Path) -> None:
     """Build gold_wasde_latest — latest pivoted S&D balance sheet."""
     if not silver_path.exists():
-        logger.warning("Silver WASDE not found: %s — skipping gold_wasde_latest", silver_path)
+        logger.warning(
+            "Silver WASDE not found: %s — skipping gold_wasde_latest", silver_path
+        )
         return
 
     con.execute(f"""

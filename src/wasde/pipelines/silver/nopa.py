@@ -1,5 +1,6 @@
 # src/wasde/pipelines/silver/nopa.py
 """Silver layer — NOPA crush data validation and cleaning."""
+
 from __future__ import annotations
 
 import logging

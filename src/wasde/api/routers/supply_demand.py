@@ -17,9 +17,15 @@ def _db(request: Request):  # type: ignore[return]
 @router.get("/", response_model=list[SupplyDemandResponse])
 def get_supply_demand(
     request: Request,
-    commodity: Annotated[str, Query(description="e.g. Soybeans, Corn, Wheat")] = "Soybeans",
-    country: Annotated[str, Query(description="e.g. World, United States, Brazil")] = "World",
-    marketing_year: Annotated[int | None, Query(description="Marketing year start, e.g. 2024")] = None,
+    commodity: Annotated[
+        str, Query(description="e.g. Soybeans, Corn, Wheat")
+    ] = "Soybeans",
+    country: Annotated[
+        str, Query(description="e.g. World, United States, Brazil")
+    ] = "World",
+    marketing_year: Annotated[
+        int | None, Query(description="Marketing year start, e.g. 2024")
+    ] = None,
 ) -> list[SupplyDemandResponse]:
     """Latest supply & demand estimates per marketing year."""
     db = _db(request)
@@ -63,7 +69,10 @@ def get_stock_to_use(
             """,
             [commodity, country],
         ).fetchall()
-        return [{"report_date": str(r[0]), "marketing_year": r[1], "stock_to_use_pct": r[2]} for r in rows]
+        return [
+            {"report_date": str(r[0]), "marketing_year": r[1], "stock_to_use_pct": r[2]}
+            for r in rows
+        ]
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 

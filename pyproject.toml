@@ -51,12 +51,15 @@ target-version = "py311"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
 
 [tool.mypy]
 python_version = "3.11"
-warn_return_any = true
+warn_return_any = false
 ignore_missing_imports = true
+disallow_untyped_calls = false
 strict = false
+disable_error_code = ["import-untyped", "no-any-return"]
 
 [tool.coverage.run]
 source = ["src/wasde"]

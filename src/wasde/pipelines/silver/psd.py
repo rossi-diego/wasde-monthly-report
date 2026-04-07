@@ -5,6 +5,7 @@ Reads Bronze PSD Parquet, validates each row with Pydantic,
 drops invalid rows (logged), and appends clean rows to the
 cumulative Silver Parquet (deduped by natural key).
 """
+
 from __future__ import annotations
 
 import logging
@@ -50,6 +51,7 @@ def _normalise_row(raw: dict) -> dict:
 
     # Report date: use releaseDate if available
     import datetime
+
     raw_date = pick(["releaseDate", "marketingYearLabel"])
     try:
         report_date = datetime.date.fromisoformat(str(raw_date)[:10])
@@ -91,7 +93,9 @@ def transform_psd(bronze_path: Path, silver_path: Path) -> int:
             logger.debug("Invalid PSD row skipped: %s", exc)
 
     if invalid_count:
-        logger.warning("Dropped %d invalid PSD rows out of %d", invalid_count, len(df_raw))
+        logger.warning(
+            "Dropped %d invalid PSD rows out of %d", invalid_count, len(df_raw)
+        )
 
     if not valid_rows:
         logger.error("No valid rows after PSD validation — check Bronze data.")

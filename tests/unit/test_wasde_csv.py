@@ -1,13 +1,12 @@
 # tests/unit/test_wasde_csv.py
 """Tests for WASDE CSV ingestion, silver cleaning, and gold SQL logic."""
+
 from __future__ import annotations
 
 from datetime import date
 
 import duckdb
 import pandas as pd
-import pytest
-
 
 # ── Bronze: URL construction ────────────────────────────────────────────────
 
@@ -240,23 +239,23 @@ def test_gold_wasde_revisions_window():
     """).fetchall()
 
     # Row 1 (May): first estimate, no previous
-    assert rows[0][1] == 112.0         # value
-    assert rows[0][2] is None          # prev_value
-    assert rows[0][3] is None          # mom_change
-    assert rows[0][4] == 112.0         # first_estimate
-    assert rows[0][5] == 0.0           # cumulative_revision
-    assert rows[0][6] == 1             # revision_number
+    assert rows[0][1] == 112.0  # value
+    assert rows[0][2] is None  # prev_value
+    assert rows[0][3] is None  # mom_change
+    assert rows[0][4] == 112.0  # first_estimate
+    assert rows[0][5] == 0.0  # cumulative_revision
+    assert rows[0][6] == 1  # revision_number
 
     # Row 2 (Jun): +2.5 from previous
     assert rows[1][1] == 114.5
     assert rows[1][2] == 112.0
     assert rows[1][3] == 2.5
-    assert rows[1][5] == 2.5           # cumulative = 114.5 - 112.0
+    assert rows[1][5] == 2.5  # cumulative = 114.5 - 112.0
 
     # Row 3 (Jul): -3.5 from previous, -1.0 from first
     assert rows[2][1] == 111.0
     assert rows[2][3] == -3.5
-    assert rows[2][5] == -1.0          # cumulative = 111.0 - 112.0
+    assert rows[2][5] == -1.0  # cumulative = 111.0 - 112.0
 
     con.close()
 
@@ -303,9 +302,9 @@ def test_gold_wasde_latest_pivot():
 
     assert len(rows) == 1
     row = rows[0]
-    assert row[3] == 2024              # latest_report_year
-    assert row[4] == 6                 # latest_report_month
-    assert row[5] == 405.0             # production (from June, the latest)
-    assert row[6] == 114.5             # ending_stocks (from June)
+    assert row[3] == 2024  # latest_report_year
+    assert row[4] == 6  # latest_report_month
+    assert row[5] == 405.0  # production (from June, the latest)
+    assert row[6] == 114.5  # ending_stocks (from June)
 
     con.close()

@@ -3,9 +3,6 @@ from __future__ import annotations
 
 from datetime import date
 
-import pandas as pd
-import pytest
-
 from wasde.pipelines.silver.psd import _normalise_row
 
 

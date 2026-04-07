@@ -1,6 +1,7 @@
-from pathlib import Path
-from dotenv import load_dotenv
 import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 
 # Load environment variables from .env file at project root
 load_dotenv()
@@ -19,4 +20,4 @@ WASDE_JWT = os.getenv("WASDE_JWT")
 
 # Optional: raise an error if token is missing
 if WASDE_JWT is None:
-    raise EnvironmentError("Missing WASDE_JWT in your .env file")
+    raise OSError("Missing WASDE_JWT in your .env file")

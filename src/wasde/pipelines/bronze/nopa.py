@@ -4,10 +4,10 @@
 Scrapes the HTML table from nopa.org/resources/crush-report/
 and saves raw data as a dated Parquet file.
 """
+
 from __future__ import annotations
 
 import logging
-import re
 from datetime import date
 from pathlib import Path
 
@@ -60,6 +60,7 @@ def _parse_nopa_date(raw: str) -> date | None:
     for fmt in ("%b-%y", "%B %Y", "%m/%Y", "%b %Y"):
         try:
             import datetime
+
             return datetime.datetime.strptime(raw, fmt).date().replace(day=1)
         except ValueError:
             continue
@@ -90,7 +91,9 @@ def extract_nopa(run_date: date | None = None, output_dir: Path | None = None) -
 
     df = _parse_nopa_table(resp.content)
     if df.empty:
-        raise RuntimeError("NOPA scraper returned no rows — page structure may have changed.")
+        raise RuntimeError(
+            "NOPA scraper returned no rows — page structure may have changed."
+        )
 
     df.to_parquet(output_path, index=False)
     logger.info("Bronze NOPA saved: %s (%d rows)", output_path, len(df))
