@@ -1,19 +1,47 @@
 # WASDE Dashboard
 
-Production-grade data pipeline and REST API for USDA agricultural supply & demand data.
+[![CI](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/ci.yml/badge.svg)](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/ci.yml)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Ingests three data sources monthly — USDA FAS PSD (supply/demand), NOPA crush reports, and USDA export sales — through a Bronze → Silver → Gold medallion architecture, storing the final layer in DuckDB and serving it via FastAPI.
+**[Live Demo](https://wasde-dashboard.onrender.com)** | **[API Docs](https://wasde-dashboard.onrender.com/docs)**
+
+Production-grade data pipeline and REST API for USDA agricultural supply & demand data. Ingests three sources monthly through a Bronze → Silver → Gold medallion architecture, stores the final layer in DuckDB, and serves it via FastAPI.
+
+---
+
+## Architecture
+
+```
+DATA SOURCES                  BRONZE              SILVER              GOLD               API
+                              (raw Parquet)       (cleaned Parquet)   (DuckDB tables)    (FastAPI)
+
+USDA FAS PSD API ──────────►  psd.parquet   ───►  psd.parquet   ───►  gold_supply_demand
+  (supply/demand)                                                     gold_export_pace   ──► /v1/supply-demand
+                                                                                          ──► /v1/exports/pace
+NOPA Monthly Crush ────────►  nopa.parquet  ───►  nopa.parquet  ───►  gold_nopa_crush    ──► /v1/nopa/crush
+
+USDA FAS Export Sales ─────►  exports.parquet ─►  exports.parquet ─►  gold_export_pace   ──► /v1/exports/pace
+
+USDA WASDE CSV ────────────►  wasde/*.parquet ─►  wasde.parquet ───►  gold_wasde_latest  ──► /v1/wasde
+                                                                      gold_wasde_revisions
+```
+
+---
 
 ## Stack
 
 | Layer | Technology |
 |---|---|
-| Orchestration | Apache Airflow (TaskFlow API) |
+| Orchestration | Apache Airflow (TaskFlow API) + GitHub Actions |
 | Storage | Parquet (Bronze/Silver) + DuckDB (Gold) |
-| API | FastAPI |
+| API | FastAPI + Pydantic v2 |
 | Frontend | HTML + Tailwind CSS + Chart.js |
-| Containerisation | Docker Compose |
-| CI | GitHub Actions |
+| Container | Docker Compose |
+| CI | GitHub Actions (ruff, mypy, pytest, coverage) |
+| Hosting | Render (free tier) |
+
+---
 
 ## Data Sources
 
@@ -22,10 +50,11 @@ Ingests three data sources monthly — USDA FAS PSD (supply/demand), NOPA crush 
 | USDA FAS PSD API | Supply & demand for wheat, corn, soybeans, soybean meal, soybean oil | Monthly |
 | NOPA | US soybean crush volume + oil stocks | Monthly |
 | USDA FAS Export Sales | Weekly export sales by commodity + destination | Weekly |
+| USDA WASDE CSV | World agricultural supply & demand estimates | Monthly |
+
+---
 
 ## Quick Start
-
-The easiest way to get started — downloads data, builds tables, and starts the API:
 
 ```bash
 git clone https://github.com/rossi-diego/wasde-monthly-report.git
@@ -33,78 +62,90 @@ cd wasde-monthly-report
 python run.py
 ```
 
-> On Windows you can also double-click `iniciar.bat`.
+The script installs dependencies, downloads WASDE data from the USDA (public, no API key needed), processes it through Bronze → Silver → Gold, and starts the API.
 
-The script automatically installs dependencies, downloads WASDE reports from the USDA (public data, no API key needed), processes them through the Bronze → Silver → Gold pipeline, and optionally starts the API server.
-
-## Manual Setup
-
-### 1. Install
+### Manual Setup
 
 ```bash
 pip install uv
-uv pip install -e ".[dev,pipelines]"
+uv pip install -e ".[dev]"
+cp .env.example .env    # add USDA_PSD_KEY (free at https://api.data.gov/signup/)
+make run-api            # starts FastAPI on http://localhost:8000
 ```
 
-### 2. Configure (optional)
+### Docker
 
 ```bash
-cp .env.example .env
-# Add your USDA_PSD_KEY (free at https://api.data.gov/signup/)
-# Only needed for the PSD pipeline — WASDE works without it
+docker compose up       # Airflow + FastAPI
 ```
 
-### 3. Run
+### Run Pipeline Manually
 
-```bash
-make run-api        # starts FastAPI on http://localhost:8000
-make up             # starts Airflow + FastAPI via Docker Compose
+Go to GitHub → Actions → **Monthly Data Update** → **Run workflow**. The pipeline fetches all sources, processes through Bronze → Silver → Gold, and commits the updated DuckDB.
+
+---
+
+## API Endpoints
+
+Interactive docs at `/docs` when running.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/health` | Health check |
+| `GET` | `/v1/supply-demand` | Supply & demand by commodity/country/year |
+| `GET` | `/v1/supply-demand/stock-to-use` | Stock-to-use ratio time series |
+| `GET` | `/v1/supply-demand/revisions` | Ending stocks revision history |
+| `GET` | `/v1/supply-demand/download` | Download as CSV or XLSX |
+| `GET` | `/v1/nopa/crush` | Monthly soybean crush volume |
+| `GET` | `/v1/nopa/crush/download` | Download crush data |
+| `GET` | `/v1/exports/pace` | Export pace vs USDA target |
+| `GET` | `/v1/exports/pace/download` | Download export pace |
+| `GET` | `/v1/wasde` | Latest WASDE estimates |
+
+### Download Data
+
+All data routes support CSV and XLSX download:
+
 ```
+GET /v1/supply-demand/download?commodity=Soybeans&country=World&format=csv
+GET /v1/nopa/crush/download?format=xlsx
+GET /v1/exports/pace/download?commodity=Corn&format=csv
+```
+
+---
 
 ## Project Structure
 
 ```
-dags/                   Airflow DAG
+dags/                       Airflow DAG (monthly pipeline)
 src/wasde/
-  config.py             Pydantic settings
-  models/               Pydantic schemas (PSD, NOPA, exports)
+  config.py                 Pydantic settings
+  models/                   Pydantic schemas (PSD, NOPA, exports)
   pipelines/
-    bronze/             Raw ingestion → Parquet
-    silver/             Validation + cleaning → Parquet
-    gold/               Aggregation → DuckDB
-  api/                  FastAPI app + routers
-frontend/               Single-page HTML/JS dashboard
-tests/                  Unit + integration tests
-data/                   Local only (gitignored) — rebuilt by pipeline
+    bronze/                 Raw ingestion → Parquet
+    silver/                 Validation + cleaning → Parquet
+    gold/                   Aggregation → DuckDB
+  api/
+    main.py                 FastAPI app
+    download.py             CSV/XLSX streaming helper
+    routers/                Endpoint modules
+frontend/                   Single-page HTML/JS dashboard
+tests/                      Unit + integration tests
 ```
 
-## API
-
-Interactive docs available at `http://localhost:8000/docs` when running locally.
-
-Key endpoints:
-
-```
-GET /health
-GET /v1/supply-demand?commodity=Soybeans&marketing_year=2024
-GET /v1/supply-demand/stock-to-use?commodity=Soybeans
-GET /v1/supply-demand/revisions?commodity=Soybeans&marketing_year=2024
-GET /v1/nopa/crush?months=24
-GET /v1/nopa/crush-margin?months=24
-GET /v1/exports/pace?commodity=Soybeans&marketing_year=2024
-```
+---
 
 ## Deploy to Render
 
-1. Go to [render.com](https://render.com) → **New Web Service** → connect `rossi-diego/wasde-monthly-report`
-2. Render auto-detects `Dockerfile.api`. Set:
-   - **Dockerfile Path:** `./Dockerfile.api`
-   - **Plan:** Free
-3. Add environment variable: `USDA_PSD_KEY` = your key from [api.data.gov](https://api.data.gov/signup/)
-4. Deploy. The dashboard + API will be live at `https://wasde-dashboard.onrender.com`
+1. Go to [render.com](https://render.com) → **New Web Service** → connect the repo
+2. Set **Dockerfile Path:** `./Dockerfile.api`
+3. Add env var: `USDA_PSD_KEY` from [api.data.gov](https://api.data.gov/signup/)
+4. Deploy
 
-The `render.yaml` Blueprint in the repo also supports one-click deployment via Render's Blueprint feature.
+The `render.yaml` Blueprint also supports one-click deployment.
+
+---
 
 ## Author
 
-Diego Rossi Santanna — [linkedin.com/in/diego-rossi-santanna](https://www.linkedin.com/in/diego-rossi-santanna/)
+Diego Rossi — Market Risk & Data Engineering
