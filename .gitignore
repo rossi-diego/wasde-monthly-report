@@ -12,17 +12,19 @@ ENV/
 # Environment
 .env
 
-# Data (rebuilt by pipeline — never commit raw/processed data)
+# Data — raw bronze files are large and reproducible, never commit
 data/bronze/
-data/silver/
 data/raw_data/
 data/processed_data/
 data/wasde_files/
-*.parquet
-*.duckdb
-*.db
 *.csv
 !data/.gitkeep
+
+# Silver parquet and Gold DuckDB ARE committed (pipeline output)
+# Negation rules to track them despite *.parquet being absent above
+!data/silver/
+!data/silver/*.parquet
+!data/wasde.duckdb
 
 # Power BI
 *.pbix

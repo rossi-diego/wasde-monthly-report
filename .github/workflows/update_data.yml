@@ -3,12 +3,15 @@ name: Monthly Data Update
 on:
   schedule:
     - cron: "0 14 12 * *"    # 12th of each month, 14:00 UTC
-  workflow_dispatch:           # also allow manual trigger from GitHub UI
+  workflow_dispatch:           # manual trigger from GitHub UI
 
 jobs:
   update:
     name: Fetch & Update Data
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -16,40 +19,77 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Install dependencies
+      - name: Install package
         run: pip install -e "."
 
-      - name: Run Bronze → Silver → Gold pipeline
+      - name: Run Bronze + Silver + Gold pipeline
         env:
           USDA_PSD_KEY: ${{ secrets.USDA_PSD_KEY }}
         run: |
-          python - <<'EOF'
+          python - <<'PIPELINE'
+          import logging, os
           from datetime import date
-          from pathlib import Path
-          from wasde.config import settings
-          from wasde.pipelines.bronze.psd import extract_psd
-          from wasde.pipelines.silver.psd import transform_psd
-          from wasde.pipelines.gold.metrics import build_gold
-          import os
+          from wasde.config import settings, configure_logging
 
-          api_key = os.environ["USDA_PSD_KEY"]
+          configure_logging()
+          log = logging.getLogger("pipeline")
           run_date = date.today()
+          api_key = os.environ.get("USDA_PSD_KEY", "")
 
-          # Bronze
-          bronze_psd = extract_psd(api_key, run_date, settings.bronze_dir / "psd")
+          settings.bronze_dir.mkdir(parents=True, exist_ok=True)
+          settings.silver_dir.mkdir(parents=True, exist_ok=True)
 
-          # Silver
-          transform_psd(bronze_psd, settings.silver_dir / "psd.parquet")
+          # ── Bronze ────────────────────────────────────────────────
+          from wasde.pipelines.bronze.wasde_csv import extract_wasde_latest
+          log.info("Bronze: WASDE CSV")
+          wasde_bz = extract_wasde_latest(output_dir=settings.bronze_dir / "wasde")
 
-          # Gold
+          psd_bz = None
+          if api_key:
+              from wasde.pipelines.bronze.psd import extract_psd
+              log.info("Bronze: PSD")
+              psd_bz = extract_psd(api_key, run_date, settings.bronze_dir / "psd")
+          else:
+              log.warning("Skipping PSD — USDA_PSD_KEY not set")
+
+          from wasde.pipelines.bronze.nopa import extract_nopa
+          log.info("Bronze: NOPA")
+          nopa_bz = extract_nopa(run_date, settings.bronze_dir / "nopa")
+
+          from wasde.pipelines.bronze.exports import extract_exports
+          log.info("Bronze: Exports")
+          exports_bz = extract_exports(run_date, settings.bronze_dir / "exports")
+
+          # ── Silver ────────────────────────────────────────────────
+          from wasde.pipelines.silver.wasde_csv import transform_wasde
+          log.info("Silver: WASDE")
+          transform_wasde(settings.bronze_dir / "wasde", settings.silver_dir / "wasde.parquet")
+
+          if psd_bz:
+              from wasde.pipelines.silver.psd import transform_psd
+              log.info("Silver: PSD")
+              transform_psd(psd_bz, settings.silver_dir / "psd.parquet")
+
+          from wasde.pipelines.silver.nopa import transform_nopa
+          log.info("Silver: NOPA")
+          transform_nopa(nopa_bz, settings.silver_dir / "nopa.parquet")
+
+          from wasde.pipelines.silver.exports import transform_exports
+          log.info("Silver: Exports")
+          transform_exports(exports_bz, settings.silver_dir / "exports.parquet")
+
+          # ── Gold ──────────────────────────────────────────────────
+          from wasde.pipelines.gold.metrics import build_gold
+          log.info("Gold: building DuckDB")
           build_gold()
-          print("Pipeline complete.")
-          EOF
 
-      - name: Commit updated DuckDB
+          log.info("Pipeline complete.")
+          PIPELINE
+
+      - name: Commit updated data
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/wasde.duckdb data/silver/ || true
-          git diff --staged --quiet || git commit -m "data: monthly WASDE update $(date +%Y-%m)"
+          git add -f data/wasde.duckdb data/silver/*.parquet || true
+          git diff --staged --quiet || git commit -m "data: monthly pipeline update $(date +%Y-%m)"
           git push
