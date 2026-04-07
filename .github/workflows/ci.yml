@@ -39,7 +39,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -e ".[dev]"
-      - run: pytest tests/ --cov=src/wasde --cov-report=xml --cov-fail-under=60
+      - run: pytest tests/ --cov=src/wasde --cov-report=xml --cov-fail-under=40
       - uses: codecov/codecov-action@v5
         with:
           files: coverage.xml

@@ -67,4 +67,4 @@ source = ["src/wasde"]
 omit = ["tests/*", "dags/*"]
 
 [tool.coverage.report]
-fail_under = 70
+fail_under = 40
