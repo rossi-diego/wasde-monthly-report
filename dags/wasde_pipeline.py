@@ -16,6 +16,7 @@ Key patterns:
     - catchup=False (no auto-backfill of missed runs)
     - retries=2 per task with 10 min delay
 """
+
 from __future__ import annotations
 
 import os
@@ -54,7 +55,11 @@ def wasde_pipeline() -> None:
         from wasde.pipelines.bronze.psd import extract_psd
 
         api_key = os.environ["USDA_PSD_KEY"]
-        path = extract_psd(api_key=api_key, run_date=date.today(), output_dir=settings.bronze_dir / "psd")
+        path = extract_psd(
+            api_key=api_key,
+            run_date=date.today(),
+            output_dir=settings.bronze_dir / "psd",
+        )
         return str(path)
 
     @task()
@@ -62,7 +67,9 @@ def wasde_pipeline() -> None:
         from wasde.config import settings
         from wasde.pipelines.bronze.nopa import extract_nopa
 
-        path = extract_nopa(run_date=date.today(), output_dir=settings.bronze_dir / "nopa")
+        path = extract_nopa(
+            run_date=date.today(), output_dir=settings.bronze_dir / "nopa"
+        )
         return str(path)
 
     @task()
@@ -70,7 +77,9 @@ def wasde_pipeline() -> None:
         from wasde.config import settings
         from wasde.pipelines.bronze.exports import extract_exports
 
-        path = extract_exports(run_date=date.today(), output_dir=settings.bronze_dir / "exports")
+        path = extract_exports(
+            run_date=date.today(), output_dir=settings.bronze_dir / "exports"
+        )
         return str(path)
 
     @task()
