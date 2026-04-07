@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: wasde-dashboard
+    runtime: docker
+    repo: https://github.com/rossi-diego/wasde-monthly-report
+    dockerfilePath: ./Dockerfile.api
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: USDA_PSD_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        value: "*"
