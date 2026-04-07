@@ -39,21 +39,21 @@ def stream_download(
         df = pd.DataFrame(result)
 
     if fmt == "xlsx":
-        buf = io.BytesIO()
-        df.to_excel(buf, index=False, engine="openpyxl")
-        buf.seek(0)
+        xls_buf = io.BytesIO()
+        df.to_excel(xls_buf, index=False, engine="openpyxl")
+        xls_buf.seek(0)
         return StreamingResponse(
-            buf,
+            xls_buf,
             media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
             headers={"Content-Disposition": f'attachment; filename="{filename}.xlsx"'},
         )
 
     # Default: CSV
-    buf = io.StringIO()
-    df.to_csv(buf, index=False)
-    buf.seek(0)
+    csv_buf = io.StringIO()
+    df.to_csv(csv_buf, index=False)
+    csv_buf.seek(0)
     return StreamingResponse(
-        iter([buf.getvalue()]),
+        iter([csv_buf.getvalue()]),
         media_type="text/csv",
         headers={"Content-Disposition": f'attachment; filename="{filename}.csv"'},
     )
