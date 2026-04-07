@@ -4,6 +4,7 @@
 The ESR API requires no authentication.  We fetch weekly cumulative
 export sales for the same 5 commodities as PSD.
 """
+
 from __future__ import annotations
 
 import logging
@@ -28,10 +29,10 @@ ESR_COMMODITY_CODES: dict[str, str] = {
 
 # Marketing year start months (used to filter the right year's data)
 MARKETING_YEAR_START: dict[str, int] = {
-    "Soybeans": 9,      # Sep 1
-    "Corn": 9,          # Sep 1
-    "Wheat": 6,         # Jun 1
-    "Soybean Meal": 10, # Oct 1
+    "Soybeans": 9,  # Sep 1
+    "Corn": 9,  # Sep 1
+    "Wheat": 6,  # Jun 1
+    "Soybean Meal": 10,  # Oct 1
     "Soybean Oil": 10,  # Oct 1
 }
 
@@ -87,7 +88,10 @@ def extract_exports(
                 r["_market_year"] = market_year
             all_records.extend(records)
             logger.info(
-                "Fetched %d ESR records for %s MY%d", len(records), commodity_name, market_year
+                "Fetched %d ESR records for %s MY%d",
+                len(records),
+                commodity_name,
+                market_year,
             )
         except Exception as exc:
             logger.error("Failed to fetch ESR for %s: %s", commodity_name, exc)

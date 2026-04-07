@@ -1,5 +1,6 @@
 # src/wasde/pipelines/silver/exports.py
 """Silver layer — USDA ESR export sales validation and cleaning."""
+
 from __future__ import annotations
 
 import logging
@@ -15,11 +16,15 @@ logger = logging.getLogger(__name__)
 
 def _normalise_row(raw: dict) -> dict:
     return {
-        "week_ending": raw.get("weekEndingDate") or raw.get("weeklyExportDate") or raw.get("weekEnding"),
+        "week_ending": raw.get("weekEndingDate")
+        or raw.get("weeklyExportDate")
+        or raw.get("weekEnding"),
         "commodity": raw.get("_commodity_name") or raw.get("commodityName", ""),
         "destination": raw.get("countryName") or raw.get("country", ""),
         "net_sales_mt": raw.get("netSalesMT") or raw.get("netSales") or 0.0,
-        "cumulative_exports_mt": raw.get("cumulativeExportsMT") or raw.get("cumulativeExports") or 0.0,
+        "cumulative_exports_mt": raw.get("cumulativeExportsMT")
+        or raw.get("cumulativeExports")
+        or 0.0,
     }
 
 

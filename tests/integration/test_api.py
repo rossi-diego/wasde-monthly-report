@@ -1,5 +1,6 @@
 # tests/integration/test_api.py
 """FastAPI integration tests using TestClient (no real database needed)."""
+
 from __future__ import annotations
 
 import pytest

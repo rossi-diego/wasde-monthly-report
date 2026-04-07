@@ -1,5 +1,6 @@
 # src/wasde/api/routers/wasde.py
 """WASDE CSV endpoints — revision tracking and latest S&D."""
+
 from __future__ import annotations
 
 from typing import Annotated
@@ -21,8 +22,12 @@ def get_wasde_revisions(
     request: Request,
     commodity: Annotated[str, Query(description="e.g. Soybeans, Corn, Wheat")],
     marketing_year: Annotated[str | None, Query(description="e.g. 2024/25")] = None,
-    region: Annotated[str | None, Query(description="e.g. World, United States")] = None,
-    attribute: Annotated[str | None, Query(description="e.g. Ending Stocks, Production")] = None,
+    region: Annotated[
+        str | None, Query(description="e.g. World, United States")
+    ] = None,
+    attribute: Annotated[
+        str | None, Query(description="e.g. Ending Stocks, Production")
+    ] = None,
 ) -> list[WASDERevisionResponse]:
     """Month-by-month revision history for a commodity's S&D estimates."""
     db = _db(request)

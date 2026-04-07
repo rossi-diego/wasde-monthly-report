@@ -1,8 +1,9 @@
 # tests/unit/test_silver_nopa.py
 from __future__ import annotations
 
-from wasde.pipelines.bronze.nopa import _parse_nopa_date
 from datetime import date
+
+from wasde.pipelines.bronze.nopa import _parse_nopa_date
 
 
 def test_parse_nopa_date_short_format():

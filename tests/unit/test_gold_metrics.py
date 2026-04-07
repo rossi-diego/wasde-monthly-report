@@ -1,11 +1,9 @@
 # tests/unit/test_gold_metrics.py
 """Tests for Gold layer SQL logic using in-memory DuckDB."""
+
 from __future__ import annotations
 
 import duckdb
-import pandas as pd
-import pytest
-from datetime import date
 
 
 def test_stock_to_use_calculation():
@@ -60,7 +58,7 @@ def test_revision_tracking_window_function():
         ORDER BY report_date
     """).fetchall()
 
-    assert rows[0][1] is None       # first row has no previous
-    assert rows[1][1] == -2.0       # 108 - 110 = -2
-    assert rows[2][1] == 7.0        # 115 - 108 = 7
+    assert rows[0][1] is None  # first row has no previous
+    assert rows[1][1] == -2.0  # 108 - 110 = -2
+    assert rows[2][1] == 7.0  # 115 - 108 = 7
     con.close()
