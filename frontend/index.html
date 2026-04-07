@@ -110,6 +110,30 @@
 
   </div>
 
+  <!-- Data Table -->
+  <div class="px-6 pb-8">
+    <div class="chart-panel">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="chart-title !mb-0">Table View — Supply &amp; Demand</h2>
+        <div class="flex gap-2">
+          <button onclick="downloadData('csv')" class="px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded text-xs font-medium transition-colors">
+            Download CSV
+          </button>
+          <button onclick="downloadData('xlsx')" class="px-3 py-1 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded text-xs font-medium transition-colors">
+            Download XLSX
+          </button>
+        </div>
+      </div>
+      <div class="overflow-x-auto">
+        <table id="data-table" class="w-full text-xs border-collapse">
+          <thead id="data-table-head"></thead>
+          <tbody id="data-table-body"></tbody>
+        </table>
+      </div>
+      <p id="table-status" class="text-xs text-gray-500 mt-2"></p>
+    </div>
+  </div>
+
   <script src="charts.js"></script>
 </body>
 </html>
