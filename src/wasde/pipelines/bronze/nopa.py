@@ -17,7 +17,12 @@ from lxml import html
 
 logger = logging.getLogger(__name__)
 
-NOPA_URL = "https://www.nopa.org/resources/crush-report/"
+# NOPA has changed URLs before — try multiple candidates
+NOPA_URLS = [
+    "https://www.nopa.org/resources/crush-report/",
+    "https://www.nopa.org/nopa-monthly-crush-report/",
+    "https://www.nopa.org/crush-report/",
+]
 
 
 def _parse_nopa_table(page_content: bytes) -> pd.DataFrame:
@@ -68,15 +73,19 @@ def _parse_nopa_date(raw: str) -> date | None:
     return None
 
 
-def extract_nopa(run_date: date | None = None, output_dir: Path | None = None) -> Path:
+def extract_nopa(
+    run_date: date | None = None, output_dir: Path | None = None
+) -> Path | None:
     """Scrape NOPA crush report page and save raw Parquet.
+
+    Tries multiple known URLs. Returns None if all fail (graceful degradation).
 
     Args:
         run_date: Date tag for the output filename (defaults to today).
         output_dir: Directory for bronze Parquet files.
 
     Returns:
-        Path to the written Parquet file.
+        Path to the written Parquet file, or None if extraction failed.
     """
     if run_date is None:
         run_date = date.today()
@@ -86,15 +95,22 @@ def extract_nopa(run_date: date | None = None, output_dir: Path | None = None) -
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / f"nopa_{run_date}.parquet"
 
-    resp = requests.get(NOPA_URL, timeout=30)
-    resp.raise_for_status()
+    for url in NOPA_URLS:
+        try:
+            resp = requests.get(url, timeout=30)
+            resp.raise_for_status()
+            df = _parse_nopa_table(resp.content)
+            if df.empty:
+                logger.warning("NOPA table empty at %s, trying next URL", url)
+                continue
+            df.to_parquet(output_path, index=False)
+            logger.info(
+                "Bronze NOPA saved: %s (%d rows) from %s", output_path, len(df), url
+            )
+            return output_path
+        except Exception as exc:
+            logger.warning("NOPA extraction failed at %s: %s", url, exc)
+            continue
 
-    df = _parse_nopa_table(resp.content)
-    if df.empty:
-        raise RuntimeError(
-            "NOPA scraper returned no rows — page structure may have changed."
-        )
-
-    df.to_parquet(output_path, index=False)
-    logger.info("Bronze NOPA saved: %s (%d rows)", output_path, len(df))
-    return output_path
+    logger.error("All NOPA URLs failed — skipping NOPA extraction")
+    return None
