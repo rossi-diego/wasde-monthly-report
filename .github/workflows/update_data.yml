@@ -151,6 +151,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -f data/wasde.duckdb data/silver/*.parquet || true
+          git add -f data/wasde.duckdb || true
+          git add -f data/silver/ || true
           git diff --staged --quiet || git commit -m "data: monthly pipeline update $(date +%Y-%m)"
+          git pull --rebase origin main || true
           git push
