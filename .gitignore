@@ -21,9 +21,8 @@ data/wasde_files/
 !data/.gitkeep
 
 # Silver parquet and Gold DuckDB ARE committed (pipeline output)
-# Negation rules to track them despite *.parquet being absent above
 !data/silver/
-!data/silver/*.parquet
+!data/silver/**
 !data/wasde.duckdb
 
 # Power BI
