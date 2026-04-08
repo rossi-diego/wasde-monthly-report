@@ -137,13 +137,7 @@ jobs:
 
           # ── Silver ────────────────────────────────────────────────
 
-          if wasde_bz or (settings.bronze_dir / "wasde").exists():
-              try:
-                  from wasde.pipelines.silver.wasde_csv import transform_wasde
-                  log.info("Silver: WASDE")
-                  transform_wasde(settings.bronze_dir / "wasde", settings.silver_dir / "wasde.parquet")
-              except Exception as e:
-                  log.warning("Silver WASDE failed: %s", e)
+          # WASDE silver already built in the CSV download section above
 
           if psd_bz:
               try:
