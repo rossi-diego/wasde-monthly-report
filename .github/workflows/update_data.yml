@@ -42,17 +42,31 @@ jobs:
           succeeded = []
           failed = []
 
+          # ── WASDE Backfill (historical CSVs, no API key needed) ──
+
+          try:
+              from wasde.pipelines.bronze.wasde_csv import backfill_wasde
+              log.info("Bronze: WASDE CSV backfill (2020-present)")
+              paths = backfill_wasde(start_year=2020)
+              if paths:
+                  from wasde.pipelines.silver.wasde_csv import transform_wasde as tf_wasde_backfill
+                  tf_wasde_backfill(settings.bronze_dir / "wasde", settings.silver_dir / "wasde.parquet")
+                  log.info("WASDE backfill: %d files processed", len(paths))
+                  succeeded.append("wasde_backfill")
+          except Exception as e:
+              log.warning("WASDE backfill failed: %s", e)
+
           # ── Bronze ────────────────────────────────────────────────
 
-          # WASDE CSV (no API key needed)
+          # WASDE CSV latest month (no API key needed)
           wasde_bz = None
           try:
               from wasde.pipelines.bronze.wasde_csv import extract_wasde_latest
-              log.info("Bronze: WASDE CSV")
+              log.info("Bronze: WASDE CSV latest")
               wasde_bz = extract_wasde_latest(output_dir=settings.bronze_dir / "wasde")
               succeeded.append("wasde")
           except Exception as e:
-              log.warning("Bronze WASDE failed: %s", e)
+              log.warning("Bronze WASDE latest failed: %s", e)
               failed.append("wasde")
 
           # PSD (requires USDA API key)
