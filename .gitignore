@@ -12,13 +12,18 @@ ENV/
 # Environment
 .env
 
-# Data — raw bronze files are large and reproducible, never commit
-data/bronze/
+# Data — raw bronze files (large, reproducible) except WASDE CSVs (small, slow to download)
+data/bronze/psd/
+data/bronze/nopa/
+data/bronze/exports/
 data/raw_data/
 data/processed_data/
 data/wasde_files/
-*.csv
 !data/.gitkeep
+
+# WASDE CSVs are cached in git (small files, slow USDA download)
+!data/bronze/wasde/
+!data/bronze/wasde/**
 
 # Silver parquet and Gold DuckDB ARE committed (pipeline output)
 !data/silver/

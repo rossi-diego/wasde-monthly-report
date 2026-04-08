@@ -9,6 +9,7 @@ jobs:
   update:
     name: Fetch & Update Data
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write
 
@@ -42,32 +43,51 @@ jobs:
           succeeded = []
           failed = []
 
-          # ── WASDE Backfill (historical CSVs, no API key needed) ──
+          # ── WASDE CSV download (individual monthly files, cached) ──
 
-          try:
-              from wasde.pipelines.bronze.wasde_csv import backfill_wasde
-              log.info("Bronze: WASDE CSV backfill (2020-present)")
-              paths = backfill_wasde(start_year=2020)
-              if paths:
-                  from wasde.pipelines.silver.wasde_csv import transform_wasde as tf_wasde_backfill
-                  tf_wasde_backfill(settings.bronze_dir / "wasde", settings.silver_dir / "wasde.parquet")
-                  log.info("WASDE backfill: %d files processed", len(paths))
-                  succeeded.append("wasde_backfill")
-          except Exception as e:
-              log.warning("WASDE backfill failed: %s", e)
+          import requests as _req
+          from dateutil.relativedelta import relativedelta
+          from pathlib import Path
 
-          # ── Bronze ────────────────────────────────────────────────
+          bronze_wasde = settings.bronze_dir / "wasde"
+          bronze_wasde.mkdir(parents=True, exist_ok=True)
+          downloaded = []
+          cached = []
 
-          # WASDE CSV latest month (no API key needed)
-          wasde_bz = None
-          try:
-              from wasde.pipelines.bronze.wasde_csv import extract_wasde_latest
-              log.info("Bronze: WASDE CSV latest")
-              wasde_bz = extract_wasde_latest(output_dir=settings.bronze_dir / "wasde")
-              succeeded.append("wasde")
-          except Exception as e:
-              log.warning("Bronze WASDE latest failed: %s", e)
+          for i in range(24):
+              d = run_date - relativedelta(months=i)
+              out = bronze_wasde / f"wasde_{d.year}_{d.month:02d}.csv"
+              if out.exists() and out.stat().st_size > 100:
+                  cached.append(out.name)
+                  continue
+              url = f"https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-{d.year}-{d.month:02d}.csv"
+              try:
+                  resp = _req.get(url, timeout=30)
+                  if resp.status_code == 200 and len(resp.content) > 100:
+                      out.write_bytes(resp.content)
+                      downloaded.append(out.name)
+                      log.info("Downloaded WASDE %d-%02d", d.year, d.month)
+                  else:
+                      log.debug("WASDE %d-%02d not available (HTTP %d)", d.year, d.month, resp.status_code)
+              except Exception as e:
+                  log.warning("WASDE %d-%02d failed: %s", d.year, d.month, e)
+
+          log.info("WASDE CSVs — downloaded: %d, cached: %d", len(downloaded), len(cached))
+
+          if downloaded or cached:
+              try:
+                  from wasde.pipelines.silver.wasde_csv import transform_wasde
+                  transform_wasde(bronze_wasde, settings.silver_dir / "wasde.parquet")
+                  succeeded.append("wasde")
+                  log.info("Silver WASDE built from %d CSV files", len(downloaded) + len(cached))
+              except Exception as e:
+                  log.warning("Silver WASDE transform failed: %s", e)
+                  failed.append("wasde")
+          else:
+              log.warning("No WASDE CSVs available")
               failed.append("wasde")
+
+          # ── Bronze (other sources) ───────────────────────────────
 
           # PSD (requires USDA API key)
           psd_bz = None
@@ -167,6 +187,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -f data/wasde.duckdb || true
           git add -f data/silver/ || true
+          git add -f data/bronze/wasde/ || true
           git diff --staged --quiet || git commit -m "data: monthly pipeline update $(date +%Y-%m)"
           git pull --rebase origin main || true
           git push
