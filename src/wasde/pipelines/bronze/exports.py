@@ -1,13 +1,17 @@
 # src/wasde/pipelines/bronze/exports.py
 """Bronze layer — USDA FAS Export Sales Reporting (ESR) extractor.
 
-The ESR API requires no authentication.  We fetch weekly cumulative
-export sales for the same 5 commodities as PSD.
+Uses the FAS OpenData ESR API (same base as PSD).
+Requires API_KEY header from https://api.data.gov/signup/
+
+API docs: https://apps.fas.usda.gov/opendata/swagger/ui/index
+Old esrquery URL (dead as of Apr 2026) → new OpenData endpoint.
 """
 
 from __future__ import annotations
 
 import logging
+import os
 from datetime import date
 from pathlib import Path
 
@@ -16,36 +20,38 @@ import requests
 
 logger = logging.getLogger(__name__)
 
-ESR_BASE_URL = "https://apps.fas.usda.gov/esrquery/esrq.aspx"
+# New FAS OpenData ESR base URL
+ESR_BASE_URL = "https://apps.fas.usda.gov/OpenData/api/esr"
 
-# ESR commodity codes (different from PSD codes)
+# ESR commodity codes
 ESR_COMMODITY_CODES: dict[str, str] = {
-    "Soybeans": "2222000",
-    "Corn": "0440000",
-    "Wheat": "0410000",
-    "Soybean Meal": "2223000",
-    "Soybean Oil": "4243000",
+    "Soybeans": "108",
+    "Corn": "101",
+    "Wheat": "104",
+    "Soybean Meal": "107",
+    "Soybean Oil": "106",
 }
 
-# Marketing year start months (used to filter the right year's data)
+# Marketing year start months
 MARKETING_YEAR_START: dict[str, int] = {
-    "Soybeans": 9,  # Sep 1
-    "Corn": 9,  # Sep 1
-    "Wheat": 6,  # Jun 1
-    "Soybean Meal": 10,  # Oct 1
-    "Soybean Oil": 10,  # Oct 1
+    "Soybeans": 9,
+    "Corn": 9,
+    "Wheat": 6,
+    "Soybean Meal": 10,
+    "Soybean Oil": 10,
 }
 
 
-def _fetch_esr_commodity(commodity_code: str, market_year: int) -> list[dict]:
-    """Fetch weekly export sales for one commodity and marketing year."""
-    params = {
-        "type": "weekly",
-        "commodity": commodity_code,
-        "marketYear": str(market_year),
-        "format": "json",
-    }
-    resp = requests.get(ESR_BASE_URL, params=params, timeout=60)
+def _fetch_esr_commodity(
+    api_key: str, commodity_code: str, market_year: int
+) -> list[dict]:
+    """Fetch weekly export sales for one commodity from the OpenData ESR API."""
+    url = (
+        f"{ESR_BASE_URL}/exports/commodityCode/{commodity_code}"
+        f"/allCountries/marketYear/{market_year}"
+    )
+    headers = {"API_KEY": api_key}
+    resp = requests.get(url, headers=headers, timeout=60)
     resp.raise_for_status()
     data = resp.json()
     if isinstance(data, list):
@@ -57,23 +63,22 @@ def extract_exports(
     run_date: date | None = None,
     output_dir: Path | None = None,
     market_year: int | None = None,
-) -> Path:
+) -> Path | None:
     """Fetch current marketing year export sales for all commodities.
 
-    Args:
-        run_date: Date tag for the output filename (defaults to today).
-        output_dir: Directory for bronze Parquet files.
-        market_year: Marketing year to fetch (defaults to current year).
-
-    Returns:
-        Path to the written Parquet file.
+    Uses the USDA_PSD_KEY env var for authentication (same key as PSD).
+    Returns None if extraction fails completely.
     """
+    api_key = os.environ.get("USDA_PSD_KEY", "")
+    if not api_key:
+        logger.warning("Skipping exports — USDA_PSD_KEY not set")
+        return None
+
     if run_date is None:
         run_date = date.today()
     if output_dir is None:
         output_dir = Path("data/bronze/exports")
     if market_year is None:
-        # Soybean marketing year starts Sep 1; use previous year Aug and before
         market_year = run_date.year if run_date.month >= 9 else run_date.year - 1
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -82,7 +87,7 @@ def extract_exports(
     all_records: list[dict] = []
     for commodity_name, code in ESR_COMMODITY_CODES.items():
         try:
-            records = _fetch_esr_commodity(code, market_year)
+            records = _fetch_esr_commodity(api_key, code, market_year)
             for r in records:
                 r["_commodity_name"] = commodity_name
                 r["_market_year"] = market_year
@@ -94,14 +99,13 @@ def extract_exports(
                 market_year,
             )
         except Exception as exc:
-            logger.error("Failed to fetch ESR for %s: %s", commodity_name, exc)
+            logger.warning("Failed to fetch ESR for %s: %s", commodity_name, exc)
 
     if not all_records:
-        logger.warning("No ESR data fetched — ESR API may be unavailable.")
-        df = pd.DataFrame()
-    else:
-        df = pd.DataFrame(all_records)
+        logger.warning("No ESR data fetched — API may be unavailable")
+        return None
 
+    df = pd.DataFrame(all_records)
     df.to_parquet(output_path, index=False)
     logger.info("Bronze exports saved: %s (%d rows)", output_path, len(df))
     return output_path

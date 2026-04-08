@@ -17,10 +17,12 @@ from lxml import html
 
 logger = logging.getLogger(__name__)
 
-# NOPA has changed URLs before — try multiple candidates
+# NOPA has changed URLs before — try multiple candidates.
+# NOTE: NOPA data is now distributed exclusively via LSEG/Refinitiv ($1,200/yr).
+# Free web scraping may stop working at any time. Graceful degradation is critical.
 NOPA_URLS = [
+    "https://www.nopa.org/resources/nopa-monthly-crush-report/",
     "https://www.nopa.org/resources/crush-report/",
-    "https://www.nopa.org/nopa-monthly-crush-report/",
     "https://www.nopa.org/crush-report/",
 ]
 
