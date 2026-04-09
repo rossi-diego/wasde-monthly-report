@@ -54,13 +54,23 @@ sd["country"] = sd["country"].str.replace(r"\s*\d+/\s*$", "", regex=True).str.st
 sd["marketing_year"] = sd["marketing_year"].astype(str).str[:4]
 sd["marketing_year"] = pd.to_numeric(sd["marketing_year"], errors="coerce").astype("Int64")
 
-# Calculate stock-to-use
-sd["stock_to_use_pct"] = sd.apply(
-    lambda r: round(r["ending_stocks"] / r["domestic_total"] * 100, 1)
-    if pd.notna(r.get("ending_stocks")) and pd.notna(r.get("domestic_total")) and r.get("domestic_total", 0) > 0
-    else None,
-    axis=1,
-)
+# Calculate stock-to-use: ending_stocks / total_use * 100
+# Total use = domestic_total + exports (if available), else production + imports - ending_stocks
+def calc_stu(r):
+    es = r.get("ending_stocks")
+    if pd.isna(es) or es is None:
+        return None
+    dom = r.get("domestic_total")
+    exp = r.get("exports")
+    if pd.notna(dom) and dom > 0:
+        total = dom + (exp if pd.notna(exp) else 0)
+    elif pd.notna(r.get("production")) and pd.notna(r.get("imports")):
+        total = r["production"] + r["imports"] - es
+    else:
+        return None
+    return round(es / total * 100, 1) if total > 0 else None
+
+sd["stock_to_use_pct"] = sd.apply(calc_stu, axis=1)
 
 # Add unit column
 sd["unit"] = "1000 MT"

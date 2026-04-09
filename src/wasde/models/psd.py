@@ -22,15 +22,17 @@ class PSDRecord(BaseModel):
 
 
 class SupplyDemandResponse(BaseModel):
+    model_config = {"extra": "ignore"}
+
     report_date: date
     commodity: str
     country: str
-    marketing_year: int
-    production: float | None
-    beginning_stocks: float | None
-    imports: float | None
-    domestic_total: float | None
-    exports: float | None
-    ending_stocks: float | None
-    stock_to_use_pct: float | None
-    unit: str
+    marketing_year: int | None = None
+    production: float | None = None
+    beginning_stocks: float | None = None
+    imports: float | None = None
+    domestic_total: float | None = None
+    exports: float | None = None
+    ending_stocks: float | None = None
+    stock_to_use_pct: float | None = None
+    unit: str = "1000 MT"
