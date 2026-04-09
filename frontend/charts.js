@@ -171,17 +171,32 @@ async function loadStockToUse() {
 
 async function loadRevisions() {
   const commodity = document.getElementById("filter-commodity").value;
-  const year = document.getElementById("filter-year").value;
+  let year = document.getElementById("filter-year").value;
   const country = document.getElementById("filter-country").value;
   try {
-    const data = await apiFetch(
+    let data = await apiFetch(
       `/v1/supply-demand/revisions?commodity=${encodeURIComponent(commodity)}&marketing_year=${year}&country=${encodeURIComponent(country)}`
     );
+    // If selected year has <2 data points, try previous year
+    if (data.length < 2) {
+      const prevYear = parseInt(year) - 1;
+      const fallback = await apiFetch(
+        `/v1/supply-demand/revisions?commodity=${encodeURIComponent(commodity)}&marketing_year=${prevYear}&country=${encodeURIComponent(country)}`
+      );
+      if (fallback.length > data.length) {
+        data = fallback;
+        year = String(prevYear);
+      }
+    }
+    if (data.length === 0) {
+      showEmpty("chart-revisions", "No revision data for this selection");
+      return;
+    }
     lineChart(
       "chart-revisions",
       data.map(r => r.report_date),
       [{
-        label: "Ending Stocks",
+        label: `Ending Stocks (MY ${year})`,
         data: data.map(r => r.ending_stocks),
         borderColor: "#10b981",
         backgroundColor: "#10b98122",
@@ -195,9 +210,24 @@ async function loadRevisions() {
   }
 }
 
+function showEmpty(canvasId, message) {
+  destroyChart(canvasId);
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext("2d");
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "#6b7280";
+  ctx.font = "14px system-ui";
+  ctx.textAlign = "center";
+  ctx.fillText(message, canvas.width / 2, canvas.height / 2);
+}
+
 async function loadNOPA() {
   try {
     const data = await apiFetch("/v1/nopa/crush?months=36");
+    if (!data || data.length === 0) {
+      showEmpty("chart-nopa", "No NOPA data available");
+      return;
+    }
     const sorted = [...data].sort((a, b) => a.report_date.localeCompare(b.report_date));
     barChart(
       "chart-nopa",
@@ -206,13 +236,17 @@ async function loadNOPA() {
       "Million Bushels"
     );
   } catch (e) {
-    console.error("NOPA load error:", e);
+    showEmpty("chart-nopa", "NOPA data unavailable");
   }
 }
 
 async function loadExports() {
   try {
     const data = await apiFetch("/v1/exports/pace");
+    if (!data || data.length === 0) {
+      showEmpty("chart-exports", "No export data available");
+      return;
+    }
     barChart(
       "chart-exports",
       data.map(r => r.commodity),
@@ -221,7 +255,7 @@ async function loadExports() {
       true
     );
   } catch (e) {
-    console.error("Export pace load error:", e);
+    showEmpty("chart-exports", "Export data unavailable");
   }
 }
 
