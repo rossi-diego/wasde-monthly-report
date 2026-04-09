@@ -346,6 +346,29 @@ function downloadData(format) {
   window.open(url, "_blank");
 }
 
+// ── Filter population ─────────────────────────────────────────────────
+
+function populateSelect(id, values, defaultValue) {
+  const el = document.getElementById(id);
+  el.innerHTML = values.map(v =>
+    `<option value="${v}"${v == defaultValue ? " selected" : ""}>${v}</option>`
+  ).join("");
+}
+
+async function loadFilters() {
+  try {
+    const meta = await apiFetch("/v1/supply-demand/metadata");
+    populateSelect("filter-commodity", meta.commodities, "Soybeans");
+    populateSelect("filter-country", meta.countries, "World");
+    populateSelect("filter-year", meta.marketing_years, 2023);
+  } catch (e) {
+    console.warn("Could not load filters from API, using defaults");
+    populateSelect("filter-commodity", ["Soybeans", "Corn", "Wheat", "Soybean Meal", "Soybean Oil"], "Soybeans");
+    populateSelect("filter-country", ["World", "United States", "Brazil", "Argentina", "China"], "World");
+    populateSelect("filter-year", [2025, 2024, 2023, 2022, 2021, 2020], 2023);
+  }
+}
+
 // ── Main ───────────────────────────────────────────────────────────────
 
 async function loadAll() {
@@ -359,4 +382,7 @@ async function loadAll() {
   ]);
 }
 
-document.addEventListener("DOMContentLoaded", loadAll);
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadFilters();
+  await loadAll();
+});

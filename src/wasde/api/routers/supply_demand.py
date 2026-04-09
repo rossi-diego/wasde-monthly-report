@@ -110,3 +110,35 @@ def download_supply_demand(
             )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/metadata")
+def get_metadata() -> dict:
+    """Available filter values — commodities, countries, marketing years."""
+    try:
+        with get_db() as db:
+            commodities = [
+                r[0]
+                for r in db.execute(
+                    "SELECT DISTINCT commodity FROM gold_supply_demand ORDER BY commodity"
+                ).fetchall()
+            ]
+            countries = [
+                r[0]
+                for r in db.execute(
+                    "SELECT DISTINCT country FROM gold_supply_demand ORDER BY country"
+                ).fetchall()
+            ]
+            years = [
+                r[0]
+                for r in db.execute(
+                    "SELECT DISTINCT marketing_year FROM gold_supply_demand WHERE marketing_year IS NOT NULL ORDER BY marketing_year DESC"
+                ).fetchall()
+            ]
+            return {
+                "commodities": commodities,
+                "countries": countries,
+                "marketing_years": years,
+            }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
