@@ -1,9 +1,7 @@
 # src/wasde/api/main.py
 """FastAPI application entry point.
 
-Startup: opens a read-only DuckDB connection shared across all requests.
-Shutdown: closes the connection cleanly.
-
+Uses connection-per-request pattern for DuckDB (avoids concurrency bugs).
 Static frontend (frontend/) is served at the root path.
 Interactive API docs are available at /docs.
 """
@@ -11,31 +9,15 @@ Interactive API docs are available at /docs.
 from __future__ import annotations
 
 import os
-from collections.abc import AsyncGenerator
-from contextlib import asynccontextmanager
 
-import duckdb
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from wasde.api.routers import exports, nopa, supply_demand, wasde
-from wasde.config import configure_logging, settings
+from wasde.config import configure_logging
 
 configure_logging()
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    db_path = settings.duckdb_path
-    if db_path.exists():
-        app.state.db = duckdb.connect(str(db_path), read_only=True)
-    else:
-        # Allow startup without data (e.g. in tests)
-        app.state.db = duckdb.connect(":memory:")
-    yield
-    app.state.db.close()
-
 
 app = FastAPI(
     title="WASDE Dashboard API",
@@ -44,7 +26,6 @@ app = FastAPI(
         "REST API for USDA agricultural supply & demand data. "
         "Sources: USDA FAS PSD, NOPA monthly crush, USDA FAS Export Sales."
     ),
-    lifespan=lifespan,
 )
 
 _cors_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
