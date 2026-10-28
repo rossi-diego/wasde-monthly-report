@@ -4,9 +4,9 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**[Live Demo](https://wasde-dashboard.onrender.com)** | **[API Docs](https://wasde-dashboard.onrender.com/docs)**
-
 Production-grade data pipeline and REST API for USDA agricultural supply & demand data. Ingests three sources monthly through a Bronze → Silver → Gold medallion architecture, stores the final layer in DuckDB, and serves it via FastAPI.
+
+> **Experimental metrics.** `gold_export_pace` (pace vs. USDA target) and the stocks-to-use ratio in `gold_supply_demand` have known methodology issues under revision: export pace sums net sales across marketing years against a non-US target, and stocks-to-use uses domestic use only instead of total use. Treat both as experimental until the fix lands.
 
 ---
 
