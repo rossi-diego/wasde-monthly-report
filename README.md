@@ -157,10 +157,10 @@ data/manifest.json   audit trail of every ingested report (data itself lives in 
 
 ## Quality
 
-- **Python:** ruff, mypy, 73 pytest tests (89% coverage) including an end-to-end dbt + publish
+- **Python:** ruff, mypy, 83 pytest tests (90% coverage) including an end-to-end dbt + publish
   run on real fixture data and XML-vs-CSV reconciliation.
 - **dbt:** schema tests + singular tests (balance identity, unique keys, plausible stocks-to-use,
-  monotonic WASDE numbers, complete latest report).
+  monotonic WASDE numbers, complete latest report, no missing report months).
 - **Web:** ESLint, TypeScript, Playwright smoke tests (desktop + mobile), re-run against the live
   site after every deploy.
 - **Charts:** colour palette validated for colour-vision deficiency and contrast in light and dark mode.
