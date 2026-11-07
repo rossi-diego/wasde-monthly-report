@@ -46,6 +46,7 @@ jobs:
         with:
           python-version: "3.12"
           enable-cache: true
+          activate-environment: true
       - run: uv pip install -e ".[dbt]"
 
       - name: Restore manifest from the latest data release (source of truth)

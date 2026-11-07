@@ -22,6 +22,7 @@ jobs:
         with:
           python-version: "3.12"
           enable-cache: true
+          activate-environment: true
       - run: uv pip install -e ".[dev,dbt]" openpyxl
       - name: Ruff
         run: |
