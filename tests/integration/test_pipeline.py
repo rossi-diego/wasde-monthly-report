@@ -92,7 +92,7 @@ def test_publish_outputs(built: Settings):
     assert (
         top["commodity"] == "corn" and top["attribute"] == "ending_stocks" and top["delta"] == -100
     )
-    assert "Drivers: production −100 mil. bu" in top["sentence"]
+    assert "Effect on stocks: production −100 mil. bu" in top["sentence"]
 
     corn = json.loads(
         (web / "commodities" / "corn" / "united_states.json").read_text(encoding="utf-8")

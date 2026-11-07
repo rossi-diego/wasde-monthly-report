@@ -64,10 +64,14 @@ export default function DriversWaterfall({ series }: { series: Series }) {
             const i = p[1]?.dataIndex ?? p[0].dataIndex;
             const v = signedVals[i];
             const total = i === 0 || i === labels.length - 1;
-            return `<b>${fullLabels[i]}</b><br/>${total ? "" : v > 0 ? "+" : "−"}${num(Math.abs(v), d)} ${series.unit_label ?? ""}`;
+            if (total) return `<b>${fullLabels[i]}</b><br/>Ending stocks ${num(v, d)} ${series.unit_label ?? ""}`;
+            const id = comps[i - 1]?.id;
+            const flip = id === "domestic_total" || id === "exports";
+            const line = flip ? `<br/><span style="color:${t.muted}">${fullLabels[i]} itself ${v < 0 ? "rose" : "fell"} by ${num(Math.abs(v), d)}</span>` : "";
+            return `<b>${fullLabels[i]}</b><br/>Effect on ending stocks: ${v > 0 ? "+" : "−"}${num(Math.abs(v), d)} ${series.unit_label ?? ""}${line}`;
           },
         },
-        xAxis: { type: "category", data: labels, ...axisCommon(t), splitLine: { show: false }, axisLabel: { color: t.muted, fontSize: 11, interval: 0, rotate: labels.length > 7 ? 35 : 0, hideOverlap: false } },
+        xAxis: { type: "category", data: labels, ...axisCommon(t), splitLine: { show: false }, axisLabel: { color: t.muted, fontSize: 11, interval: 0, rotate: labels.length > 5 ? 30 : 0, hideOverlap: false } },
         yAxis: {
           type: "value",
           ...axisCommon(t),
@@ -122,7 +126,39 @@ export default function DriversWaterfall({ series }: { series: Series }) {
       {unchanged ? (
         <p className="py-16 text-center text-sm text-muted">No revision to {drv.market_year} ending stocks this month.</p>
       ) : (
-        <EChart option={option} height={300} ariaLabel={`Ending stocks drivers for ${drv.market_year}`} />
+        <>
+          <EChart option={option} height={300} ariaLabel={`Ending stocks drivers for ${drv.market_year}`} />
+          <p className="mt-1 text-xs text-muted">
+            Bars show each line&apos;s effect on ending stocks: higher domestic use or exports lowers stocks, so they
+            appear with the opposite sign of the balance-sheet change.
+          </p>
+          <details className="mt-2 text-sm">
+            <summary className="cursor-pointer text-xs text-muted">Show as table</summary>
+            <table className="mt-2 w-full text-xs">
+              <tbody>
+                <tr className="border-t border-line">
+                  <td className="py-1">Last month</td>
+                  <td className="tabular py-1 text-right">{num(drv.from, decimals(series.unit, drv.from ?? 0))}</td>
+                </tr>
+                {drv.components
+                  .filter((c) => c.value !== null && Math.abs(c.value) > 1e-9)
+                  .map((c) => (
+                    <tr key={c.id} className="border-t border-line">
+                      <td className="py-1">{c.label}</td>
+                      <td className="tabular py-1 text-right">
+                        {(c.value ?? 0) > 0 ? "+" : "−"}
+                        {num(Math.abs(c.value ?? 0), decimals(series.unit, drv.to ?? 0))}
+                      </td>
+                    </tr>
+                  ))}
+                <tr className="border-t border-line font-medium">
+                  <td className="py-1">This month</td>
+                  <td className="tabular py-1 text-right">{num(drv.to, decimals(series.unit, drv.to ?? 0))}</td>
+                </tr>
+              </tbody>
+            </table>
+          </details>
+        </>
       )}
     </div>
   );

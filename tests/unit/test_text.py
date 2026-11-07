@@ -67,3 +67,8 @@ def test_flag_from_text(raw, expected):
 )
 def test_parse_number(raw, expected):
     assert parse_number(raw) == expected
+
+
+def test_price_range_becomes_midpoint():
+    assert parse_number("7.50 - 8.90") == 8.2
+    assert parse_number("6.20-6.30") == 6.25

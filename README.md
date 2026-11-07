@@ -169,7 +169,9 @@ data/manifest.json   audit trail of every ingested report (data itself lives in 
 
 - History starts in July 2010 (earlier reports are PDF/text only).
 - Pre-2021 history excludes WASDE's projection-reliability tables and some quarterly
-  livestock/dairy lines.
+  livestock lines; the U.S. milk table's fat/skim blocks are not fully separated in the XML era.
+- Projected prices published as ranges in older reports are stored as the range midpoint.
+- No pre-report trade estimates (not public), so "surprise vs. the market" is out of scope.
 - Values are as published by USDA (rounded); tiny changes can be rounding.
 
 ## Author

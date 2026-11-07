@@ -23,6 +23,16 @@ from wasde.publish.focus import Focus
 
 REGION_LABEL = {"united_states": "U.S.", "world": "World", "world_less_china": "World ex-China"}
 ORDINAL = {2: "2nd", 3: "3rd"}
+# Context chips under a headline, most explanatory first.
+RELATED_ORDER = [
+    "yield",
+    "area_harvested",
+    "production",
+    "exports",
+    "crush",
+    "ending_stocks",
+    "farm_price",
+]
 
 REPORT_CONTEXT = {
     1: "January report: final U.S. production estimates for the previous harvest.",
@@ -87,10 +97,16 @@ def _drivers(con: duckdb.DuckDBPyConnection, month: str) -> dict[tuple, dict[str
 
 def _driver_text(d: dict[str, Any], unit_id: str) -> str:
     parts = []
+
+    # Effect on ending stocks (same convention as the waterfall): more use or exports
+    # *reduces* stocks, so those lines enter with a minus sign.
+    def neg(v: Any) -> Any:
+        return None if v is None or pd.isna(v) else -v
+
     raw: list[tuple[str, Any]] = [
         ("production", d.get("d_production")),
-        ("exports", d.get("d_exports")),
-        ("domestic use", d.get("d_domestic_total")),
+        ("exports", neg(d.get("d_exports"))),
+        ("domestic use", neg(d.get("d_domestic_total"))),
         ("beginning stocks", d.get("d_beginning_stocks")),
         ("imports", d.get("d_imports")),
     ]
@@ -126,7 +142,7 @@ def _sentence(r: pd.Series, driver: dict[str, Any] | None) -> str:
     if driver and r.attribute_id == "ending_stocks":
         dt = _driver_text(driver, r.unit_id)
         if dt:
-            s += f" Drivers: {dt}."
+            s += f" Effect on stocks: {dt}."
         su, psu = driver.get("stocks_to_use_pct"), driver.get("p_stocks_to_use_pct")
         if su is not None and psu is not None and pd.notna(su) and pd.notna(psu):
             s += f" Stocks-to-use {su:.1f}% vs {psu:.1f}%."
@@ -229,7 +245,14 @@ def build_highlights(
                         "delta": float(x.delta),
                         "unit": x.unit_id,
                     }
-                    for x in related.itertuples(index=False)
+                    for x in sorted(
+                        related.itertuples(index=False),
+                        key=lambda x: (
+                            RELATED_ORDER.index(x.attribute_id)
+                            if x.attribute_id in RELATED_ORDER
+                            else len(RELATED_ORDER)
+                        ),
+                    )
                 ][:4],
                 "sentence": _sentence(r, driver),
             }

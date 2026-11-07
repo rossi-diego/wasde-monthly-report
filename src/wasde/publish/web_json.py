@@ -198,6 +198,17 @@ def build_series(
         [table, commodity, region],
     ).df()
     latest = sheet[sheet.report_month == month].sort_values("market_year")
+    line_units = dict(
+        con.execute(
+            """
+            select attribute_id, any_value(unit_label) from fct_wasde
+            where report_month = ? and table_id = ? and commodity_id = ? and region_id = ?
+            group by attribute_id
+            """,
+            [month, table, commodity, region],
+        ).fetchall()
+    )
+    line_units["stocks_to_use_pct"] = "%"
     prev_month = sheet.loc[sheet.report_month < month, "report_month"].max()
     prev = (
         sheet[sheet.report_month == prev_month].set_index("market_year")
@@ -226,7 +237,9 @@ def build_series(
                     "delta": (v - p) if (p is not None and pd.notna(p) and pd.notna(v)) else None,
                 }
             )
-        rows.append({"id": line.id, "label": line.label, "values": vals})
+        rows.append(
+            {"id": line.id, "label": line.label, "unit": line_units.get(line.id), "values": vals}
+        )
 
     # Drivers of the latest ending-stocks revision, per marketing year.
     drv = con.execute(
@@ -303,7 +316,8 @@ def build_series(
 
     # Stocks-to-use by marketing year: last published value (final) or current estimate.
     last = sheet.sort_values("report_seq").groupby("market_year").tail(1).sort_values("market_year")
-    current_mys = set(latest.market_year)
+    # Highlight only years still being projected/estimated; the oldest column is settled.
+    current_mys = set(latest.loc[latest.proj_est_flag.isin(["proj", "est"]), "market_year"])
     su_hist = [
         {
             "market_year": r.market_year,

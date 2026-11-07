@@ -24,6 +24,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
       </head>
       <body className="min-h-screen">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2"
+        >
+          Skip to content
+        </a>
         <header className="sticky top-0 z-20 border-b border-line bg-page/90 backdrop-blur">
           <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
             <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
@@ -75,14 +81,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </div>
         </header>
-        <main className="mx-auto max-w-7xl px-4 py-8">{children}</main>
+        <main id="main" className="mx-auto max-w-7xl px-4 py-8">{children}</main>
         <footer className="border-t border-line">
           <div className="mx-auto flex max-w-7xl flex-wrap gap-x-6 gap-y-1 px-4 py-6 text-xs text-muted">
             <span>
               Source: USDA World Agricultural Supply and Demand Estimates. {meta.history.reports} reports,{" "}
               {monthLabel(meta.history.first_report)} – {meta.latest.label}.
             </span>
-            <span>Updated automatically on every release · built by Diego Rossi</span>
+            <span>
+              Data {meta.data_release_tag ?? "local build"} · generated{" "}
+              {new Date(meta.generated_at).toISOString().slice(0, 16).replace("T", " ")} UTC · updated automatically
+              on every release
+            </span>
             <a className="underline hover:text-ink" href="https://github.com/rossi-diego/wasde-monthly-report">
               Source code
             </a>

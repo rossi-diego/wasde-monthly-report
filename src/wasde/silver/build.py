@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from datetime import date
 from pathlib import Path
@@ -74,6 +75,14 @@ def validate(silver: pd.DataFrame, min_rows: int) -> None:
 def build_silver(settings: Settings, manifest: Manifest) -> pd.DataFrame:
     layout = XmlLayout.load(settings.config_dir / "xml_layout")
     vocab = Vocabulary.load(settings.config_dir / "mappings.yaml")
+    corrupt = [
+        m
+        for m, e in manifest.reports.items()
+        if not (settings.bronze_dir / e.file).exists()
+        or hashlib.sha256((settings.bronze_dir / e.file).read_bytes()).hexdigest() != e.sha256
+    ]
+    if corrupt:
+        raise SilverContractError(f"bronze files missing or not matching the manifest: {corrupt}")
     frames = []
     for month, entry in sorted(manifest.reports.items()):
         raw = parse_report(

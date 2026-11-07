@@ -88,7 +88,7 @@ export type Series = {
   unit_label: string | null;
   balance_sheet: {
     columns: { market_year: string; flag: string | null }[];
-    rows: { id: string; label: string; values: { value: number | null; prev: number | null; delta: number | null }[] }[];
+    rows: { id: string; label: string; unit?: string | null; values: { value: number | null; prev: number | null; delta: number | null }[] }[];
   };
   drivers: {
     market_year: string;

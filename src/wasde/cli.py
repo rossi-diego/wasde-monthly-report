@@ -80,48 +80,42 @@ def detect(
         str | None, typer.Option(help="Ingest this YYYY-MM regardless of calendar")
     ] = None,
 ) -> None:
-    """Ingest the latest scheduled report if it is out and not yet in bronze.
+    """Ingest the latest scheduled report (or a revised edition) if it is out.
 
-    Sets GitHub outputs: ``new_report`` (true/false), ``report_month``, ``overdue``.
+    Sets GitHub outputs ``new_report`` (true/false), ``report_month`` and ``problems``.
+    Exit code 2 = a watchdog fired (overdue report, stale data, empty calendar);
+    exit code 1 = a forced month could not be found.
     """
-    from wasde.bronze import BronzeStore, ingest_month
+    from wasde.bronze import BronzeStore
+    from wasde.detect import DetectError, run_detect
     from wasde.manifest import Manifest
     from wasde.net import make_client
-    from wasde.sources.calendar import is_overdue, latest_due, load_calendar
-    from wasde.sources.esmis import list_releases
+    from wasde.sources.calendar import load_calendar
 
     s = get_settings()
     manifest = Manifest.load(s.manifest_path)
-    now = datetime.now(UTC)
-    dates = load_calendar(s.config_dir / "release_calendar.yaml")
-    due = latest_due(dates, now)
-    month = force_month or (f"{due:%Y-%m}" if due else None)
-    overdue = is_overdue(dates, now, set(manifest.reports))
-    _gh_output(overdue="true" if overdue else "false")
-
-    if month is None or (month in manifest.reports and not force_month):
-        log.info(
-            "detect.nothing_new",
-            latest_due=str(due),
-            have=month in manifest.reports if month else None,
-        )
-        _gh_output(new_report="false", report_month=month or "")
-        return
-
     store = BronzeStore(s.bronze_dir, manifest)
-    with make_client() as client:
-        entry = ingest_month(client, store, month, None)
-        if entry is None:  # CSV not up yet / not published: try the ESMIS XML
-            entry = ingest_month(client, store, month, list_releases(client, max_pages=1))
-    if entry is None:
-        log.warning("detect.not_yet_available", month=month, overdue=str(overdue))
-        _gh_output(new_report="false", report_month=month)
-        if overdue:
-            raise typer.Exit(2)
-        return
-    manifest.save(s.manifest_path)
-    log.info("detect.ingested", month=month, source=entry.source)
-    _gh_output(new_report="true", report_month=month)
+    dates = load_calendar(s.config_dir / "release_calendar.yaml")
+    try:
+        with make_client() as client:
+            result = run_detect(client, store, dates, datetime.now(UTC), force_month)
+    except DetectError as exc:
+        log.error("detect.failed", error=str(exc))
+        raise typer.Exit(1) from exc
+    if result.new_report:
+        manifest.save(s.manifest_path)
+    _gh_output(
+        new_report="true" if result.new_report else "false",
+        report_month=max(result.ingested) if result.ingested else (result.due_month or ""),
+        problems="; ".join(result.problems),
+    )
+    log.info(
+        "detect.done", ingested=result.ingested, due=result.due_month, problems=result.problems
+    )
+    if result.problems:
+        for p in result.problems:
+            typer.echo(f"::error::{p}", err=True)
+        raise typer.Exit(2)
 
 
 @app.command("learn-xml-layout")

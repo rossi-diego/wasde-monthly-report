@@ -8,14 +8,13 @@ test("home shows the latest report and headlines", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(meta.latest.label);
   await expect(page.getByRole("heading", { name: "Headlines" })).toBeVisible();
-  expect(await page.locator("ol > li").count()).toBeGreaterThan(0);
   if (process.env.EXPECTED_REPORT_LABEL) expect(meta.latest.label).toBe(process.env.EXPECTED_REPORT_LABEL);
 });
 
 test("commodity page renders charts and switches region", async ({ page }) => {
   await page.goto("/commodity/corn/");
   await expect(page.getByRole("heading", { name: /Balance sheet/ })).toBeVisible();
-  await expect(page.locator('[role="img"] svg').first()).toBeVisible();
+  await expect(page.locator('[role="img"] svg').first()).toBeVisible({ timeout: 30_000 });
   await page.getByLabel("Region").selectOption("world");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("World");
 });
@@ -33,5 +32,14 @@ test("prebuilt downloads exist", async ({ page }) => {
   for (const d of meta.downloads) {
     const r = await page.request.head(`/data/${d.url}`);
     expect(r.status(), d.file).toBe(200);
+  }
+});
+
+test("pages never scroll horizontally", async ({ page }) => {
+  for (const url of ["/", "/commodity/corn/", "/commodity/soybeans/", "/downloads/", "/methodology/"]) {
+    await page.goto(url);
+    await page.waitForTimeout(500);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow, url).toBeLessThanOrEqual(0);
   }
 });

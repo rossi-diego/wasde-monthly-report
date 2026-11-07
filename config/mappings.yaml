@@ -278,3 +278,20 @@ units:
   mil.: {id: million, label: Million}
   number: {id: number, label: Number}
   rough equiv.: {id: rough_equiv, label: Rough equivalent}
+
+# Tables whose sub-lines legitimately repeat a label within one report (numbered _2, _3…).
+# Any other repeated key fails the build: it would indicate a parser bug, not a new series.
+allowed_repeats:
+  us_milk: ["*"]            # fat-basis and skim-solids blocks reuse the same line labels
+  us_sugar: [imports_other] # TRQ / other-program import sub-lines
+
+# One continuous series per economic region across label changes.
+# "European Union" before 2020 included the UK; USDA's "EU-27+UK" (Jan–Apr 2021) is the same
+# aggregate; EU-27 (2010–2013) predates Croatia. Kept as one series, noted in Methodology.
+region_aliases:
+  EU-27: European Union
+  EU-27+UK: European Union
+
+# Fix unit labels that are wrong at the source: "<table_id>.<attribute_id>": <unit id>.
+unit_overrides:
+  us_cotton.farm_price: cents_per_lb

@@ -51,8 +51,15 @@ export default function Methodology() {
           mapped, so nothing is silently dropped.
         </p>
         <p>
-          Known gaps in the pre-2021 history: WASDE&apos;s projection-reliability tables, and some quarterly livestock and
-          dairy lines.
+          Continuity choices: &quot;EU-27&quot; (2010–2013), &quot;European Union&quot; and &quot;EU-27+UK&quot; (Jan–Apr 2021)
+          form one European Union series (membership changed over time, including Brexit in 2020). Older reports publish
+          projected farm prices as ranges (e.g. 7.50–8.90); these are stored as the midpoint. Units follow the official CSV
+          for every series, and labels that are wrong at the source (cotton farm price tagged as bales) are corrected.
+        </p>
+        <p>
+          Known gaps in the pre-2021 history: WASDE&apos;s projection-reliability tables, some quarterly livestock lines,
+          and the U.S. milk table, whose fat- and skim-solids blocks share labels in the XML and are not fully separated.
+          Footnoted &quot;negligible&quot; cells in old cotton tables are stored as missing rather than zero.
         </p>
       </Block>
 

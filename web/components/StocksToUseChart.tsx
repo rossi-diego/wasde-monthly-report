@@ -31,7 +31,7 @@ export default function StocksToUseChart({ series }: { series: Series }) {
           data: hist.map((h) => h.market_year),
           ...axisCommon(t),
           splitLine: { show: false },
-          axisLabel: { color: t.muted, fontSize: 11, interval: hist.length > 14 ? 1 : 0 },
+          axisLabel: { color: t.muted, fontSize: 11, interval: "auto", hideOverlap: true },
         },
         yAxis: { type: "value", name: "%", nameTextStyle: { color: t.muted, fontSize: 11 }, ...axisCommon(t) },
         series: [
@@ -54,7 +54,7 @@ export default function StocksToUseChart({ series }: { series: Series }) {
                   silent: true,
                   symbol: "none",
                   lineStyle: { color: t.muted, width: 1, type: "solid" },
-                  label: { formatter: `Median, final years: ${num(median, 1)}%`, color: t.ink2, fontSize: 10, position: "insideEndTop", backgroundColor: t.surface, padding: [2, 4] },
+                  label: { formatter: `Median, final years: ${num(median, 1)}%`, color: t.ink2, fontSize: 10, position: "insideStartTop", backgroundColor: t.surface, padding: [2, 4] },
                   data: [{ yAxis: median }],
                 }
               : undefined,

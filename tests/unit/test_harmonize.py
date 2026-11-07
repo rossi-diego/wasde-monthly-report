@@ -2,7 +2,7 @@ import pandas as pd
 import pytest
 
 from wasde.silver.build import CORE_SERIES, SilverContractError, validate
-from wasde.silver.harmonize import SILVER_COLUMNS, Vocabulary, harmonize
+from wasde.silver.harmonize import SILVER_COLUMNS, RepeatedKeyError, Vocabulary, harmonize
 
 
 @pytest.fixture
@@ -86,12 +86,23 @@ def test_repeated_sublines_are_numbered_and_exact_duplicates_dropped(vocab):
     row = {
         "report_title": "U.S. Sugar Supply and Use",
         "commodity": "Sugar",
-        "attribute": "Imports",
+        "attribute": "Imports - Other",
         "market_year": "2024/25",
     }
     raw = _raw([{**row, "value": 1.0}, {**row, "value": 1.0}, {**row, "value": 5.0}])
     silver, _ = harmonize(raw, vocab)
-    assert sorted(silver.attribute_id) == ["imports", "imports_2"]
+    assert sorted(silver.attribute_id) == ["imports_other", "imports_other_2"]
+
+
+def test_unexpected_repeats_fail(vocab):
+    row = {
+        "report_title": "U.S. Feed Grain and Corn Supply and Use",
+        "commodity": "Corn",
+        "attribute": "Ending Stocks",
+        "market_year": "2024/25",
+    }
+    with pytest.raises(RepeatedKeyError):
+        harmonize(_raw([{**row, "value": 1.0}, {**row, "value": 2.0}]), vocab)
 
 
 def test_validate_flags_missing_core_series_and_small_reports(vocab):
@@ -117,3 +128,64 @@ def test_validate_flags_missing_core_series_and_small_reports(vocab):
         validate(df.iloc[1:], min_rows=1)
     with pytest.raises(SilverContractError, match="below 100 rows"):
         validate(df, min_rows=100)
+
+
+def test_eu_labels_form_one_series(vocab):
+    base = {
+        "report_title": "World Corn Supply and Use",
+        "commodity": "Corn",
+        "attribute": "Production",
+        "market_year": "2012/13",
+        "unit": "Million Metric Tons",
+    }
+    raw = _raw(
+        [
+            {**base, "region": "EU-27", "value": 1.0},
+            {**base, "region": "EU-27+UK", "market_year": "2020/21", "value": 2.0},
+            {**base, "region": "European Union", "market_year": "2024/25", "value": 3.0},
+        ]
+    )
+    silver, _ = harmonize(raw, vocab)
+    assert set(silver.region_id) == {"european_union"}
+
+
+def test_units_follow_the_csv_reference_and_overrides(vocab):
+    corn = {
+        "report_title": "U.S. Feed Grain and Corn Supply and Use",
+        "commodity": "Corn",
+        "attribute": "Ethanol & by-products",
+    }
+    cotton = {
+        "report_title": "U.S. Cotton Supply and Use",
+        "commodity": "Cotton",
+        "attribute": "Avg. Farm Price",
+    }
+    raw = _raw(
+        [
+            {
+                **corn,
+                "market_year": "2024/25",
+                "value": 5.0,
+                "unit": "Million Bushels",
+                "source": "usda_csv",
+            },
+            {
+                **corn,
+                "market_year": "2010/11",
+                "value": 4.0,
+                "unit": "Percent",
+                "source": "esmis_xml",
+            },  # XML fallback unit
+            {
+                **cotton,
+                "market_year": "2024/25",
+                "value": 63.0,
+                "unit": "Million 480 Pound Bales",
+                "source": "usda_csv",
+            },
+        ]
+    )
+    silver, _ = harmonize(raw, vocab)
+    eth = silver[silver.attribute_id == "ethanol"]
+    assert set(eth.unit_id) == {"m_bu"}
+    assert silver.loc[silver.attribute_id == "farm_price", "unit_id"].iat[0] == "cents_per_lb"

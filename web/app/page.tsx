@@ -151,12 +151,10 @@ export default function Home() {
           </h2>
           <p className="mb-4 text-sm text-muted">Production, million metric tons — the U.S. export competition.</p>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[480px] text-sm">
+            <table className="w-full text-sm">
               <thead className="text-xs text-muted">
                 <tr>
                   <th className="pb-2 text-left font-normal">Crop</th>
-                  <th className="pb-2 text-left font-normal">Country</th>
-                  <th className="pb-2 text-left font-normal">Marketing year</th>
                   <th className="pb-2 text-right font-normal">Production</th>
                   <th className="pb-2 text-right font-normal">vs last month</th>
                 </tr>
@@ -164,9 +162,10 @@ export default function Home() {
               <tbody>
                 {sa.map((r) => (
                   <tr key={`${r.commodity_id}-${r.region_id}-${r.market_year}`} className="border-t border-line">
-                    <td className="py-2 capitalize">{r.commodity_id}</td>
-                    <td className="py-2">{r.region}</td>
-                    <td className="py-2">{r.market_year}</td>
+                    <td className="py-2">
+                      <span className="capitalize">{r.region} {r.commodity_id}</span>
+                      <span className="block text-xs text-muted">{r.market_year}</span>
+                    </td>
                     <td className="tabular py-2 text-right">{qty(r.value, r.unit_id)}</td>
                     <td className="py-2 text-right">
                       <Delta value={r.delta} digits={1} />

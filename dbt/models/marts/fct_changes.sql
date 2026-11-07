@@ -15,8 +15,9 @@ seasonal as (
     select
         series_key,
         report_cal_month,
-        median(abs(delta)) filter (where delta <> 0) as median_abs_delta,
-        count(*)                                     as n_history
+        -- seasonal baseline from genuine one-month revisions only
+        median(abs(delta)) filter (where delta <> 0 and months_since_prev = 1) as median_abs_delta,
+        count(*) filter (where months_since_prev = 1)                          as n_history
     from r
     group by series_key, report_cal_month
 ),

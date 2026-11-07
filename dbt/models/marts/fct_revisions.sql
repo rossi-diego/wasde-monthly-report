@@ -15,6 +15,7 @@ w as (
         *,
         lag(value) over s                 as prev_value,
         lag(report_seq) over s            as prev_report_seq,
+        lag(report_date) over s           as prev_report_date,
         first_value(value) over s_all     as first_value,
         first_value(report_month) over s_all as first_report_month,
         last_value(value) over s_all      as last_value,
@@ -37,6 +38,10 @@ select
         when prev_report_seq = report_seq - 1 and prev_value <> 0
             then (value - prev_value) / abs(prev_value)
     end                                                                    as pct_delta,
+    -- 1 for consecutive months; >1 when USDA skipped a report (e.g. shutdowns).
+    case
+        when prev_report_seq = report_seq - 1 then datediff('month', prev_report_date, report_date)
+    end                                                                    as months_since_prev,
     value - first_value                                                    as delta_vs_first,
     report_month = first_report_month                                      as is_first,
     report_month = last_report_month                                       as is_last,

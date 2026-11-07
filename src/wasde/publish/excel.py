@@ -292,7 +292,8 @@ def history_workbook(con: duckdb.DuckDBPyConnection, focus: Focus, fid: str, out
             )
             pivot = pivot[[m for m in pivot.columns if len(m) == 7]]
             ws = wb.add_worksheet(f"{prefix} {label}"[:31])
-            unit = "%" if attr == "stocks_to_use_pct" else sheet.unit_label.dropna().iat[0]
+            units = sheet.unit_label.dropna()
+            unit = "%" if attr == "stocks_to_use_pct" else (units.iat[0] if len(units) else "")
             ws.write(0, 0, f"{c.label} · {prefix} · {label} ({unit})", st.title)
             ws.write(1, 0, "Report", st.head)
             for j, my in enumerate(pivot.columns, start=1):

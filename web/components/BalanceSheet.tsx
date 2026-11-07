@@ -31,6 +31,9 @@ export default function BalanceSheet({ series }: { series: Series }) {
               <tr key={r.id} className={`border-b border-line last:border-0 ${key ? "font-medium" : ""}`}>
                 <th scope="row" className={`py-1.5 pr-3 text-left font-normal ${key ? "text-ink" : "text-ink-2"}`}>
                   {r.label}
+                  {r.unit && r.unit !== series.unit_label && (
+                    <span className="block text-xs font-normal text-muted">{r.unit}</span>
+                  )}
                 </th>
                 {r.values.map((v, i) => (
                   <td key={i} className="tabular py-1.5 text-right align-top">

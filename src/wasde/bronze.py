@@ -127,13 +127,21 @@ def ingest_month(
     month: str,
     esmis: dict[str, EsmisRelease] | None,
     seeds: dict[str, Path] | None = None,
+    version: int | None = None,
 ) -> ReportEntry | None:
     """Fetch one report. CSV first (2021+), then ESMIS XML (local seed, then download)."""
+    rel = (esmis or {}).get(month)
     if month >= CSV_FIRST_MONTH:
         body = fetch_csv(client, month)
         if body is not None:
-            return store.put(month, body, source="usda_csv", url=csv_url(month))
-    rel = (esmis or {}).get(month)
+            return store.put(
+                month,
+                body,
+                source="usda_csv",
+                url=csv_url(month),
+                release_date=rel.release_date.isoformat() if rel else None,
+                version=version or (rel.version if rel else 1),
+            )
     if seeds and month in seeds:
         data = seeds[month].read_bytes()
         url = rel.xml_url if rel else f"file://{seeds[month].name}"

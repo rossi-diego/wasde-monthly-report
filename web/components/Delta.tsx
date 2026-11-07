@@ -15,6 +15,7 @@ export default function Delta({
   if (value === null || value === undefined || Number.isNaN(value)) {
     return <span className={`text-muted ${className}`}>—</span>;
   }
+  if (Math.abs(value) < 0.5 * 10 ** -digits) value = 0; // "−0.0" is not a move
   const tone = value > 0 ? "text-up" : value < 0 ? "text-down" : "text-muted";
   const arrow = value > 0 ? "▲" : value < 0 ? "▼" : "";
   return (

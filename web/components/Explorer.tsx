@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-import { bytes, monthLabel, num } from "@/lib/format";
+import { bytes, flagLabel, monthLabel, num } from "@/lib/format";
 import type { CatalogEntry } from "@/lib/types";
 
 type Row = {
@@ -250,7 +250,7 @@ export default function Explorer({ catalog, defaultTable }: { catalog: CatalogEn
                 <td className="px-3 py-1.5">{r.region}</td>
                 <td className="px-3 py-1.5">{r.attribute}{r.stat ? ` · ${r.stat}` : ""}</td>
                 <td className="px-3 py-1.5">{r.market_year}</td>
-                <td className="px-3 py-1.5 text-muted">{r.flag}</td>
+                <td className="px-3 py-1.5 text-muted">{flagLabel(r.flag)}</td>
                 <td className="tabular px-3 py-1.5 text-right">{num(r.value, Math.abs(r.value) < 100 ? 2 : 0)}</td>
                 <td className="px-3 py-1.5 text-muted">{r.unit}</td>
               </tr>

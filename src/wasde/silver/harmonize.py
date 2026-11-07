@@ -23,6 +23,10 @@ SILVER_KEY = [
 ]
 
 
+class RepeatedKeyError(ValueError):
+    """Same report/table/commodity/region/line/MY published twice with different values."""
+
+
 def slugify(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", "_", s.lower()).strip("_") or "unknown"
 
@@ -36,6 +40,13 @@ class Vocabulary:
     units: dict[str, tuple[str, str]]
     commodity_labels: dict[str, str] = field(default_factory=dict)
     attribute_labels: dict[str, str] = field(default_factory=dict)
+    allowed_repeats: dict[str, list[str]] = field(default_factory=dict)
+    region_aliases: dict[str, str] = field(default_factory=dict)
+    unit_overrides: dict[str, str] = field(default_factory=dict)
+
+    def repeat_allowed(self, table_id: str, attribute_id: str) -> bool:
+        allowed = self.allowed_repeats.get(table_id, [])
+        return "*" in allowed or attribute_id in allowed
 
     @classmethod
     def load(cls, path: Path) -> Vocabulary:
@@ -51,6 +62,9 @@ class Vocabulary:
             units={label_key(k): (v["id"], v["label"]) for k, v in raw["units"].items()},
             commodity_labels=raw.get("commodity_labels", {}),
             attribute_labels=raw.get("attribute_labels", {}),
+            allowed_repeats=raw.get("allowed_repeats", {}),
+            region_aliases=raw.get("region_aliases", {}),
+            unit_overrides=raw.get("unit_overrides", {}),
         )
 
     def table(self, title: str) -> tuple[str, str, bool]:
@@ -85,8 +99,9 @@ def harmonize(raw: pd.DataFrame, vocab: Vocabulary) -> tuple[pd.DataFrame, pd.Da
 
     df["commodity_id"] = mapper("commodity", vocab.commodities, "commodity")
     df["attribute_id"] = mapper("attribute", vocab.attributes, "attribute")
-    df["region_id"] = df["region"].map(lambda r: slugify(r) if r else "united_states")
     df["region"] = df["region"].where(df["region"] != "", "United States")
+    df["region"] = df["region"].replace(vocab.region_aliases)
+    df["region_id"] = df["region"].map(slugify)
 
     unit_lut = {}
     for u in df["unit"].unique():
@@ -96,6 +111,7 @@ def harmonize(raw: pd.DataFrame, vocab: Vocabulary) -> tuple[pd.DataFrame, pd.Da
         unit_lut[u] = hit or (slugify(u) if u else "", u)
     df["unit_id"] = df["unit"].map(lambda u: unit_lut[u][0])
     df["unit_label"] = df["unit"].map(lambda u: unit_lut[u][1])
+    _harmonize_units(df, vocab)
 
     df["commodity_label"] = df["commodity_id"].map(vocab.commodity_labels).fillna(df["commodity"])
     df["attribute_label"] = df["attribute_id"].map(vocab.attribute_labels).fillna(df["attribute"])
@@ -110,6 +126,12 @@ def harmonize(raw: pd.DataFrame, vocab: Vocabulary) -> tuple[pd.DataFrame, pd.Da
     # Exact repeats (same key and value, e.g. a country listed twice in old XML) are dropped.
     df = df.drop_duplicates([*SILVER_KEY, "value"]).copy()
     dup = df.groupby(SILVER_KEY, sort=False).cumcount()
+    rep = df.loc[dup > 0, ["table_id", "attribute_id"]].drop_duplicates()
+    bad = [
+        (t, a) for t, a in rep.itertuples(index=False, name=None) if not vocab.repeat_allowed(t, a)
+    ]
+    if bad:
+        raise RepeatedKeyError(f"repeated keys with different values (parser bug?): {bad[:10]}")
     df.loc[dup > 0, "attribute_id"] = (
         df.loc[dup > 0, "attribute_id"] + "_" + (dup[dup > 0] + 1).astype(str)
     )
@@ -120,6 +142,26 @@ def harmonize(raw: pd.DataFrame, vocab: Vocabulary) -> tuple[pd.DataFrame, pd.Da
         else pd.DataFrame(columns=["kind", "label"])
     )
     return df, report
+
+
+def _harmonize_units(df: pd.DataFrame, vocab: Vocabulary) -> None:
+    """One unit per series. The XML edition has no unit labels, so some rows inherit a
+    fallback (e.g. "Percent"); the official CSV is the reference. Explicit overrides fix
+    labels that are wrong at the source (cotton farm price is tagged as bales in the CSV)."""
+    key = ["table_id", "commodity_id", "attribute_id"]
+    csv = df[df["source"] == "usda_csv"]
+    if not csv.empty:
+        ref = csv.groupby(key)[["unit_id", "unit_label"]].agg(lambda s: s.mode().iat[0])
+        joined = df[key].join(ref, on=key)
+        fix = joined["unit_id"].notna() & (joined["unit_id"] != df["unit_id"])
+        df.loc[fix, "unit_id"] = joined.loc[fix, "unit_id"]
+        df.loc[fix, "unit_label"] = joined.loc[fix, "unit_label"]
+    units_by_id = {uid: label for uid, label in vocab.units.values()}
+    for spec, unit_id in vocab.unit_overrides.items():
+        table_id, attribute_id = spec.split(".")
+        hit = (df["table_id"] == table_id) & (df["attribute_id"] == attribute_id)
+        df.loc[hit, "unit_id"] = unit_id
+        df.loc[hit, "unit_label"] = units_by_id.get(unit_id, unit_id)
 
 
 SILVER_COLUMNS = [

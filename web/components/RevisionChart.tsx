@@ -65,7 +65,7 @@ export default function RevisionChart({ series }: { series: Series }) {
           interval: 3,
           ...axisCommon(t),
           splitLine: { show: false },
-          axisLabel: { color: t.muted, fontSize: 11, formatter: (v: number) => CYCLE_LABEL(v) },
+          axisLabel: { color: t.muted, fontSize: 11, hideOverlap: true, formatter: (v: number) => CYCLE_LABEL(v) },
         },
         yAxis: {
           type: "value",

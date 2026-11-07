@@ -6,6 +6,7 @@ with b as (
     select
         *,
         lag(report_seq) over s        as prev_seq,
+        lag(report_month) over s      as prev_report_month,
         lag(beginning_stocks) over s  as p_beginning_stocks,
         lag(production) over s        as p_production,
         lag(imports) over s           as p_imports,
@@ -23,6 +24,12 @@ d as (
     select
         report_month,
         report_seq,
+        prev_report_month,
+        datediff(
+            'month',
+            strptime(prev_report_month || '-01', '%Y-%m-%d'),
+            strptime(report_month || '-01', '%Y-%m-%d')
+        )                                                               as months_since_prev,
         table_id,
         commodity_id,
         commodity_label,

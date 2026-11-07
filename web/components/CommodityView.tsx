@@ -47,7 +47,7 @@ export default function CommodityView({ entry, initial }: { entry: Entry; initia
   const pctile = series.stocks_to_use_percentile;
 
   return (
-    <div className="space-y-8">
+    <div className="min-w-0 space-y-8">
       <section className="space-y-4">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -111,7 +111,7 @@ export default function CommodityView({ entry, initial }: { entry: Entry; initia
       </section>
 
       <div className={`grid items-start gap-6 lg:grid-cols-5 ${loading ? "opacity-60" : ""}`}>
-        <section className="card p-5 lg:col-span-3" aria-labelledby="h-bs">
+        <section className="card min-w-0 p-5 lg:col-span-3" aria-labelledby="h-bs">
           <h2 id="h-bs" className="text-lg font-semibold">
             Balance sheet
           </h2>
@@ -121,7 +121,7 @@ export default function CommodityView({ entry, initial }: { entry: Entry; initia
           </p>
           <BalanceSheet series={series} />
         </section>
-        <section className="card p-5 lg:col-span-2" aria-labelledby="h-drv">
+        <section className="card min-w-0 p-5 lg:col-span-2" aria-labelledby="h-drv">
           <h2 id="h-drv" className="text-lg font-semibold">
             Why ending stocks changed
           </h2>

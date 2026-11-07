@@ -55,7 +55,11 @@ def load_calendar(path: Path) -> list[date]:
 
 
 def save_calendar(path: Path, dates: list[date]) -> None:
-    merged = sorted(set(load_calendar(path)) | set(dates))
+    """Merge scraped dates: a year present in the scrape replaces that year entirely (so
+    cancelled or moved releases disappear); other years are kept."""
+    scraped_years = {d.year for d in dates}
+    kept = {d for d in load_calendar(path) if d.year not in scraped_years}
+    merged = sorted(kept | set(dates))
     path.parent.mkdir(parents=True, exist_ok=True)
     body = {
         "source": "https://www.usda.gov/.../commodity-markets/wasde-report",

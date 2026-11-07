@@ -9,6 +9,7 @@ _WS = re.compile(r"\s+")
 _FOOTNOTE = re.compile(r"\s*\b\d{1,2}/(?!\d)\s*")  # "World 3/", "Total Use 2/"
 _TRAILING_FN = re.compile(r"\s*/\d{1,2}\b")  # "Pounds /4"
 _CONTD = re.compile(r"\(\s*Cont'?d\.?\s*\)", re.IGNORECASE)
+_RANGE = re.compile(r"(-?\d+(?:\.\d+)?)\s*-\s*(\d+(?:\.\d+)?)")
 _MY = re.compile(r"(\d{4})\s*(?:/\s*(\d{2,3}))?")
 
 
@@ -52,10 +53,14 @@ def flag_from_text(s: object) -> str:
 
 
 def parse_number(s: object) -> float | None:
-    """'1,234.98' -> 1234.98; '101.3 *' -> 101.3; 'NA'/'' -> None."""
+    """'1,234.98' -> 1234.98; '101.3 *' -> 101.3; '7.50 - 8.90' -> 8.2 (range midpoint,
+    how older reports publish projected prices); 'NA'/'' -> None."""
     t = squash(s).replace(",", "").replace("*", "").strip()
     if not t or t.upper() in {"NA", "N/A", "-", "--"}:
         return None
+    m = _RANGE.fullmatch(t)
+    if m:
+        return round((float(m.group(1)) + float(m.group(2))) / 2, 4)
     try:
         return float(t)
     except ValueError:
