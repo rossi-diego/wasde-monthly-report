@@ -1,18 +1,50 @@
-# src/wasde/config.py
+"""Runtime settings. Everything configurable lives here and is overridable by env vars."""
+
 from __future__ import annotations
 
-import logging
+from functools import lru_cache
 from pathlib import Path
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+BROWSER_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+)
 
 
 class Settings(BaseSettings):
-    usda_psd_key: str = ""
-    app_name: str = "WASDE Dashboard"
-    data_dir: Path = Path("data")
+    """Pipeline settings (env prefix ``WASDE_``)."""
+
+    model_config = SettingsConfigDict(env_prefix="WASDE_", env_file=".env", extra="ignore")
+
+    data_dir: Path = PROJECT_ROOT / "data"
+    config_dir: Path = PROJECT_ROOT / "config"
+    web_data_dir: Path = PROJECT_ROOT / "web" / "public" / "data"
+    dbt_dir: Path = PROJECT_ROOT / "dbt"
+
     log_level: str = "INFO"
-    wasde_backfill_start_year: int = 2010
+    log_json: bool = False
+
+    # USDA's CDN (Akamai) rejects non-browser user agents with HTTP 403.
+    user_agent: str = BROWSER_USER_AGENT
+    http_timeout_s: float = 90.0
+
+    usda_csv_url: str = (
+        "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-{year}-{month:02d}.csv"
+    )
+    usda_calendar_url: str = (
+        "https://www.usda.gov/about-usda/general-information/staff-offices/"
+        "office-chief-economist/commodity-markets/wasde-report"
+    )
+    esmis_api_url: str = "https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/wasde"
+
+    # Earliest report with machine-readable (XML) tables.
+    history_start: str = "2010-07"
+    # Minimum rows per report (May/June reports carry ~3,980; normal ~4,000-5,000).
+    min_rows_per_report: int = 3500
 
     @property
     def bronze_dir(self) -> Path:
@@ -23,24 +55,22 @@ class Settings(BaseSettings):
         return self.data_dir / "silver"
 
     @property
-    def duckdb_path(self) -> Path:
-        return self.data_dir / "wasde.duckdb"
+    def gold_dir(self) -> Path:
+        return self.data_dir / "gold"
 
     @property
-    def wasde_manifest_path(self) -> Path:
-        return self.bronze_dir / "wasde" / "_manifest.json"
+    def publish_dir(self) -> Path:
+        return self.data_dir / "publish"
 
-    model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
+    @property
+    def manifest_path(self) -> Path:
+        return self.data_dir / "manifest.json"
+
+    @property
+    def duckdb_path(self) -> Path:
+        return self.gold_dir / "wasde.duckdb"
 
 
-settings = Settings()
-
-
-def configure_logging() -> None:
-    logging.basicConfig(
-        level=getattr(logging, settings.log_level.upper(), logging.INFO),
-        format="%(asctime)s %(levelname)-8s %(name)s — %(message)s",
-        handlers=[
-            logging.StreamHandler(),
-        ],
-    )
+@lru_cache(maxsize=1)
+def get_settings() -> Settings:
+    return Settings()

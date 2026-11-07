@@ -1,0 +1,24 @@
+xtitle,matrix,xcom,xreg,xattr,report_title,commodity,region,votes
+U.S. Dairy Prices,matrix1,,,Cheese,U.S. Dairy Prices,Cheese,United States,59
+U.S. Dairy Prices,matrix1,,,Butter,U.S. Dairy Prices,Butter,United States,57
+U.S. Dairy Prices,matrix1,,,Nonfat Dry Milk,U.S. Dairy Prices,Nonfat Dry Milk,United States,68
+U.S. Dairy Prices,matrix1,,,Dry Whey,U.S. Dairy Prices,Dry Whey,United States,58
+U.S. Dairy Prices,matrix1,,,Class III,U.S. Dairy Prices,"Milk, Class III",United States,212
+U.S. Dairy Prices,matrix1,,,Class IV,U.S. Dairy Prices,"Milk, Class IV",United States,210
+U.S. Dairy Prices,matrix1,,,All Milk,U.S. Dairy Prices,Milk,United States,53
+U.S. Milk Supply and Use,matrix2,,,Production,U.S. Milk Supply and Use,Milk,United States,53
+U.S. Milk Supply and Use,matrix2,,,Farm Use,U.S. Milk Supply and Use,Milk,United States,212
+U.S. Milk Supply and Use,matrix2,,,Beg. Commercial Stocks,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,64
+U.S. Milk Supply and Use,matrix2,,,Imports,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,212
+U.S. Milk Supply and Use,matrix2,,,Total Cml. Supply,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,64
+U.S. Milk Supply and Use,matrix2,,,Commercial Exports,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,64
+U.S. Milk Supply and Use,matrix2,,,Ending Commercial Stocks,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,64
+U.S. Milk Supply and Use,matrix2,,,CCC Donations,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,16
+U.S. Milk Supply and Use,matrix2,,,Domestic Commercial Use,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,64
+U.S. Milk Supply and Use,matrix2,,,Fat Basis Supply Beginning Stocks,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,131
+U.S. Milk Supply and Use,matrix2,,,Total Supply,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,148
+U.S. Milk Supply and Use,matrix2,,,Fat Basis Use Exports,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,144
+U.S. Milk Supply and Use,matrix2,,,Ending Stocks,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,148
+U.S. Milk Supply and Use,matrix2,,,Domestic Use,U.S. Milk Supply and Use,"Milk, Fat Basis",United States,148
+U.S. Milk Supply and Use,matrix2,,,Skim-solid Basis Supply Beginning Stocks,U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",United States,140
+U.S. Milk Supply and Use,matrix2,,,Skim-solid Basis Use Exports,U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",United States,144

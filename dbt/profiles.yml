@@ -1,0 +1,7 @@
+wasde:
+  target: prod
+  outputs:
+    prod:
+      type: duckdb
+      path: "{{ env_var('WASDE_DUCKDB_PATH', '../data/gold/wasde.duckdb') }}"
+      threads: 4

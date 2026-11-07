@@ -1,0 +1,500 @@
+report_title,commodity,attribute,unit
+Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption,Sugar,Beginning Stocks,"1000 Metric Tons, Actual Weight"
+Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption,Sugar,Domestic,"1000 Metric Tons, Actual Weight"
+Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption,Sugar,Ending Stocks,"1000 Metric Tons, Actual Weight"
+Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption,Sugar,Exports,"1000 Metric Tons, Actual Weight"
+Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption,Sugar,Imports,"1000 Metric Tons, Actual Weight"
+Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption,Sugar,Production,"1000 Metric Tons, Actual Weight"
+U.S. Cotton Supply and Use,Cotton,Avg. Farm Price,Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,Beginning Stocks,Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,Domestic Use,Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,Ending Stocks,Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,"Exports, Total",Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,Harvested,Million Acres
+U.S. Cotton Supply and Use,Cotton,Imports,Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,Planted,Million Acres
+U.S. Cotton Supply and Use,Cotton,Production,Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,"Supply, Total",Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,Unaccounted,Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,"Use, Total",Million 480 Pound Bales
+U.S. Cotton Supply and Use,Cotton,Yield per Harvested Acre,Pounds
+U.S. Dairy Prices,Butter,Prices,Dollars Per Pound
+U.S. Dairy Prices,Cheese,Prices,Dollars Per Pound
+U.S. Dairy Prices,Dry Whey,Prices,Dollars Per Pound
+U.S. Dairy Prices,Milk,Prices,Dollars Per Cwt
+U.S. Dairy Prices,"Milk, Class III",Prices,Dollars Per Cwt
+U.S. Dairy Prices,"Milk, Class IV",Prices,Dollars Per Cwt
+U.S. Dairy Prices,Nonfat Dry Milk,Prices,Dollars Per Cwt
+U.S. Egg Supply and Use,Eggs,Beginning Stocks,Million Dozen
+U.S. Egg Supply and Use,Eggs,Disappearance Total,Million Dozen
+U.S. Egg Supply and Use,Eggs,Ending Stocks,Million Dozen
+U.S. Egg Supply and Use,Eggs,Exports,Million Dozen
+U.S. Egg Supply and Use,Eggs,Hatching Use,Million Dozen
+U.S. Egg Supply and Use,Eggs,Imports,Million Dozen
+U.S. Egg Supply and Use,Eggs,Per Capita,number
+U.S. Egg Supply and Use,Eggs,Production,Million Dozen
+U.S. Egg Supply and Use,Eggs,Supply Beginning Stocks,Million Dozen
+U.S. Egg Supply and Use,Eggs,Total Supply,Million Dozen
+U.S. Egg Supply and Use,Eggs,Use Exports,Million Dozen
+U.S. Feed Grain and Corn Supply and Use,Corn,Area Harvested,Million Acres
+U.S. Feed Grain and Corn Supply and Use,Corn,Area Planted,Million Acres
+U.S. Feed Grain and Corn Supply and Use,Corn,Avg. Farm Price,$/bu
+U.S. Feed Grain and Corn Supply and Use,Corn,Beginning Stocks,Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,"Domestic, Total",Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,Ending Stocks,Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,Ethanol & by-products,Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,Exports,Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,Feed and Residual,Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,"Food, Seed & Industrial",Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,Imports,Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,Production,Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,"Supply, Total",Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,"Use, Total",Million Bushels
+U.S. Feed Grain and Corn Supply and Use,Corn,Yield per Harvested Acre,Bushels
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,Area Harvested,Million Acres
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,Area Planted,Million Acres
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,Beginning Stocks,Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,"Domestic, Total",Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,Ending Stocks,Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,Exports,Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,Feed and Residual,Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,"Food, Seed & Industrial",Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,Imports,Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,Production,Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,"Supply, Total",Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,"Use, Total",Million Metric Tons
+U.S. Feed Grain and Corn Supply and Use,Feed Grains,Yield per Harvested Acre,Metric Tons
+U.S. Meats Supply and Use,Beef,Beginning stocks,Million Pounds
+U.S. Meats Supply and Use,Beef,Ending Stocks,Million Pounds
+U.S. Meats Supply and Use,Beef,Exports,Million Pounds
+U.S. Meats Supply and Use,Beef,Imports,Million Pounds
+U.S. Meats Supply and Use,Beef,Per Capita,Million Pounds
+U.S. Meats Supply and Use,Beef,Production,Million Pounds
+U.S. Meats Supply and Use,Beef,Total Supply,Million Pounds
+U.S. Meats Supply and Use,Beef,Total Use,Million Pounds
+U.S. Meats Supply and Use,Broiler,Beginning stocks,Million Pounds
+U.S. Meats Supply and Use,Broiler,Ending Stocks,Million Pounds
+U.S. Meats Supply and Use,Broiler,Exports,Million Pounds
+U.S. Meats Supply and Use,Broiler,Imports,Million Pounds
+U.S. Meats Supply and Use,Broiler,Per Capita,Million Pounds
+U.S. Meats Supply and Use,Broiler,Production,Million Pounds
+U.S. Meats Supply and Use,Broiler,Total Supply,Million Pounds
+U.S. Meats Supply and Use,Broiler,Total Use,Million Pounds
+U.S. Meats Supply and Use,Pork,Beginning stocks,Million Pounds
+U.S. Meats Supply and Use,Pork,Ending Stocks,Million Pounds
+U.S. Meats Supply and Use,Pork,Exports,Million Pounds
+U.S. Meats Supply and Use,Pork,Imports,Million Pounds
+U.S. Meats Supply and Use,Pork,Per Capita,Million Pounds
+U.S. Meats Supply and Use,Pork,Production,Million Pounds
+U.S. Meats Supply and Use,Pork,Total Supply,Million Pounds
+U.S. Meats Supply and Use,Pork,Total Use,Million Pounds
+U.S. Meats Supply and Use,Red Meat & Poultry,Beginning stocks,Million Pounds
+U.S. Meats Supply and Use,Red Meat & Poultry,Ending Stocks,Million Pounds
+U.S. Meats Supply and Use,Red Meat & Poultry,Exports,Million Pounds
+U.S. Meats Supply and Use,Red Meat & Poultry,Imports,Million Pounds
+U.S. Meats Supply and Use,Red Meat & Poultry,Per Capita,Million Pounds
+U.S. Meats Supply and Use,Red Meat & Poultry,Production,Million Pounds
+U.S. Meats Supply and Use,Red Meat & Poultry,Total Supply,Million Pounds
+U.S. Meats Supply and Use,Red Meat & Poultry,Total Use,Million Pounds
+U.S. Meats Supply and Use,Total Poultry,Beginning stocks,Million Pounds
+U.S. Meats Supply and Use,Total Poultry,Ending Stocks,Million Pounds
+U.S. Meats Supply and Use,Total Poultry,Exports,Million Pounds
+U.S. Meats Supply and Use,Total Poultry,Imports,Million Pounds
+U.S. Meats Supply and Use,Total Poultry,Per Capita,Million Pounds
+U.S. Meats Supply and Use,Total Poultry,Production,Million Pounds
+U.S. Meats Supply and Use,Total Poultry,Total Supply,Million Pounds
+U.S. Meats Supply and Use,Total Poultry,Total Use,Million Pounds
+U.S. Meats Supply and Use,Total Red Meat,Beginning stocks,Million Pounds
+U.S. Meats Supply and Use,Total Red Meat,Ending Stocks,Million Pounds
+U.S. Meats Supply and Use,Total Red Meat,Exports,Million Pounds
+U.S. Meats Supply and Use,Total Red Meat,Imports,Million Pounds
+U.S. Meats Supply and Use,Total Red Meat,Per Capita,Million Pounds
+U.S. Meats Supply and Use,Total Red Meat,Production,Million Pounds
+U.S. Meats Supply and Use,Total Red Meat,Total Supply,Million Pounds
+U.S. Meats Supply and Use,Total Red Meat,Total Use,Million Pounds
+U.S. Meats Supply and Use,Turkey,Beginning stocks,Million Pounds
+U.S. Meats Supply and Use,Turkey,Ending Stocks,Million Pounds
+U.S. Meats Supply and Use,Turkey,Exports,Million Pounds
+U.S. Meats Supply and Use,Turkey,Imports,Million Pounds
+U.S. Meats Supply and Use,Turkey,Per Capita,Million Pounds
+U.S. Meats Supply and Use,Turkey,Production,Million Pounds
+U.S. Meats Supply and Use,Turkey,Total Supply,Million Pounds
+U.S. Meats Supply and Use,Turkey,Total Use,Million Pounds
+U.S. Milk Supply and Use,Milk,Farm Use,Billion Pounds
+U.S. Milk Supply and Use,Milk,Production,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Beg. Commercial Stocks,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Beginning Stocks,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",CCC Donations,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Commercial Exports,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Domestic Commercial Use,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Domestic Use,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Ending Commercial Stocks,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Ending Stocks,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Exports,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Imports,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Marketings,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Total Cml. Supply,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Fat Basis",Total Supply,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Beg. Commercial Stocks,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Beginning Stocks,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",CCC Donations,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Commercial Exports,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Domestic Commercial Use,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Domestic Use,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Ending Commercial Stocks,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Ending Stocks,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Exports,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Imports,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Marketings,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Total Cml. Supply,Billion Pounds
+U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",Total Supply,Billion Pounds
+U.S. Quarterly Animal Product Production,Beef,Production,Million Pounds
+U.S. Quarterly Animal Product Production,Broiler,Production,Million Pounds
+U.S. Quarterly Animal Product Production,Eggs,Production,Million Dozen
+U.S. Quarterly Animal Product Production,Milk,Production,Billion Pounds
+U.S. Quarterly Animal Product Production,Pork,Production,Million Pounds
+U.S. Quarterly Animal Product Production,Red Meat,Production,Million Pounds
+U.S. Quarterly Animal Product Production,Red Meat & Poultry,Production,Million Pounds
+U.S. Quarterly Animal Product Production,Total Poultry,Production,Million Pounds
+U.S. Quarterly Animal Product Production,Turkey,Production,Million Pounds
+U.S. Quarterly Prices for Animal Products,Barrows and gilts,Prices,Dol./cwt
+U.S. Quarterly Prices for Animal Products,Broiler,Prices,Cents/lb.
+U.S. Quarterly Prices for Animal Products,Eggs,Prices,Cents/Doz.
+U.S. Quarterly Prices for Animal Products,Milk,Prices,Dol./cwt
+U.S. Quarterly Prices for Animal Products,Steers,Prices,Dol./cwt
+U.S. Quarterly Prices for Animal Products,Turkey,Prices,Cents/lb.
+U.S. Rice Supply and Use,"Rice, Long",Avg. Farm Price,$/cwt
+U.S. Rice Supply and Use,"Rice, Long",Beginning Stocks,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Long",Domestic & Residual,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Long",Ending Stocks,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Long",Exports,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Long",Harvested Acres,mil.
+U.S. Rice Supply and Use,"Rice, Long",Imports,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Long",Production,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Long","Supply, Total",Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Long","Use, Total",Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Long",Yield,pounds/acre
+U.S. Rice Supply and Use,"Rice, Med and Short",Avg. Farm Price,$/cwt
+U.S. Rice Supply and Use,"Rice, Med and Short",Beginning Stocks,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short",California,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short",Domestic & Residual,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short",Ending Stocks,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short",Exports,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short",Harvested Acres,mil.
+U.S. Rice Supply and Use,"Rice, Med and Short",Imports,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short",Other States,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short",Production,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short","Supply, Total",Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short","Use, Total",Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Med and Short",Yield,pounds/acre
+U.S. Rice Supply and Use,"Rice, Rough",Area Harvested,Million Acres
+U.S. Rice Supply and Use,"Rice, Rough",Area Planted,Million Acres
+U.S. Rice Supply and Use,"Rice, Rough",Avg. Farm Price,$/cwt
+U.S. Rice Supply and Use,"Rice, Rough",Avg. Milling Yield,%
+U.S. Rice Supply and Use,"Rice, Rough",Beginning Stocks,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Rough",Domestic & Residual,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Rough",Ending Stocks,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Rough","Exports, Total",Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Rough",Imports,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Rough",Milled,rough equiv.
+U.S. Rice Supply and Use,"Rice, Rough",Production,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Rough",Rough,Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Rough","Supply, Total",Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Rough","Use, Total",Million Hundredweight
+U.S. Rice Supply and Use,"Rice, Rough",Yield per Harvested Acre,Pounds
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Area Harvested,mil. acres
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Area Planted,mil. acres
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Avg. Farm Price,$/bu
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Beginning Stocks,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Ending Stocks,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Exports,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Feed and Residual,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,"Food, Seed & Industrial",Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Imports,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Production,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,"Supply, Total",Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Total Domestic,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,"Use, Total",Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,Yield,bushels/acre
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Area Harvested,mil. acres
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Area Planted,mil. acres
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Avg. Farm Price,$/bu
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Beginning Stocks,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Ending Stocks,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Exports,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Feed and Residual,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,"Food, Seed & Industrial",Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Imports,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Production,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,"Supply, Total",Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Total Domestic,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,"Use, Total",Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,Yield,bushels/acre
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Area Harvested,mil. acres
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Area Planted,mil. acres
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Avg. Farm Price,$/bu
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Beginning Stocks,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Ending Stocks,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Exports,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Feed and Residual,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,"Food, Seed & Industrial",Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Imports,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Production,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,"Supply, Total",Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Total Domestic,Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,"Use, Total",Million Bushels
+"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,Yield,bushels/acre
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean",Avg. Farm Price,$/s.t.
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean",Beginning Stocks,Thousand Short Tons
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean",Domestic Disappearance,Thousand Short Tons
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean",Ending Stocks,Thousand Short Tons
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean",Exports,Thousand Short Tons
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean",Imports,Thousand Short Tons
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean",Production,Thousand Short Tons
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean","Supply, Total",Thousand Short Tons
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean","Use, Total",Thousand Short Tons
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",Avg. Farm Price,c/lb
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",Beginning Stocks,Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",Biodiesel,Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",Biofuel,Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",Domestic Disappearance,Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",Ending stocks,Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",Exports,Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean","Food, Feed & other Industrial",Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",Imports,Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",Production,Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean","Supply, Total",Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean","Use, Total",Million Pounds
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Area Harvested,Million Acres
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Area Planted,Million Acres
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Avg. Farm Price,$/bu
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Beginning Stocks,Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Crushings,Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Ending Stocks,Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Exports,Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Imports,Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Production,Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Residual,Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Seed,Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean","Supply, Total",Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean","Use, Total",Million Bushels
+U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",Yield per Harvested Acre,Bushels
+U.S. Sugar Supply and Use,Sugar,Beet Sugar,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Beginning Stocks,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Cane Sugar,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Deliveries,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Ending Stocks,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Exports,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Exports - Other,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Florida,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Food,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Hawaii,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,High-tier tariff/other,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Imports,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Imports - Other,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Louisiana,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Mexico,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Miscellaneous,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Non-program,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Other,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Other Program,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Production,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Stocks to Use Ratio,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,TRQ,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Texas,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Total Supply,"1000 Short Tons, Raw Value"
+U.S. Sugar Supply and Use,Sugar,Total Use,"1000 Short Tons, Raw Value"
+U.S. Wheat Supply and Use,Wheat,Area Harvested,Million Acres
+U.S. Wheat Supply and Use,Wheat,Area Planted,Million Acres
+U.S. Wheat Supply and Use,Wheat,Avg. Farm Price,$/bu
+U.S. Wheat Supply and Use,Wheat,Beginning Stocks,Million Bushels
+U.S. Wheat Supply and Use,Wheat,"Domestic, Total",Million Bushels
+U.S. Wheat Supply and Use,Wheat,Ending Stocks,Million Bushels
+U.S. Wheat Supply and Use,Wheat,Exports,Million Bushels
+U.S. Wheat Supply and Use,Wheat,Feed and Residual,Million Bushels
+U.S. Wheat Supply and Use,Wheat,Food,Million Bushels
+U.S. Wheat Supply and Use,Wheat,Imports,Million Bushels
+U.S. Wheat Supply and Use,Wheat,Production,Million Bushels
+U.S. Wheat Supply and Use,Wheat,Seed,Million Bushels
+U.S. Wheat Supply and Use,Wheat,"Supply, Total",Million Bushels
+U.S. Wheat Supply and Use,Wheat,"Use, Total",Million Bushels
+U.S. Wheat Supply and Use,Wheat,Yield per Harvested Acre,Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,Beginning Stocks,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,Domestic Use,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,"Ending Stocks, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,Exports,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,Feed and Residual,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,Food,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,Imports,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,Production,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,Seed,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,"Supply, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Spring,"Use, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,Beginning Stocks,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,Domestic Use,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,"Ending Stocks, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,Exports,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,Feed and Residual,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,Food,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,Imports,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,Production,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,Seed,Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,"Supply, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Hard Red Winter,"Use, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,Beginning Stocks,Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,Domestic Use,Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,"Ending Stocks, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,Exports,Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,Feed and Residual,Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,Food,Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,Imports,Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,Production,Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,Seed,Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,"Supply, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Soft Red Winter,"Use, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,Beginning Stocks,Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,Domestic Use,Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,"Ending Stocks, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,Exports,Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,Feed and Residual,Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,Food,Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,Imports,Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,Production,Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,Seed,Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,"Supply, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,Total,"Use, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum",Beginning Stocks,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum",Domestic Use,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum","Ending Stocks, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum",Exports,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum",Feed and Residual,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum",Food,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum",Imports,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum",Production,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum",Seed,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum","Supply, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, Durum","Use, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White",Beginning Stocks,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White",Domestic Use,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White","Ending Stocks, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White",Exports,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White",Feed and Residual,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White",Food,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White",Imports,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White",Production,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White",Seed,Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White","Supply, Total",Million Bushels
+U.S. Wheat by Class: Supply and Use,"Wheat, White","Use, Total",Million Bushels
+World Coarse Grain Supply and Use,Coarse Grain,Beginning Stocks,Million Metric Tons
+World Coarse Grain Supply and Use,Coarse Grain,Domestic Feed,Million Metric Tons
+World Coarse Grain Supply and Use,Coarse Grain,Domestic Total,Million Metric Tons
+World Coarse Grain Supply and Use,Coarse Grain,Ending Stocks,Million Metric Tons
+World Coarse Grain Supply and Use,Coarse Grain,Exports,Million Metric Tons
+World Coarse Grain Supply and Use,Coarse Grain,Imports,Million Metric Tons
+World Coarse Grain Supply and Use,Coarse Grain,Production,Million Metric Tons
+World Corn Supply and Use,Corn,Beginning Stocks,Million Metric Tons
+World Corn Supply and Use,Corn,Domestic Feed,Million Metric Tons
+World Corn Supply and Use,Corn,Domestic Total,Million Metric Tons
+World Corn Supply and Use,Corn,Ending Stocks,Million Metric Tons
+World Corn Supply and Use,Corn,Exports,Million Metric Tons
+World Corn Supply and Use,Corn,Imports,Million Metric Tons
+World Corn Supply and Use,Corn,Production,Million Metric Tons
+World Cotton Supply and Use,Cotton,Beginning Stocks,Million 480-Pound Bales
+World Cotton Supply and Use,Cotton,Domestic Use,Million 480-Pound Bales
+World Cotton Supply and Use,Cotton,Ending Stocks,Million 480-Pound Bales
+World Cotton Supply and Use,Cotton,Exports,Million 480-Pound Bales
+World Cotton Supply and Use,Cotton,Imports,Million 480-Pound Bales
+World Cotton Supply and Use,Cotton,Loss,Million 480-Pound Bales
+World Cotton Supply and Use,Cotton,Production,Million 480-Pound Bales
+World Rice Supply and Use (Milled Basis),Rice,Beginning Stocks,Million Metric Tons
+World Rice Supply and Use (Milled Basis),Rice,Ending Stocks,Million Metric Tons
+World Rice Supply and Use (Milled Basis),Rice,Exports,Million Metric Tons
+World Rice Supply and Use (Milled Basis),Rice,Imports,Million Metric Tons
+World Rice Supply and Use (Milled Basis),Rice,Production,Million Metric Tons
+World Rice Supply and Use (Milled Basis),Rice,Total Domestic,Million Metric Tons
+World Soybean Meal Supply and Use,Soybean Meal,Beginning Stocks,Million Metric Tons
+World Soybean Meal Supply and Use,Soybean Meal,Domestic Total,Million Metric Tons
+World Soybean Meal Supply and Use,Soybean Meal,Ending Stocks,Million Metric Tons
+World Soybean Meal Supply and Use,Soybean Meal,Exports,Million Metric Tons
+World Soybean Meal Supply and Use,Soybean Meal,Imports,Million Metric Tons
+World Soybean Meal Supply and Use,Soybean Meal,Production,Million Metric Tons
+World Soybean Oil Supply and Use,Soybean Oil,Beginning Stocks,Million Metric Tons
+World Soybean Oil Supply and Use,Soybean Oil,Domestic Total,Million Metric Tons
+World Soybean Oil Supply and Use,Soybean Oil,Ending Stocks,Million Metric Tons
+World Soybean Oil Supply and Use,Soybean Oil,Exports,Million Metric Tons
+World Soybean Oil Supply and Use,Soybean Oil,Imports,Million Metric Tons
+World Soybean Oil Supply and Use,Soybean Oil,Production,Million Metric Tons
+World Soybean Supply and Use,"Oilseed, Soybean",Beginning Stocks,Million Metric Tons
+World Soybean Supply and Use,"Oilseed, Soybean",Domestic Crush,Million Metric Tons
+World Soybean Supply and Use,"Oilseed, Soybean",Domestic Total,Million Metric Tons
+World Soybean Supply and Use,"Oilseed, Soybean",Ending Stocks,Million Metric Tons
+World Soybean Supply and Use,"Oilseed, Soybean",Exports,Million Metric Tons
+World Soybean Supply and Use,"Oilseed, Soybean",Imports,Million Metric Tons
+World Soybean Supply and Use,"Oilseed, Soybean",Production,Million Metric Tons
+World Wheat Supply and Use,Wheat,Beginning Stocks,Million Metric Tons
+World Wheat Supply and Use,Wheat,Domestic Feed,Million Metric Tons
+World Wheat Supply and Use,Wheat,Domestic Total,Million Metric Tons
+World Wheat Supply and Use,Wheat,Ending Stocks,Million Metric Tons
+World Wheat Supply and Use,Wheat,Exports,Million Metric Tons
+World Wheat Supply and Use,Wheat,Imports,Million Metric Tons
+World Wheat Supply and Use,Wheat,Production,Million Metric Tons
+World and U.S Supply and Use for Grains,Coarse Grains,Ending Stocks,Million Metric Tons
+World and U.S Supply and Use for Grains,Coarse Grains,Output,Million Metric Tons
+World and U.S Supply and Use for Grains,Coarse Grains,Total Supply,Million Metric Tons
+World and U.S Supply and Use for Grains,Coarse Grains,Total Use,Million Metric Tons
+World and U.S Supply and Use for Grains,Coarse Grains,Trade,Million Metric Tons
+World and U.S Supply and Use for Grains,"Rice, milled",Ending Stocks,Million Metric Tons
+World and U.S Supply and Use for Grains,"Rice, milled",Output,Million Metric Tons
+World and U.S Supply and Use for Grains,"Rice, milled",Total Supply,Million Metric Tons
+World and U.S Supply and Use for Grains,"Rice, milled",Total Use,Million Metric Tons
+World and U.S Supply and Use for Grains,"Rice, milled",Trade,Million Metric Tons
+World and U.S Supply and Use for Grains,Total Grains,Ending Stocks,Million Metric Tons
+World and U.S Supply and Use for Grains,Total Grains,Output,Million Metric Tons
+World and U.S Supply and Use for Grains,Total Grains,Total Supply,Million Metric Tons
+World and U.S Supply and Use for Grains,Total Grains,Total Use,Million Metric Tons
+World and U.S Supply and Use for Grains,Total Grains,Trade,Million Metric Tons
+World and U.S Supply and Use for Grains,Wheat,Ending Stocks,Million Metric Tons
+World and U.S Supply and Use for Grains,Wheat,Output,Million Metric Tons
+World and U.S Supply and Use for Grains,Wheat,Total Supply,Million Metric Tons
+World and U.S Supply and Use for Grains,Wheat,Total Use,Million Metric Tons
+World and U.S Supply and Use for Grains,Wheat,Trade,Million Metric Tons
+World and U.S. Supply and Use for Cotton,Cotton,Ending Stocks,Million 480-lb. Bales
+World and U.S. Supply and Use for Cotton,Cotton,Output,Million 480-lb. Bales
+World and U.S. Supply and Use for Cotton,Cotton,Total Supply,Million 480-lb. Bales
+World and U.S. Supply and Use for Cotton,Cotton,Total Use,Million 480-lb. Bales
+World and U.S. Supply and Use for Cotton,Cotton,Trade,Million 480-lb. Bales
+World and U.S. Supply and Use for Grains,Coarse Grains,Ending Stocks,Million Metric Tons
+World and U.S. Supply and Use for Grains,Coarse Grains,Output,Million Metric Tons
+World and U.S. Supply and Use for Grains,Coarse Grains,Total Supply,Million Metric Tons
+World and U.S. Supply and Use for Grains,Coarse Grains,Total Use,Million Metric Tons
+World and U.S. Supply and Use for Grains,Coarse Grains,Trade,Million Metric Tons
+World and U.S. Supply and Use for Grains,"Rice, milled",Ending Stocks,Million Metric Tons
+World and U.S. Supply and Use for Grains,"Rice, milled",Output,Million Metric Tons
+World and U.S. Supply and Use for Grains,"Rice, milled",Total Supply,Million Metric Tons
+World and U.S. Supply and Use for Grains,"Rice, milled",Total Use,Million Metric Tons
+World and U.S. Supply and Use for Grains,"Rice, milled",Trade,Million Metric Tons
+World and U.S. Supply and Use for Grains,Total Grains,Ending Stocks,Million Metric Tons
+World and U.S. Supply and Use for Grains,Total Grains,Output,Million Metric Tons
+World and U.S. Supply and Use for Grains,Total Grains,Total Supply,Million Metric Tons
+World and U.S. Supply and Use for Grains,Total Grains,Total Use,Million Metric Tons
+World and U.S. Supply and Use for Grains,Total Grains,Trade,Million Metric Tons
+World and U.S. Supply and Use for Grains,Wheat,Ending Stocks,Million Metric Tons
+World and U.S. Supply and Use for Grains,Wheat,Output,Million Metric Tons
+World and U.S. Supply and Use for Grains,Wheat,Total Supply,Million Metric Tons
+World and U.S. Supply and Use for Grains,Wheat,Total Use,Million Metric Tons
+World and U.S. Supply and Use for Grains,Wheat,Trade,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilmeals,Ending Stocks,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilmeals,Output,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilmeals,Total Supply,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilmeals,Total Use,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilmeals,Trade,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilseeds,Ending Stocks,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilseeds,Output,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilseeds,Total Supply,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilseeds,Total Use,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Oilseeds,Trade,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Vegetable Oils,Ending Stocks,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Vegetable Oils,Output,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Vegetable Oils,Total Supply,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Vegetable Oils,Total Use,Million Metric Tons
+World and U.S. Supply and Use for Oilseeds,Vegetable Oils,Trade,Million Metric Tons

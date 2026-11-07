@@ -1,0 +1,8 @@
+# Label aliases applied to older ESMIS XML before layout lookup.
+titles:
+  Mexico Sugar Supply and Use and High Fructose Corn Syrup Imports: Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption
+# Commodity cell labels (pre-2015 wheat-by-class headers).
+commodities:
+  Hard Winter: Hard Red Winter
+  Hard Spring: Hard Red Spring
+  Soft Red: Soft Red Winter

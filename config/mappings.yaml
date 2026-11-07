@@ -1,0 +1,280 @@
+# Canonical vocabulary for the silver layer.
+# Keys are matched case/space/punctuation-insensitively (see wasde.silver.text.label_key).
+# Any label not listed here is slugified and reported in data/silver/unmapped_labels.json;
+# a label that appears for the first time in the newest report fails the monthly run.
+
+tables:
+  World and U.S. Supply and Use for Grains: {id: world_us_grains, label: World & U.S. Grains}
+  World and U.S Supply and Use for Grains: {id: world_us_grains, label: World & U.S. Grains}
+  World and U.S. Supply and Use for Cotton: {id: world_us_cotton, label: World & U.S. Cotton}
+  World and U.S. Supply and Use for Oilseeds: {id: world_us_oilseeds, label: World & U.S. Oilseeds}
+  U.S. Wheat Supply and Use: {id: us_wheat, label: U.S. Wheat}
+  "U.S. Wheat by Class: Supply and Use": {id: us_wheat_by_class, label: U.S. Wheat by Class}
+  U.S. Feed Grain and Corn Supply and Use: {id: us_feed_grains_corn, label: U.S. Feed Grains & Corn}
+  U.S. Sorghum, Barley, and Oats Supply and Use: {id: us_sorghum_barley_oats, label: U.S. Sorghum, Barley & Oats}
+  U.S. Rice Supply and Use: {id: us_rice, label: U.S. Rice}
+  U.S. Soybeans and Products Supply and Use (Domestic Measure): {id: us_soybeans_products, label: U.S. Soybeans & Products}
+  U.S. Sugar Supply and Use: {id: us_sugar, label: U.S. Sugar}
+  Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption: {id: mexico_sugar, label: Mexico Sugar}
+  U.S. Cotton Supply and Use: {id: us_cotton, label: U.S. Cotton}
+  World Wheat Supply and Use: {id: world_wheat, label: World Wheat}
+  World Coarse Grain Supply and Use: {id: world_coarse_grains, label: World Coarse Grains}
+  World Corn Supply and Use: {id: world_corn, label: World Corn}
+  World Rice Supply and Use (Milled Basis): {id: world_rice, label: World Rice (milled)}
+  World Cotton Supply and Use: {id: world_cotton, label: World Cotton}
+  World Soybean Supply and Use: {id: world_soybeans, label: World Soybeans}
+  World Soybean Meal Supply and Use: {id: world_soybean_meal, label: World Soybean Meal}
+  World Soybean Oil Supply and Use: {id: world_soybean_oil, label: World Soybean Oil}
+  U.S. Meats Supply and Use: {id: us_meats, label: U.S. Meats}
+  U.S. Egg Supply and Use: {id: us_eggs, label: U.S. Eggs}
+  U.S. Milk Supply and Use: {id: us_milk, label: U.S. Milk}
+  U.S. Dairy Prices: {id: us_dairy_prices, label: U.S. Dairy Prices}
+  U.S. Quarterly Animal Product Production: {id: us_animal_production_quarterly, label: U.S. Quarterly Animal Production}
+  U.S. Quarterly Prices for Animal Products: {id: us_animal_prices_quarterly, label: U.S. Quarterly Animal Prices}
+
+# Regex rules evaluated after exact table matches.
+table_patterns:
+  - {pattern: "^Reliability of United States \\w+ Projections$", id: reliability_us, label: Reliability of U.S. Projections}
+  - {pattern: "^Reliability of \\w+ Projections$", id: reliability_world, label: Reliability of World Projections}
+
+commodities:
+  Wheat: wheat
+  Total: wheat              # "Total" row of U.S. Wheat by Class
+  Hard Red Winter: wheat_hrw
+  Hard Red Spring: wheat_hrs
+  Soft Red Winter: wheat_srw
+  Wheat, White: wheat_white
+  Wheat, Durum: wheat_durum
+  Corn: corn
+  Coarse Grain: coarse_grains
+  Coarse Grains: coarse_grains
+  Feed Grains: feed_grains
+  Total Grains: total_grains
+  Sorghum: sorghum
+  Barley: barley
+  Oats: oats
+  Rice: rice
+  RICE, milled: rice
+  Rice, milled: rice
+  Rice, Rough: rice_rough
+  Rice, Long: rice_long_grain
+  Rice, Med and Short: rice_medium_short_grain
+  Oilseed, Soybean: soybeans
+  Meal, Soybean: soybean_meal
+  Soybean Meal: soybean_meal
+  Oil, Soybean: soybean_oil
+  Soybean Oil: soybean_oil
+  Oilseeds: oilseeds
+  Oilmeals: oilmeals
+  Vegetable Oils: vegetable_oils
+  Cotton: cotton
+  Sugar: sugar
+  Beef: beef
+  Pork: pork
+  Red Meat: red_meat
+  Total Red Meat: red_meat
+  Broiler: broilers
+  Broilers: broilers
+  Turkey: turkey
+  Turkeys: turkey
+  Total Poultry: poultry
+  Red Meat & Poultry: red_meat_poultry
+  Eggs: eggs
+  Milk: milk
+  Milk, Fat Basis: milk_fat_basis
+  Milk, Skim-Soild Basis: milk_skim_solids_basis
+  Milk, Class III: milk_class_iii
+  Milk, Class IV: milk_class_iv
+  Butter: butter
+  Cheese: cheese
+  Dry Whey: dry_whey
+  Nonfat Dry Milk: nonfat_dry_milk
+  Steers: steers
+  Barrows and gilts: barrows_gilts
+
+commodity_labels:
+  wheat: Wheat
+  wheat_hrw: Hard Red Winter Wheat
+  wheat_hrs: Hard Red Spring Wheat
+  wheat_srw: Soft Red Winter Wheat
+  wheat_white: White Wheat
+  wheat_durum: Durum Wheat
+  corn: Corn
+  coarse_grains: Coarse Grains
+  feed_grains: Feed Grains
+  total_grains: Total Grains
+  sorghum: Sorghum
+  barley: Barley
+  oats: Oats
+  rice: Rice (milled)
+  rice_rough: Rice (rough)
+  rice_long_grain: Long-grain Rice
+  rice_medium_short_grain: Medium/Short-grain Rice
+  soybeans: Soybeans
+  soybean_meal: Soybean Meal
+  soybean_oil: Soybean Oil
+  oilseeds: Oilseeds
+  oilmeals: Oilmeals
+  vegetable_oils: Vegetable Oils
+  cotton: Cotton
+  sugar: Sugar
+
+attributes:
+  Area Planted: area_planted
+  Planted: area_planted
+  Area Harvested: area_harvested
+  Harvested: area_harvested
+  Harvested Acres: area_harvested
+  Yield: yield
+  Yield per Harvested Acre: yield
+  Beginning Stocks: beginning_stocks
+  Supply Beginning Stocks: beginning_stocks
+  Production: production
+  Output: production
+  Imports: imports
+  Total Supply: total_supply
+  Supply, Total: total_supply
+  Feed and Residual: feed_residual
+  Domestic Feed: domestic_feed
+  Food, Seed & Industrial: food_seed_industrial
+  Food, Feed & other Industrial: food_feed_industrial
+  Ethanol & by-products: ethanol
+  Food: food
+  Seed: seed
+  Residual: residual
+  Crushings: crush
+  Domestic Crush: crush
+  Domestic Total: domestic_total
+  Total Domestic: domestic_total
+  Domestic, Total: domestic_total
+  Domestic Use: domestic_total
+  Domestic: domestic_total
+  Domestic & Residual: domestic_residual
+  Biofuel: biofuel
+  Biodiesel: biofuel          # renamed to "Biofuel" in May 2021
+  Exports: exports
+  Exports, Total: exports
+  Use Exports: exports
+  Total Use: total_use
+  Use, Total: total_use
+  Ending Stocks: ending_stocks
+  Ending Stocks, Total: ending_stocks
+  Stocks to Use Ratio: stocks_to_use_ratio
+  Avg. Farm Price: farm_price
+  Trade: trade
+  Loss: loss
+  Unaccounted: unaccounted
+  Avg. Milling Yield: milling_yield
+  Per Capita: per_capita
+  Prices: price
+  # Truncated / older XML labels
+  Supply Beginning Sto: beginning_stocks
+  Disappearance To: disappearance_total
+  Ending Commercial Stks: ending_commercial_stocks
+  Avg. Farm Price ($/s.t.): farm_price
+  Avg. Farm Price (c/lb): farm_price
+  Methyl Ester: biofuel       # soybean oil used for biodiesel, pre-2021 label
+  For Methyl Ester: biofuel
+  Ethanol for Fuel: ethanol
+  # Minor sub-lines (sugar, dairy, eggs, rice), kept with stable ids
+  Beet Sugar: beet_sugar
+  Cane Sugar: cane_sugar
+  Florida: florida
+  Louisiana: louisiana
+  Texas: texas
+  Hawaii: hawaii
+  California: california
+  Other States: other_states
+  Mexico: mexico
+  TRQ: trq
+  Other Program: other_program
+  Non-program: non_program
+  High-tier tariff/other: high_tier_tariff_other
+  Imports - Other: imports_other
+  Exports - Other: exports_other
+  Other: other
+  Deliveries: deliveries
+  Miscellaneous: miscellaneous
+  Beg. Commercial Stocks: beginning_commercial_stocks
+  Ending Commercial Stocks: ending_commercial_stocks
+  Total Cml. Supply: total_commercial_supply
+  Commercial Exports: commercial_exports
+  Commercial Use: commercial_use
+  Domestic Commercial Use: domestic_commercial_use
+  Domestic Disappearance: domestic_disappearance
+  Disappearance Total: disappearance_total
+  CCC Donations: ccc_donations
+  CCC Inventory: ccc_inventory
+  CCC Net Removals: ccc_net_removals
+  Outstanding Loans: outstanding_loans
+  Free Stocks: free_stocks
+  Dry Whole Milk: dry_whole_milk
+  Farm Use: farm_use
+  Marketings: marketings
+  Hatching Use: hatching_use
+  Milled: milled
+  Rough: rough
+
+attribute_labels:
+  area_planted: Area planted
+  area_harvested: Area harvested
+  yield: Yield
+  beginning_stocks: Beginning stocks
+  production: Production
+  imports: Imports
+  total_supply: Total supply
+  feed_residual: Feed & residual
+  domestic_feed: Feed
+  food_seed_industrial: Food, seed & industrial
+  food_feed_industrial: Food, feed & other industrial
+  ethanol: Ethanol & by-products
+  food: Food
+  seed: Seed
+  residual: Residual
+  crush: Crush
+  domestic_total: Domestic use
+  biofuel: Biofuel
+  exports: Exports
+  total_use: Total use
+  ending_stocks: Ending stocks
+  stocks_to_use_ratio: Stocks-to-use (USDA)
+  farm_price: Season-average farm price
+  trade: Trade
+
+units:
+  Million Metric Tons: {id: mmt, label: Million metric tons}
+  Million 480-Pound Bales: {id: m_bales, label: Million 480-lb bales}
+  Million 480 Pound Bales: {id: m_bales, label: Million 480-lb bales}
+  Million 480-Pounds Bales: {id: m_bales, label: Million 480-lb bales}
+  Million 480-lb. Bales: {id: m_bales, label: Million 480-lb bales}
+  Million Bushels: {id: m_bu, label: Million bushels}
+  Million Acres: {id: m_acres, label: Million acres}
+  mil. acres: {id: m_acres, label: Million acres}
+  bushels/acre: {id: bu_per_acre, label: Bushels per acre}
+  Bushels: {id: bu_per_acre, label: Bushels per acre}
+  pounds/acre: {id: lb_per_acre, label: Pounds per acre}
+  Pounds: {id: lb_per_acre, label: Pounds per acre}
+  $/bu: {id: usd_per_bu, label: $ per bushel}
+  $/cwt: {id: usd_per_cwt, label: $ per cwt}
+  Dol./cwt: {id: usd_per_cwt, label: $ per cwt}
+  Dollars Per Cwt: {id: usd_per_cwt, label: $ per cwt}
+  $/s.t.: {id: usd_per_short_ton, label: $ per short ton}
+  Cents/lb.: {id: cents_per_lb, label: Cents per lb}
+  c/lb: {id: cents_per_lb, label: Cents per lb}
+  Dollars Per Pound: {id: usd_per_lb, label: $ per lb}
+  Cents/Doz.: {id: cents_per_dozen, label: Cents per dozen}
+  Million Pounds: {id: m_lbs, label: Million pounds}
+  Billion Pounds: {id: b_lbs, label: Billion pounds}
+  Million Hundredweight: {id: m_cwt, label: Million cwt}
+  Thousand Short Tons: {id: k_short_tons, label: Thousand short tons}
+  1000 Short Tons, Raw Value: {id: k_short_tons_raw, label: Thousand short tons (raw value)}
+  1000 Metric Tons, Actual Weight: {id: k_mt, label: Thousand metric tons}
+  Metric Tons: {id: mt, label: Metric tons}
+  Million Dozen: {id: m_dozen, label: Million dozen}
+  Million Dosen: {id: m_dozen, label: Million dozen}
+  Percent: {id: pct, label: Percent}
+  "%": {id: pct, label: Percent}
+  Years: {id: years, label: Years}
+  mil.: {id: million, label: Million}
+  number: {id: number, label: Number}
+  rough equiv.: {id: rough_equiv, label: Rough equivalent}

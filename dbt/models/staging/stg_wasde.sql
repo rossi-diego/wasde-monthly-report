@@ -1,0 +1,24 @@
+-- Silver parquet exposed to dbt, with light typing. One row per published value.
+select
+    report_month,
+    strptime(report_month || '-01', '%Y-%m-%d')::date as report_date,
+    cast(wasde_number as integer)                     as wasde_number,
+    cast(release_date as date)                        as release_date,
+    source,
+    table_id,
+    table_label,
+    commodity_id,
+    commodity_label,
+    region_id,
+    region,
+    attribute_id,
+    attribute_label,
+    nullif(reliability_stat, '')                      as reliability_stat,
+    market_year,
+    cast(my_start as integer)                         as my_start,
+    nullif(proj_est_flag, '')                         as proj_est_flag,
+    period,
+    value,
+    unit_id,
+    unit_label
+from read_parquet('{{ var("silver_path") }}')

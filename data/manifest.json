@@ -1,0 +1,1940 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-07T02:31:33+00:00",
+  "latest_report": null,
+  "latest_wasde_number": null,
+  "data_release_tag": null,
+  "total_rows": null,
+  "reports": {
+    "2010-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2010-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/3n203z415/6t053g38w/wasde-07-09-2010.xml",
+      "sha256": "e32c2378a008cf9fe5f6ba2861863c0cd78f5e89587a2abb56caa57c577908ed",
+      "bytes": 3719364,
+      "release_date": "2010-07-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2010-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2010-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/hh63sw29w/n009w264b/wasde-08-12-2010.xml",
+      "sha256": "ca73a81d35aede57a63cc03825b4f3e2e48570df5954b011dba86842e5cfe105",
+      "bytes": 3718176,
+      "release_date": "2010-08-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2010-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2010-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/xp68kg723/f1881m24x/wasde-09-10-2010.xml",
+      "sha256": "e11dfdcabe91c0b85589372392777156de306f4132abae7e96795582f420e6b8",
+      "bytes": 2114696,
+      "release_date": "2010-09-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2010-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2010-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/05741r990/47429957v/wasde-10-08-2010.xml",
+      "sha256": "0c372e89d9c305a19aac2328e1089705f9e7c433780099da6975982d2853ac10",
+      "bytes": 2114658,
+      "release_date": "2010-10-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2010-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2010-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/wh246s48n/zs25x892g/wasde-11-09-2010.xml",
+      "sha256": "93df3384e883d23e36338d51f1ce114478dbc56a948b6123128ee803dd196afe",
+      "bytes": 2114331,
+      "release_date": "2010-11-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2010-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2010-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/rf55z801m/kh04dq03d/wasde-12-10-2010.xml",
+      "sha256": "55bdf29861ed17a156f399548b4718231e37e94ff95df40b17bf474205fe02b1",
+      "bytes": 2114583,
+      "release_date": "2010-12-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-01": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-01.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/st74cq794/hx11xf58c/wasde-01-12-2011.xml",
+      "sha256": "5c48758c5200582c23a745cb7c398f42d29d35a67528fd7562a05b1092dc1e1a",
+      "bytes": 2107948,
+      "release_date": "2011-01-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/9s1616520/1j92g776j/wasde-02-09-2011.xml",
+      "sha256": "d7404932e12164352a3b342d0be6bf10ba11ad1589a5ec2073269c962111d2bc",
+      "bytes": 2114277,
+      "release_date": "2011-02-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/02870w35d/jq085k32r/wasde-03-10-2011.xml",
+      "sha256": "e09f33c463c6c09ddec0ef2dbca8af90daaa1b3d51ea84f3830913bc7b491694",
+      "bytes": 2113595,
+      "release_date": "2011-03-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/z890rt626/dn39x192v/wasde-04-08-2011.xml",
+      "sha256": "6efb60f1937d05e26be6f86f43194c96de71d0cae89159cad6a45048a7293129",
+      "bytes": 2112947,
+      "release_date": "2011-04-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/bz60cw58k/tx31qj06q/wasde-05-11-2011.xml",
+      "sha256": "366a00f5cb620d008f826f517fd2ae1f0660342a79a56fb824cd630a9983cf54",
+      "bytes": 2103782,
+      "release_date": "2011-05-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/hd76s040t/v692t668h/wasde-06-09-2011.xml",
+      "sha256": "6d11275fb455590d5b88c1421d0b976dd054f16ebf1f76cdb5bee11e1861ba58",
+      "bytes": 2107150,
+      "release_date": "2011-06-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/8s45q910p/d504rk709/wasde-07-12-2011.xml",
+      "sha256": "10c2bf1fcad64b3677a2d664d6fdbab6558f3d176b95e976adc76292522b0404",
+      "bytes": 2121380,
+      "release_date": "2011-07-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/8g84mm551/7p88cg86x/wasde-08-11-2011.xml",
+      "sha256": "5a91cdec65a6d92470265335b43ae0eb3d478a4e4c8504e2a8fbaaf3dca3e42d",
+      "bytes": 2119950,
+      "release_date": "2011-08-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/3f4625823/g732d9374/wasde-09-12-2011.xml",
+      "sha256": "d473c6b3b0182e688e8c4143d125b83c9c2d21f41723a3a9bd2fe0974b52d9f3",
+      "bytes": 2119763,
+      "release_date": "2011-09-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/h989r362m/1v53jx418/wasde-10-12-2011.xml",
+      "sha256": "2f7366160502130bde2a6080e885c46b6f9bbb1d60736e7a3855ced0beb81c7f",
+      "bytes": 3725501,
+      "release_date": "2011-10-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/p5547r855/p5547r898/wasde-11-09-2011.xml",
+      "sha256": "7a6b46aa5aa136b799417347ca4dbd6ac67dc2f79f342a1ce6dc6414e6526b5e",
+      "bytes": 2120087,
+      "release_date": "2011-11-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2011-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2011-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/x920fx21b/1g05fb841/wasde-12-09-2011.xml",
+      "sha256": "437adc290854e0588c2d2be712e947506eb1ff243d602f201470df1ec5078cda",
+      "bytes": 2120239,
+      "release_date": "2011-12-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-01": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-01.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/mw22v590d/7s75dc75n/wasde-01-12-2012.xml",
+      "sha256": "4a051663e16202fd987d8d5c3f035ccd0b13772b93c5d54df0bb0c47d80a392c",
+      "bytes": 2119519,
+      "release_date": "2012-01-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/db78tc281/cf95jb65j/wasde-02-09-2012.xml",
+      "sha256": "4db394b631adb92751195bf6e46f66f672c21a5dacb34d26f9a3b4eeaec205fd",
+      "bytes": 2119530,
+      "release_date": "2012-02-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/3197xm462/qn59q435b/wasde-03-09-2012.xml",
+      "sha256": "2ad2fe8f88920627a97c6699eb62183d1319c36fad0753ae6d04a45b9528f102",
+      "bytes": 2119078,
+      "release_date": "2012-03-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/m326m214q/2f75r8412/wasde-04-10-2012.xml",
+      "sha256": "0b46eadd80f573f1391c253357ed22dfd051cda9b9dfd395bf7570bb3f7c40f4",
+      "bytes": 2118283,
+      "release_date": "2012-04-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/db78tc299/s1784m14f/wasde-05-10-2012.xml",
+      "sha256": "fe3e3f80dc0afe98fd34543a79a89e73352059d63252ccb31bc184f004167ad8",
+      "bytes": 2098061,
+      "release_date": "2012-05-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/gb19f612s/k643b162r/wasde-06-12-2012.xml",
+      "sha256": "8b21e6f2bf5f63f3032a979dd8ad813c5582515e319c548138f36fefa4ec4736",
+      "bytes": 2101325,
+      "release_date": "2012-06-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/xp68kg74n/zk51vh09p/wasde-07-11-2012.xml",
+      "sha256": "51b584f3da5f94bddb767c4c71de865c994345625061f5257f969c2504e0c8b5",
+      "bytes": 2117455,
+      "release_date": "2012-07-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/ms35t8930/t435gd264/wasde-08-10-2012.xml",
+      "sha256": "174eb78cba36f287d3cdbdab3889432d43dc362ad630d77b761a223a28c3441d",
+      "bytes": 2115777,
+      "release_date": "2012-08-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/gm80hv75c/np193955b/wasde-09-12-2012.xml",
+      "sha256": "1388b6a974d6f57c010ae4a00d0fd9298cba85c55747868456ba78d374220747",
+      "bytes": 3717208,
+      "release_date": "2012-09-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/jw827c173/dn39x1934/wasde-10-11-2012.xml",
+      "sha256": "7f44df5e6d077c29e3cb4f1eded32b4ee236b516afc0fb46c2feaa0b836fc97c",
+      "bytes": 3717993,
+      "release_date": "2012-10-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/zw12z571z/6q182k452/wasde-11-09-2012.xml",
+      "sha256": "64f44425127308cfde623e93b475c606ed2c98824861d85e5532c2cba02e48d6",
+      "bytes": 3727136,
+      "release_date": "2012-11-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2012-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2012-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/2r36tx89v/8049g551v/wasde-12-11-2012.xml",
+      "sha256": "6c0f863419321bb9444a0adfaaa3e8c0399326ad000c71090e990e81010e3d83",
+      "bytes": 2121812,
+      "release_date": "2012-12-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-01": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-01.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/1r66j149d/3n203z43q/wasde-01-11-2013.xml",
+      "sha256": "3a3f754f38dc83165865c0e73bc2c7a896492b0c79ff3fa195be66a89417d36a",
+      "bytes": 2121076,
+      "release_date": "2013-01-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/474299541/0z708w85q/wasde-02-08-2013.xml",
+      "sha256": "eab8757de6216cc03979a60625ef392ee16c067fa2bb61817c54d8ccdf9758c2",
+      "bytes": 2121061,
+      "release_date": "2013-02-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/b2773w09j/8c97kq740/wasde-03-08-2013.xml",
+      "sha256": "b24683c6670e8fd33ea7f4685fb43ec43caa41c96eb53ad3326c019e2cc9046a",
+      "bytes": 2120431,
+      "release_date": "2013-03-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/z603qx70p/6d56zx080/wasde-04-10-2013.xml",
+      "sha256": "7a1f60606a048a8846a79a91a9a05aa27477ade0f153a9c2d60439cc4fb02fc4",
+      "bytes": 2119639,
+      "release_date": "2013-04-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/x920fx22m/6d56zx098/wasde-05-10-2013.xml",
+      "sha256": "379917c5db569d8873b4fca2bc236259db0394e8a5fd2e906cfa2eb72653f466",
+      "bytes": 2111195,
+      "release_date": "2013-05-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/8c97kq70w/bk128b33w/wasde-06-12-2013.xml",
+      "sha256": "6bc4e9d3e9efbaddd9aaa75c0d469fd96fb95efc9be3f2139a7f3b82d86fdfac",
+      "bytes": 2114731,
+      "release_date": "2013-06-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/mc87pq55j/j38607367/wasde-07-11-2013.xml",
+      "sha256": "8fb87c1c2bc05ea258af4b696e7b12108aa7d1086fbcde7a97a503e1d0deef96",
+      "bytes": 2130773,
+      "release_date": "2013-07-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/bk128b299/tx31qj070/ORIGwasde-08-12-2013.xml",
+      "sha256": "072337623d4242742abb994af4abfe73021089ee0bfa7de0f883f3ebae90cd15",
+      "bytes": 2129780,
+      "release_date": "2013-08-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/08612n84m/pz50gw415/wasde-09-12-2013.xml",
+      "sha256": "d095ca3dd7d36114194accba57d4c52ac16e30f4f98d099fc4f1e289c9134217",
+      "bytes": 2129580,
+      "release_date": "2013-09-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/9k41zd93b/pv63g064d/wasde-11-08-2013.xml",
+      "sha256": "4f8a7ae6beebdda24c5a45bdc03d79cff2b1883450bbec9086c04ce165a3a297",
+      "bytes": 2130041,
+      "release_date": "2013-11-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2013-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2013-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/7w62f8608/hh63sw31x/wasde-12-10-2013.xml",
+      "sha256": "784da753cd490d7d9c93c6cb7ba4ac917ac3041cff20fd479bf8b5e253f6f337",
+      "bytes": 2129592,
+      "release_date": "2013-12-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-01": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-01.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/tq57nr35p/k643b159f/wasde-01-10-2014.xml",
+      "sha256": "2b6db9b56b8dd1d06122c7913f38fda546c6c4a0f2ad69279d991bc35f7d5827",
+      "bytes": 2129039,
+      "release_date": "2014-01-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/ms35t8948/v692t666z/wasde-02-10-2014.xml",
+      "sha256": "13cb91a3b243e4f68eef00b3aee92e464c99d26a6af8afa04dde9313f7d66e28",
+      "bytes": 2129080,
+      "release_date": "2014-02-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/m900nt76t/6d56zx119/wasde-03-10-2014.xml",
+      "sha256": "0138ca4c3e460e2c496e70a1a9a4961daaddb396c6581e30056d244786f319d5",
+      "bytes": 2128480,
+      "release_date": "2014-03-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/ht24wj80n/gx41mj255/wasde-04-09-2014.xml",
+      "sha256": "a88c3238376fd72b8b11c9fd656751b6fd6c77dfc041fc8448497fb6791c93e3",
+      "bytes": 2127247,
+      "release_date": "2014-04-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/79407x56x/v692t6677/wasde-05-09-2014.xml",
+      "sha256": "cded26a493581be7cd2083013285f7a7f1fa18c724c9e35d861dcd3c17ccd39c",
+      "bytes": 3627487,
+      "release_date": "2014-05-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/b8515n698/s1784m160/wasde-06-11-2014.xml",
+      "sha256": "fef17274adb5652b2e2d5fd776ca122a73c9757a95f91111f964396e505dbf59",
+      "bytes": 2068127,
+      "release_date": "2014-06-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/vq27zn76k/rx913q155/wasde-07-11-2014.xml",
+      "sha256": "f62f0e83ecdacb00417c752e6ee09756cba1bbb56f74ae8c168b761d68268a1f",
+      "bytes": 2084222,
+      "release_date": "2014-07-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/8336h2246/db78tc33w/wasde-08-12-2014.xml",
+      "sha256": "78c6eecbd9eb00462804b38345ca555de5ef6295a8a9a841d29ba27f7d92b925",
+      "bytes": 2082542,
+      "release_date": "2014-08-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/t722h924t/m039k527j/wasde-09-11-2014.xml",
+      "sha256": "1d387204e403287d9523e6e3eced30bbc1de5f18d1ecc2f47a1a200217096684",
+      "bytes": 2082234,
+      "release_date": "2014-09-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/vh53ww03h/t435gd24k/wasde-10-10-2014.xml",
+      "sha256": "db9cea77ef6a98b434bb6a09ee71698a24b68b66af28bf27787f622c51308e68",
+      "bytes": 2082761,
+      "release_date": "2014-10-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/v692t6609/wd375w68w/wasde-11-10-2014.xml",
+      "sha256": "c9e834926e6483349db3df17ed85c9e5d31779af91ac8e3d70471651e7c6ffa4",
+      "bytes": 2082367,
+      "release_date": "2014-11-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2014-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2014-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/6t053g36b/h128nf057/wasde-12-10-2014.xml",
+      "sha256": "4b1553708a5f7e9c2760d7d47fa1dc7ca446ece534acbac168f30af749886e15",
+      "bytes": 2082536,
+      "release_date": "2014-12-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-01": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-01.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/6q182k43h/pn89d685p/wasde-01-12-2015.xml",
+      "sha256": "6e272dd59689e64d83a16dc9f100e6c65006930241d9ea920da81a297dbbe812",
+      "bytes": 2082048,
+      "release_date": "2015-01-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/4f16c3196/2z10wq504/wasde-02-10-2015.xml",
+      "sha256": "66c69719a3abd33736271be3e4f1590338d959f7cbc5a5bd605c7a4875a34801",
+      "bytes": 2085679,
+      "release_date": "2015-02-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/1831ck330/w6634403p/wasde-03-10-2015.xml",
+      "sha256": "161d9561fa7f3d423ebb54bf6bfa6917662fee2271673b74af6282310c117547",
+      "bytes": 2085085,
+      "release_date": "2015-03-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/zp38wc91z/5999n384w/wasde-04-09-2015.xml",
+      "sha256": "db9bad6e4fb91a57a4263e2af1f2d2ef7705a051e1e8efdd8a17772aba77031f",
+      "bytes": 2084289,
+      "release_date": "2015-04-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/4t64gn433/zs25x8895/wasde-05-12-2015.xml",
+      "sha256": "684dc7be711fc847a6166ba8562c28d116df6f27f9883b9925b1a7bfe6418f08",
+      "bytes": 2029852,
+      "release_date": "2015-05-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/k643b157w/cz30pt087/wasde-06-10-2015.xml",
+      "sha256": "9c7caa902bf48ca8aa8f07c8794b261e9afda09273b04b4d913af71d61c782a1",
+      "bytes": 3570472,
+      "release_date": "2015-06-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/q524jp142/nc580n00z/wasde-07-10-2015.xml",
+      "sha256": "c7ad8395e8faf4d66308bc363aa8a95983f12de5f76f490a64103f8fa6a6e29f",
+      "bytes": 2049484,
+      "release_date": "2015-07-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/rb68xc23d/zs25x890x/wasde-08-12-2015.xml",
+      "sha256": "9035d21eeeef776d80f23a25c204e907623e43aad61d0abd84e7050572c7f0b6",
+      "bytes": 1986093,
+      "release_date": "2015-08-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/z029p513z/w37637182/wasde-09-11-2015.xml",
+      "sha256": "8f257f8f3a6700c6bb9567f0eb99f431690fdfc5f131d7bbf8d5ce54d9f12477",
+      "bytes": 1985594,
+      "release_date": "2015-09-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/g445cd50f/9593tv51s/wasde-10-09-2015.xml",
+      "sha256": "e7fb80503592efd638012c97247c6411eeb545be37e764ee798853de79ceea84",
+      "bytes": 1985743,
+      "release_date": "2015-10-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/qr46r120z/bg257f470/wasde-11-10-2015.xml",
+      "sha256": "c04de9ac1d87c1c1af23c11d774ce2f02a8aaa019523b1d3c2dafbc7efe604a5",
+      "bytes": 1985508,
+      "release_date": "2015-11-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2015-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2015-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/rj430479p/sb397859k/wasde-12-09-2015.xml",
+      "sha256": "388359f428e3739ddf5731c6f2da79a6537f5e98aa7787a95bba9332bd43fa24",
+      "bytes": 1985694,
+      "release_date": "2015-12-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-01": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-01.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/jd472w730/hm50ts08c/wasde-01-12-2016.xml",
+      "sha256": "8d9def191a3ee3974b1bf5b3d1b1e92151580b067ce45ecce0e004e468b4e92d",
+      "bytes": 1985190,
+      "release_date": "2016-01-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/gx41mj212/5425kb10k/wasde-02-09-2016.xml",
+      "sha256": "806a4fdabef79c09c4cfb393ca6b2985dcd0b9502bff87fadf20a3e8ac9aa9c3",
+      "bytes": 1985004,
+      "release_date": "2016-02-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/zs25x8827/q524jp17w/wasde-03-09-2016.xml",
+      "sha256": "e7af121b15e32ca35a607e55df3aa7bd2b5ffa0eaa593fbf5963ca4aea723763",
+      "bytes": 1984395,
+      "release_date": "2016-03-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/db78tc302/qb98mf92z/wasde-04-12-2016.xml",
+      "sha256": "69f92235cc4d96b25bad20a7166d44d66b423bb2741a89eda396a9cf9db419a4",
+      "bytes": 1983640,
+      "release_date": "2016-04-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/bg257f43w/bv73c074w/wasde-05-10-2016.xml",
+      "sha256": "f35d33f6f676500288c3a8f625cbf7f9dd89a90b8f88fa5787559cd4aa743522",
+      "bytes": 1967476,
+      "release_date": "2016-05-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/jh343s69n/bz60cw59v/wasde-06-10-2016.xml",
+      "sha256": "00638d22237ad9201727892547d408f67c464b6c27cd834fd08c01aa2ae18720",
+      "bytes": 1971204,
+      "release_date": "2016-06-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/0z708w82w/wp988k163/wasde-07-12-2016.xml",
+      "sha256": "a8cd469b2962aa7a39bd87c108bb242fc484a8b0e77fed29b6126f96b01307ce",
+      "bytes": 1987235,
+      "release_date": "2016-07-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/sj139222d/wp988k15t/wasde-08-12-2016.xml",
+      "sha256": "77b8c4cf3d48cb1e32f8e0cfbe8a860fa2519fa90653e808da015aea8c58177f",
+      "bytes": 1985536,
+      "release_date": "2016-08-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/zk51vh08d/ht24wj826/wasde-09-12-2016.xml",
+      "sha256": "983e33ca5862e614885333ffcda0e179acd8db2bf5b2af50b8e810b5f58b7241",
+      "bytes": 1985636,
+      "release_date": "2016-09-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/4b29b639f/1n79h462q/wasde-10-12-2016.xml",
+      "sha256": "d1dc6bebc99f3250026bfbcc66a1d0dd1fa19466ac7acbe1e554a5f2d6fbb6a7",
+      "bytes": 1985425,
+      "release_date": "2016-10-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/v692t662v/c821gk09p/wasde-11-09-2016.xml",
+      "sha256": "87b39df358a000ad52412c0dafa524610844bc417c7f531cbebd8374b6bbb9fc",
+      "bytes": 1985173,
+      "release_date": "2016-11-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:16+00:00"
+    },
+    "2016-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2016-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/73666481z/2227mq03n/wasde-12-09-2016.xml",
+      "sha256": "121dbb56dbba0be1f983506fd011843cea4085259c823c50d3d453bc3b1e7375",
+      "bytes": 1985355,
+      "release_date": "2016-12-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-01": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-01.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/fb494882m/t722h9296/wasde-01-12-2017.xml",
+      "sha256": "8227aa8e012b11b6ac7c5c2daf84dd4e1406445732eed8642189daeeb8b71716",
+      "bytes": 1984935,
+      "release_date": "2017-01-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/79407x576/765371663/wasde-02-09-2017.xml",
+      "sha256": "fbcdccd2a50817bf6f9e2d78302cccaa5c3a4340928209e3279ea533d6405586",
+      "bytes": 1984764,
+      "release_date": "2017-02-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/wp988k138/t148fh50z/wasde-03-09-2017.xml",
+      "sha256": "a78fa148ba2405c98387fca3c6dde21e668714b8aad7caf08334db02239dd106",
+      "bytes": 1984166,
+      "release_date": "2017-03-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/t722h9253/70795797m/wasde-04-11-2017.xml",
+      "sha256": "2bf93bf07da9e2f5f8d2e2fe4acacfd63dc74b01794c21cea805f1b5576d0abd",
+      "bytes": 1983586,
+      "release_date": "2017-04-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/4m90dv88p/ms35t8973/wasde-05-10-2017.xml",
+      "sha256": "b5860d95450ddd52edaf4e5edf9dc4a19f8134870656805b2b42539295dd5a05",
+      "bytes": 1967062,
+      "release_date": "2017-05-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/df65v8181/k0698788d/wasde-06-09-2017.xml",
+      "sha256": "75551fcdfd56dffcc328f3bceaf86ab888e99202f0dee2c7915a42ba3044158f",
+      "bytes": 1970715,
+      "release_date": "2017-06-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/9g54xh96x/3484zh16k/wasde-07-12-2017.xml",
+      "sha256": "c0e05a45b1c23d5e3c5f5aa152b4c42b587355eea23821c6e2c9203dad604228",
+      "bytes": 1986555,
+      "release_date": "2017-07-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/8k71nh37b/vm40xr97t/wasde-08-10-2017.xml",
+      "sha256": "533e515cc8e5e6cdcd4f9dd12e71a0586eefb253518efb5b80586ecc061d5e7c",
+      "bytes": 1985541,
+      "release_date": "2017-08-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/br86b406q/3197xm48m/wasde-09-12-2017.xml",
+      "sha256": "9454049d9a487237a0990cedd3740c062e07bea230efe6ad0f0a05f920019cf8",
+      "bytes": 1985396,
+      "release_date": "2017-09-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/tm70mv56x/j6731418j/wasde-10-12-2017.xml",
+      "sha256": "3ce351911e0073652666c1fa2023231f36f55f4664504eff271b95f344ab00fc",
+      "bytes": 1985414,
+      "release_date": "2017-10-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/gm80hv76n/sq87bv02g/wasde-11-09-2017.xml",
+      "sha256": "ac283becc269b1c7aab8bdc78b58ab480ea53f274974690fbf8219a6d9dfdab3",
+      "bytes": 1985110,
+      "release_date": "2017-11-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2017-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2017-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/pn89d6834/nk322d76k/wasde-12-12-2017.xml",
+      "sha256": "acf493732002aa440e51f83367dd7a8c07d913f0bb8df6b77ae44b3b50578ec4",
+      "bytes": 1985305,
+      "release_date": "2017-12-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-01": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-01.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/8336h225g/0r9674034/wasde-01-12-2018.xml",
+      "sha256": "b2f9d9b56d65d5b6a03e8b76090a29e3d3a5b4e18a0d2acbe0066aaf4dade743",
+      "bytes": 1984806,
+      "release_date": "2018-01-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/ft848r05s/000000353/wasde-02-08-2018.xml",
+      "sha256": "dcf16df3613ef3d6dd9caaac0000bc251f250db728dd767271b1d693b31e8e4a",
+      "bytes": 1984633,
+      "release_date": "2018-02-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/z603qx71z/8s45q911z/wasde-03-08-2018.xml",
+      "sha256": "be80ef96b8ede3b0b72f65d3f2f436e572dca20573b56818421482d3f6885dc3",
+      "bytes": 1984028,
+      "release_date": "2018-03-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/wh246s51z/41687h85j/wasde-04-10-2018.xml",
+      "sha256": "6af80a0bd268d8812994eaaa27f73b209157dffa965be71822c86922db7a8faa",
+      "bytes": 1983273,
+      "release_date": "2018-04-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/5425kb078/pv63g0634/wasde-05-10-2018.xml",
+      "sha256": "0660d4acd83025c472247c6bd761c8d78a4e293da3fbb2bdf0513ffb7073f33f",
+      "bytes": 1967095,
+      "release_date": "2018-05-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/5d86p0623/w37637203/wasde-06-12-2018.xml",
+      "sha256": "a21271197bff81751ca224f67adbf1392349d0dac1604095db4b9d36296a4b81",
+      "bytes": 1970766,
+      "release_date": "2018-06-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/6682x426b/qv33rx12b/wasde-07-12-2018.xml",
+      "sha256": "4377d7abb8e16824dc6305a71fdb739dcc4cf7f00fd9c608a6984b7bc0a4ca54",
+      "bytes": 1986784,
+      "release_date": "2018-07-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/xw42n8302/gt54kn398/wasde-08-10-2018.xml",
+      "sha256": "354b4f273f5ce16b13210334e657b18d58ba7fe56195d411c6aec81b54316756",
+      "bytes": 1985649,
+      "release_date": "2018-08-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/4b29b6406/kd17ct22c/wasde-09-12-2018.xml",
+      "sha256": "51faa93d56056123a5ae6ba50c84196f8d10d3f270400db1b6727a25948d5b37",
+      "bytes": 1985433,
+      "release_date": "2018-09-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/m039k877c/9306t3267/WASDE-582-October-11-2018.xml",
+      "sha256": "ab3c38a3cbe9e9e72bf6dddce91f5fa7c5c0059b3cf61d14f4d4bc65abce837a",
+      "bytes": 1985577,
+      "release_date": "2018-10-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/g445ch502/qn59q730k/latest.xml",
+      "sha256": "68365287a3be10987cd49a50234d0bf541ed38c39d45b7c06ce192d471e00057",
+      "bytes": 1985314,
+      "release_date": "2018-11-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2018-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2018-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/4q77fw19m/9k41zj60m/latest.xml",
+      "sha256": "27ff2c80034616c654e2e46efbac801b751f539763178cd72ac6cd3ec3e2d00e",
+      "bytes": 3454224,
+      "release_date": "2018-12-14",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/nz806541q/hd76s5503/latest.xml",
+      "sha256": "ed858bfe33a24e7dc825700145a5daaf88a91fb816557e6621b55f9fba1e00ce",
+      "bytes": 1985359,
+      "release_date": "2019-02-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/0p096d888/gx41mr05x/latest.xml",
+      "sha256": "4f79c3659b7a5b54e59f81f729e9ff2068e74a6ccd678c4eef671757aab07f35",
+      "bytes": 1984238,
+      "release_date": "2019-03-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/m326m8891/dv1402049/latest.xml",
+      "sha256": "9cf5bd73c1c82c19f4ae325200dd5aa453d5c94a9e78387343c9d0968b7b159f",
+      "bytes": 1983463,
+      "release_date": "2019-04-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/7s75dn66b/ff365f42j/wasde0519.xml",
+      "sha256": "2be4441c1a7d4b49cc49ef260fb34c501e23a264d7b18f08a0649a9433da2a0d",
+      "bytes": 2014060,
+      "release_date": "2019-05-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/41687t15q/8g84mx14n/latest.xml",
+      "sha256": "7b48d03af3e221d8579f9251b31c300bbdbbe780485d96e34e95ac0e1fd3c01c",
+      "bytes": 2017484,
+      "release_date": "2019-06-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/ks65hp42q/f1881x55s/latest.xml",
+      "sha256": "a02b12699fb332e806eaed4b1a4da946dfdc8516dc853bb5717d4634cebe9897",
+      "bytes": 2033215,
+      "release_date": "2019-07-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/sf268h73q/t148fv74m/latest.xml",
+      "sha256": "c5454c20cd5346c7ad65b9e108061133cb02e03b7dabea5b5a6afb175bab8279",
+      "bytes": 2032164,
+      "release_date": "2019-08-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/gx41mw834/kk91fz919/latest.xml",
+      "sha256": "e84098b2edd2d01948c2480e3771dcc09ecca31d093afd3650ae717f5cd45696",
+      "bytes": 2032280,
+      "release_date": "2019-09-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/vd66wc47s/x633fd607/latest.xml",
+      "sha256": "a5a593c33a59cca7ae2e04d21fd9a0a262db73232834c51af7992efa554fb97a",
+      "bytes": 2032902,
+      "release_date": "2019-10-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/k930cb595/td96kg99w/latest.xml",
+      "sha256": "d57a2be34a292177b4f99859e7115eb0d0fc90f8cc4b02d998d9bddfd7b1491d",
+      "bytes": 2032160,
+      "release_date": "2019-11-08",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2019-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2019-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/1544c4419/rf55zp75w/latest.xml",
+      "sha256": "6fa47308af4dfdf3538688575536baa7940d65b3bc962f583b8a0eb604809287",
+      "bytes": 2032446,
+      "release_date": "2019-12-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-01": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-01.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/79408c82d/hq37w4529/latest.xml",
+      "sha256": "059276c25945613853172a82b362503dd992f04b9668736df6fcff9afe0b1fc7",
+      "bytes": 2032357,
+      "release_date": "2020-01-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-02": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-02.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/pz50hc74s/0z709d052/latest.xml",
+      "sha256": "84635719a6bb994a98b2b776d0e402c503cff608d6d51714b26b18da87bde7aa",
+      "bytes": 2031979,
+      "release_date": "2020-02-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-03": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-03.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/02871d57q/ht24x3049/latest.xml",
+      "sha256": "0e4c4652a563de5e5cbc886218642070879f1fd12efc95725e905c42ffc217cf",
+      "bytes": 2031380,
+      "release_date": "2020-03-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-04": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-04.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/q237jb60d/q524k6930/latest.xml",
+      "sha256": "a74a013792b023bbfd1d85fe755942c401959e104851485168501f730aefdf15",
+      "bytes": 2030724,
+      "release_date": "2020-04-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/w6634p60m/w0892x325/latest.xml",
+      "sha256": "57e432fde7998a8bb81b91f2c1e005728496d4abc5735774f462b6b5666755d7",
+      "bytes": 2014252,
+      "release_date": "2020-05-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/g158c396h/9g54z352j/latest.xml",
+      "sha256": "8a84bb9bdccba252d43abae1bf0c812241283f27aed90db3d783491aa179fa2d",
+      "bytes": 2017637,
+      "release_date": "2020-06-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-07": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-07.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/sb397x16q/8623jk67z/latest.xml",
+      "sha256": "2b0141d754bdf085f910441c9644ec4ef0ecef3a775ba47b032979e88cc9a57f",
+      "bytes": 2033544,
+      "release_date": "2020-07-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-08": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-08.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/gm80jj54x/ns064v77j/latest.xml",
+      "sha256": "fdcc212e77290f6197b09d02e82bb6535a2323a602118ce3b6ddece6d88e32b3",
+      "bytes": 2032536,
+      "release_date": "2020-08-12",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-09": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-09.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/dv140g79v/3f462v46c/latest.xml",
+      "sha256": "d9e7ffbb9945242207773101c6c29c703dcf1c8a0967ad9bec087417a50def70",
+      "bytes": 2032599,
+      "release_date": "2020-09-11",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-10": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-10.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/bk1292082/ff365w29p/latest.xml",
+      "sha256": "91b6ad1ff5c86636523e8cb7dcf646e88f9288da08e82b42e03c11baab2d6195",
+      "bytes": 2033128,
+      "release_date": "2020-10-09",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-11": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-11.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/6d570p50v/0r967v03g/latest.xml",
+      "sha256": "3539aafc07ee81033a80199251356e17f648b3c04282ab12966fa277e0379a1b",
+      "bytes": 2032463,
+      "release_date": "2020-11-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2020-12": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2020-12.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/3t945q76s/ft849g262/qn59qw57x/latest.xml",
+      "sha256": "ff216c746d513a6e9504348606eac7c8e8e6dbfbc92abb72a00af4e230f4d793",
+      "bytes": 2032785,
+      "release_date": "2020-12-10",
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-01": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-01.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-01.csv",
+      "sha256": "97de043d57311428fd97f0bc818d28caa49b7ab702dc63d0dda19dda8dedd611",
+      "bytes": 776676,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-02": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-02.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-02.csv",
+      "sha256": "2a9a3652a6070c6f783763baa84a879b26c1d7cf3f9febdcfed5fe391df400bc",
+      "bytes": 782268,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-03": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-03.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-03.csv",
+      "sha256": "56e243514492c6689c3210b9c3e790ea4ed338c781308ac0a32308e92d3f1868",
+      "bytes": 765469,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-04": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-04.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-04.csv",
+      "sha256": "d9b53ced9d775ce4fe791ca1dd1d10a8b049b1b6d8e028abca36aabac4a17c3c",
+      "bytes": 765440,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-05": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-05.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-05.csv",
+      "sha256": "18bb4d0e9791b4516783d569e0e41fb1cf78b94e8becaf405526bb5cfce78192",
+      "bytes": 953783,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-06": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-06.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-06.csv",
+      "sha256": "42703b936e220e36608aefb3c37491e903fd5f9ee916cc5e7f7edb1eb03c00eb",
+      "bytes": 959378,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-07": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-07.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-07.csv",
+      "sha256": "79177041ebfca324ebbe0a24dbb585dd464e446e12c00357c2e05437861d0f3e",
+      "bytes": 968095,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-08": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-08.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-08.csv",
+      "sha256": "fd12efc19d48d2abb791460cb6b681a4973c4c6c499160be9bc1593c56dd9402",
+      "bytes": 979363,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-09": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-09.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-09.csv",
+      "sha256": "ab03e8474ad438b73492d141c5319db68e902bf2a0b04b76497e3f3bfcf21c76",
+      "bytes": 996269,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-10": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-10.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-10.csv",
+      "sha256": "f8f9f619a52c6698081032ddad974db6920ff3b78dbdfe6e54f532172d247acd",
+      "bytes": 989974,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-11": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-11.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-11.csv",
+      "sha256": "d19da221bc1e5639994eb7ab1f7d6c00ef952fc5b71a8ab337644f2857e38831",
+      "bytes": 794859,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2021-12": {
+      "source": "usda_csv",
+      "file": "usda_csv/2021-12.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2021-12.csv",
+      "sha256": "6a5e31cf3788fdd48f188f3d9261728f17f441d0b12a7727ec935ef74ff8b086",
+      "bytes": 995606,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-01": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-01.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-01.csv",
+      "sha256": "6f47150a013611cf9956cf19a27c8ae7a70b7eb0381354a6601c15ddd58bbf1c",
+      "bytes": 984827,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-02": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-02.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-02.csv",
+      "sha256": "a4bcc1284d25779b24f194b80d938b1d2020f9fa486d87612daf8641ede556b6",
+      "bytes": 990443,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-03": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-03.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-03.csv",
+      "sha256": "44ef24029652393eac5ac0b078a3999653e7e038ce979c77db96693bd573ec48",
+      "bytes": 973510,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-04": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-04.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-04.csv",
+      "sha256": "99f0ed99e4f83af9a2cfaf276005c1a98e6301bfac24c29b6dc54461c2615489",
+      "bytes": 973484,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-05": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-05.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-05.csv",
+      "sha256": "bd67790fd8c4fdb5567ddd85e090f8d900e1a8931fa29ae3aad6522bd8ef8655",
+      "bytes": 952534,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-06": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-06.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-06.csv",
+      "sha256": "8c6aaacd36168aa28c9f9c11fe9c3aea8570f49822e6b207fa97c22d0741dff3",
+      "bytes": 958131,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-07": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-07.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-07.csv",
+      "sha256": "203421046b9d3712aaf5da7fc8036bc82851109315e6414766469f5ffda9e028",
+      "bytes": 966831,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-08": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-08.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-08.csv",
+      "sha256": "3cef4a99dd5cd2bff1c4bf14e717f061fb93bdfb638f30d227c6075efa5cc252",
+      "bytes": 978101,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-09": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-09.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-09.csv",
+      "sha256": "059abb11c127c4165006d012bd659a50a9b6f5f7eabba933e88886e18183e540",
+      "bytes": 994981,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-10": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-10.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-10.csv",
+      "sha256": "2a10fb1353a3119352776282fccce17b7015cfce154361d1764a48d01505a4f3",
+      "bytes": 988690,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-11": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-11.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-11.csv",
+      "sha256": "bf924ac77e945baf6ee02641f9c423eb52aef5662ad1d11cd656249d12f62cf2",
+      "bytes": 994318,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2022-12": {
+      "source": "usda_csv",
+      "file": "usda_csv/2022-12.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2022-12.csv",
+      "sha256": "de3a08249ba6cce1074d0bc6b9c7e0af9fdbd7c16de8efaf9316e1ae98a8eb12",
+      "bytes": 994310,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2023-01": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-01.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-01.csv",
+      "sha256": "232299f407b45aff9030a071cebc85cfb9bc342ccb77d8928c1b9df52ff3b549",
+      "bytes": 983553,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2023-02": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-02.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-02.csv",
+      "sha256": "4d8426eeb40bcc8a820f7411e90cec7a33b7e2e03088f5e5626f83db6c4619e4",
+      "bytes": 989162,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:17+00:00"
+    },
+    "2023-03": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-03.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-03.csv",
+      "sha256": "9b8842bb335103beb2270ebc66aa5abba00f739cbdfbbcfffc9a2f3bdf6a15be",
+      "bytes": 972374,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2023-04": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-04.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-04.csv",
+      "sha256": "f705b2e8f5388159812317508771ce9433c75704e6c84fe4611b93b8c4de4f71",
+      "bytes": 972340,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2023-05": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-05.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-05.csv",
+      "sha256": "e7384e79f0a4ceaa59bb06c808c15e58e31c9a732922cd574c730c5a8c92be68",
+      "bytes": 957401,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2023-06": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-06.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-06.csv",
+      "sha256": "486fa51ae524086cff1f91a9b9e055d7e54dd0bc0ce2ab0c916c9881a54947ee",
+      "bytes": 963023,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2023-07": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-07.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-07.csv",
+      "sha256": "abdbfa20a79be73a04bb5b0484ff9bb63a3a8eae953e45889563a599e50e5307",
+      "bytes": 976528,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2023-08": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-08.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-08.csv",
+      "sha256": "2397541413967847a06bb49e9129e56d24839eeda2d47b9287643879b91a29dd",
+      "bytes": 987907,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2023-09": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-09.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-09.csv",
+      "sha256": "ffbdfce60e7b02c6d0bb407ae52e1872918bccd56473921223c36ce2885a8ec1",
+      "bytes": 1004942,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2023-10": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-10.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-10.csv",
+      "sha256": "59905f5c4ebe6f247c6d2c92a2f2c2e697e15013a9da4a3f31402c5e32c9e6d0",
+      "bytes": 998596,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2023-11": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-11.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-11.csv",
+      "sha256": "6eaeec7577af66c16d8950ec4adca815f69eb502697a1f229e5065da39491da9",
+      "bytes": 1004265,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2023-12": {
+      "source": "usda_csv",
+      "file": "usda_csv/2023-12.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2023-12.csv",
+      "sha256": "dc54139bc20db03f780d453d176a7e449652f3d8586bd5864beb1f681136f12f",
+      "bytes": 1004265,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-01": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-01.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-01.csv",
+      "sha256": "72ca5de6f01c0529718b685af9d09593f1ab6f15a83bcd6b86fa43a00612cd36",
+      "bytes": 993414,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-02": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-02.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-02.csv",
+      "sha256": "27a4d80ec703cc29a2604e7ae5b78fb04213bcad480c1c4ee18caee0bd112887",
+      "bytes": 999070,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-03": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-03.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-03.csv",
+      "sha256": "878516fd1bd948c5d34920828cea7e715a99d90751170c6e9ea09495cc1f0041",
+      "bytes": 982010,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-04": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-04.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-04.csv",
+      "sha256": "66fb4c3fadc703b9bfde8d28ddc3b2de1336c3e3f77cfc5eab2a03cb570860e4",
+      "bytes": 981987,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-05": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-05.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-05.csv",
+      "sha256": "510ddacd5cf632b35846c5c6f2b06c425f703aee69bddcb0312f33b0fb073457",
+      "bytes": 957434,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-06": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-06.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-06.csv",
+      "sha256": "d161c65be2ff79e2c8f9807a2808cd14895b719fa67bc446106233f8fbc9b089",
+      "bytes": 963055,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-07": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-07.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-07.csv",
+      "sha256": "f995201cc9cec8fd0284a49193f563c7fb9a434d1d2a83a3a229f23865c2b468",
+      "bytes": 976547,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-08": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-08.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-08.csv",
+      "sha256": "393b60eb447e1640280ecb2243516457dd3292de3ca03c758bb5019bd15dd13c",
+      "bytes": 987912,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-09": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-09.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-09.csv",
+      "sha256": "a23fb1c975bbb71d63236533bd91fffd2f08780117332ecd69b4587fdf34c2a8",
+      "bytes": 1004937,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-10": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-10.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-10.csv",
+      "sha256": "2dbf75cf111749da6cce25d74fcab1d444afbf14efbcb0e02e06b832d7c4ca5d",
+      "bytes": 998608,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-11": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-11.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-11.csv",
+      "sha256": "9167822a972211e246e763ba628748697e4a0dfe98ebb2b7aacd3c4a6c8b729d",
+      "bytes": 1004267,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2024-12": {
+      "source": "usda_csv",
+      "file": "usda_csv/2024-12.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2024-12.csv",
+      "sha256": "29e8bfbfe57e72f1e70e8f8367498f35f3cb8ccd6b33e0ec683e66d40e332a74",
+      "bytes": 1004269,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-01": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-01.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-01.csv",
+      "sha256": "7a7be1d6d9b74f87e16b2c777db57d4c2834f1741ba73696be939bf52dcb58eb",
+      "bytes": 993417,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-02": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-02.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-02.csv",
+      "sha256": "d6ff919eca4cbc809a71a6fc962cf082cbf76d0fc2041a1a8d45a94cc89bfbe2",
+      "bytes": 999079,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-03": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-03.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-03.csv",
+      "sha256": "a982e6bdfe5c1603b0f24b814c3d90e424e8ee4dece0f78e64163fb21fb34ce4",
+      "bytes": 982025,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-04": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-04.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-04.csv",
+      "sha256": "1549593e0d3c5c8afa538decc118fd4e283491652ecdbfc326ac4e1e69747262",
+      "bytes": 982004,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-05": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-05.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-05.csv",
+      "sha256": "4c08fdf3657a854d2100bb7dfead186fb1ea26be208e137c52619707cc060987",
+      "bytes": 957445,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-06": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-06.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-06.csv",
+      "sha256": "e0bed22b0b08eaa361e16649918952a5b13b388a300c9fc528636ebda7e86924",
+      "bytes": 963058,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-07": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-07.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-07.csv",
+      "sha256": "af215ba7ca48302779756b07a65e29473f86437d6cda9fbe16f1bcd66f83708c",
+      "bytes": 976568,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-08": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-08.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-08.csv",
+      "sha256": "c3124dcf818a156da19ce03af365c18e0d0eaa3348a03f6188a5d8fdd3da7d8f",
+      "bytes": 987928,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-09": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-09.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-09.csv",
+      "sha256": "2e5dfdb0d31f1619ceeba99122369514497c6bfa63522900b89e7af2ae675649",
+      "bytes": 1004960,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:18+00:00"
+    },
+    "2025-11": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-11.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-11.csv",
+      "sha256": "896385bbf592ec74e9b9b581bc5969597f719b5dbf84d59905cc6cc1c5587156",
+      "bytes": 1004315,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:19+00:00"
+    },
+    "2025-12": {
+      "source": "usda_csv",
+      "file": "usda_csv/2025-12.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2025-12.csv",
+      "sha256": "cfad35ab09e17453509606dfa224ebf18af26536220397180c610000160d0188",
+      "bytes": 1004318,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:19+00:00"
+    },
+    "2026-01": {
+      "source": "usda_csv",
+      "file": "usda_csv/2026-01.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2026-01.csv",
+      "sha256": "8dce8b1f4cbbe6e98bd320b9ad03a279ee30194b11481de11fb7c78d2791981a",
+      "bytes": 993460,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:19+00:00"
+    },
+    "2026-02": {
+      "source": "usda_csv",
+      "file": "usda_csv/2026-02.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2026-02.csv",
+      "sha256": "aca52f3e755c678a7c584b84bd3bd806b7771247bb90e0c67dd675d570714d5e",
+      "bytes": 999122,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:19+00:00"
+    },
+    "2026-03": {
+      "source": "usda_csv",
+      "file": "usda_csv/2026-03.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2026-03.csv",
+      "sha256": "b2fbd43ecb19874489026a5adad3754105a090db5f73d442561e32d8bfe320eb",
+      "bytes": 982061,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:19+00:00"
+    },
+    "2026-04": {
+      "source": "usda_csv",
+      "file": "usda_csv/2026-04.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2026-04.csv",
+      "sha256": "e544c0008457894ce4895078afc62874c423c945837cb968d61536231c9b2574",
+      "bytes": 982032,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:19+00:00"
+    },
+    "2026-05": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2026-05.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/795903/wasde0526v2.xml",
+      "sha256": "83ac69b267eaea8904bb10ede3be3c7ac74f5050480b95d5079eaa9555794f9d",
+      "bytes": 2024303,
+      "release_date": "2026-05-12",
+      "version": 2,
+      "fetched_at": "2026-11-07T02:31:32+00:00"
+    },
+    "2026-06": {
+      "source": "esmis_xml",
+      "file": "esmis_xml/2026-06.xml",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/795937/wasde0626v2.xml",
+      "sha256": "7f17badc30b1385b2a67bbc45d37c2fbe20378cf1feec89b0f977701597fb314",
+      "bytes": 2027757,
+      "release_date": "2026-06-11",
+      "version": 2,
+      "fetched_at": "2026-11-07T02:31:32+00:00"
+    },
+    "2026-07": {
+      "source": "usda_csv",
+      "file": "usda_csv/2026-07.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2026-07.csv",
+      "sha256": "468a6b27a832c05054a73a4ac0fe68e6278f1e89bf25f9327c806b95bf54c4b8",
+      "bytes": 976608,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:22+00:00"
+    },
+    "2026-08": {
+      "source": "usda_csv",
+      "file": "usda_csv/2026-08.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2026-08.csv",
+      "sha256": "7611d70293fdfe403b53cb42a9fd16fbbc760584e52843917aca4b05750584d9",
+      "bytes": 987981,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:22+00:00"
+    },
+    "2026-09": {
+      "source": "usda_csv",
+      "file": "usda_csv/2026-09.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2026-09.csv",
+      "sha256": "8b492fe4a50b5b1de1601856acbecdc88e9f859bb1ec5ab15518f40ae4682344",
+      "bytes": 1005019,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:22+00:00"
+    },
+    "2026-10": {
+      "source": "usda_csv",
+      "file": "usda_csv/2026-10.csv",
+      "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2026-10.csv",
+      "sha256": "8695eab7454f9a445ae3c23d699c8f9bb681461839c1ea038bd15d45f7037638",
+      "bytes": 998693,
+      "release_date": null,
+      "version": 1,
+      "fetched_at": "2026-11-07T02:30:22+00:00"
+    }
+  }
+}
