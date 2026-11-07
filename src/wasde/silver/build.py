@@ -33,7 +33,9 @@ class SilverContractError(ValueError):
     pass
 
 
-def parse_report(month: str, path: Path, source: str, release_date: str | None, layout: XmlLayout) -> pd.DataFrame:
+def parse_report(
+    month: str, path: Path, source: str, release_date: str | None, layout: XmlLayout
+) -> pd.DataFrame:
     if source == "usda_csv":
         return parse_csv(path, month)
     rd = date.fromisoformat(release_date) if release_date else None
@@ -54,7 +56,10 @@ def validate(silver: pd.DataFrame, min_rows: int) -> None:
     if len(small):
         errors.append(f"reports below {min_rows} rows: {small.to_dict()}")
     present = set(
-        silver.loc[silver["period"] == "annual", ["report_month", "table_id", "commodity_id", "region_id", "attribute_id"]]
+        silver.loc[
+            silver["period"] == "annual",
+            ["report_month", "table_id", "commodity_id", "region_id", "attribute_id"],
+        ]
         .drop_duplicates()
         .itertuples(index=False, name=None)
     )
@@ -71,7 +76,9 @@ def build_silver(settings: Settings, manifest: Manifest) -> pd.DataFrame:
     vocab = Vocabulary.load(settings.config_dir / "mappings.yaml")
     frames = []
     for month, entry in sorted(manifest.reports.items()):
-        raw = parse_report(month, settings.bronze_dir / entry.file, entry.source, entry.release_date, layout)
+        raw = parse_report(
+            month, settings.bronze_dir / entry.file, entry.source, entry.release_date, layout
+        )
         if raw["release_date"].isna().all() and entry.release_date:
             raw["release_date"] = date.fromisoformat(entry.release_date)
         frames.append(raw)
@@ -97,7 +104,9 @@ def build_silver(settings: Settings, manifest: Manifest) -> pd.DataFrame:
     return silver
 
 
-def _write_unmapped(path: Path, unmapped: pd.DataFrame, raw: pd.DataFrame, vocab: Vocabulary) -> None:
+def _write_unmapped(
+    path: Path, unmapped: pd.DataFrame, raw: pd.DataFrame, vocab: Vocabulary
+) -> None:
     """Record unmapped labels with the first month they appeared (drives new-label alerts)."""
     first_seen: dict[str, str] = {}
     for row in unmapped.itertuples(index=False):

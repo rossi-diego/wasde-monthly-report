@@ -11,7 +11,7 @@ tables:
   U.S. Wheat Supply and Use: {id: us_wheat, label: U.S. Wheat}
   "U.S. Wheat by Class: Supply and Use": {id: us_wheat_by_class, label: U.S. Wheat by Class}
   U.S. Feed Grain and Corn Supply and Use: {id: us_feed_grains_corn, label: U.S. Feed Grains & Corn}
-  U.S. Sorghum, Barley, and Oats Supply and Use: {id: us_sorghum_barley_oats, label: U.S. Sorghum, Barley & Oats}
+  U.S. Sorghum, Barley, and Oats Supply and Use: {id: us_sorghum_barley_oats, label: "U.S. Sorghum, Barley & Oats"}
   U.S. Rice Supply and Use: {id: us_rice, label: U.S. Rice}
   U.S. Soybeans and Products Supply and Use (Domestic Measure): {id: us_soybeans_products, label: U.S. Soybeans & Products}
   U.S. Sugar Supply and Use: {id: us_sugar, label: U.S. Sugar}

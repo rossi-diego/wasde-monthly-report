@@ -82,7 +82,9 @@ def latest_due(dates: list[date], now_utc: datetime) -> date | None:
     return due[-1] if due else None
 
 
-def is_overdue(dates: list[date], now_utc: datetime, ingested_months: set[str], grace_days: int = 3) -> date | None:
+def is_overdue(
+    dates: list[date], now_utc: datetime, ingested_months: set[str], grace_days: int = 3
+) -> date | None:
     """Return the scheduled date if its report is still missing ``grace_days`` after release."""
     d = latest_due(dates, now_utc)
     if d is None or f"{d:%Y-%m}" in ingested_months:

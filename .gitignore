@@ -44,3 +44,4 @@ dbt/dbt_packages/
 .DS_Store
 Thumbs.db
 dbt/.user.yml
+web/next-env.d.ts

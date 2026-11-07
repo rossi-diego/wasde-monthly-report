@@ -32,7 +32,9 @@ def sha256(data: bytes) -> str:
 def looks_like_xml(data: bytes) -> bool:
     """True for an XML document (tolerates a UTF-8 BOM); False for HTML error pages."""
     head = data.lstrip(b"\xef\xbb\xbf \r\n\t")[:200].lower()
-    return head.startswith(b"<?xml") or (head.startswith(b"<") and not head.startswith(b"<!doctype html") and b"<html" not in head)
+    return head.startswith(b"<?xml") or (
+        head.startswith(b"<") and not head.startswith(b"<!doctype html") and b"<html" not in head
+    )
 
 
 def _now() -> str:

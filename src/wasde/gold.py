@@ -31,8 +31,24 @@ def run_dbt(settings: Settings, command: str = "build") -> int:
         "--quiet" if command == "build" else "--no-quiet",
     ]
     result = dbtRunner().invoke(args)
+    _release_connections()
     ok = bool(result.success)
     log.info("gold.dbt", command=command, success=ok, duckdb=str(settings.duckdb_path))
     if not ok and result.exception:
         log.error("gold.dbt_exception", error=str(result.exception))
     return 0 if ok else 1
+
+
+def _release_connections() -> None:
+    """dbt-duckdb keeps its DuckDB handle alive in-process; release it so later steps
+    (publish, tests) can open the same file."""
+    try:
+        from dbt.adapters.factory import cleanup_connections, reset_adapters
+
+        cleanup_connections()
+        reset_adapters()
+    except Exception:  # pragma: no cover - best effort across dbt versions
+        log.debug("gold.release_failed")
+    import gc
+
+    gc.collect()

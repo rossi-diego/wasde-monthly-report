@@ -4,7 +4,8 @@ with base as (
     select
         report_month, report_date, report_seq, series_key,
         table_id, commodity_id, region_id, attribute_id, market_year, my_start,
-        proj_est_flag, value, unit_id
+        proj_est_flag, value, unit_id,
+        commodity_label, region, attribute_label, unit_label
     from {{ ref('fct_wasde') }}
     where period = 'annual' and reliability_stat is null
 ),

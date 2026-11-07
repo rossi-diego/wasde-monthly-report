@@ -76,7 +76,9 @@ def refresh_calendar() -> None:
 
 @app.command()
 def detect(
-    force_month: Annotated[str | None, typer.Option(help="Ingest this YYYY-MM regardless of calendar")] = None,
+    force_month: Annotated[
+        str | None, typer.Option(help="Ingest this YYYY-MM regardless of calendar")
+    ] = None,
 ) -> None:
     """Ingest the latest scheduled report if it is out and not yet in bronze.
 
@@ -98,7 +100,11 @@ def detect(
     _gh_output(overdue="true" if overdue else "false")
 
     if month is None or (month in manifest.reports and not force_month):
-        log.info("detect.nothing_new", latest_due=str(due), have=month in manifest.reports if month else None)
+        log.info(
+            "detect.nothing_new",
+            latest_due=str(due),
+            have=month in manifest.reports if month else None,
+        )
         _gh_output(new_report="false", report_month=month or "")
         return
 
@@ -120,7 +126,9 @@ def detect(
 
 @app.command("learn-xml-layout")
 def learn_xml_layout(
-    seed_dir: Annotated[Path, typer.Option(help="Folder with ESMIS XML files overlapping the CSV era")],
+    seed_dir: Annotated[
+        Path, typer.Option(help="Folder with ESMIS XML files overlapping the CSV era")
+    ],
 ) -> None:
     """Re-learn config/xml_layout from months where both CSV and XML exist."""
     from wasde.bronze import find_seed_files
@@ -140,7 +148,9 @@ def learn_xml_layout(
     units = learn_units(parse_csv(p, m) for m, p in sorted(csvs.items()))
     folder = s.config_dir / "xml_layout"
     old = XmlLayout.load(folder) if (folder / "positions.csv").exists() else None
-    layout = XmlLayout(tables["positions"], tables["position_attributes"], tables["attributes"], units)
+    layout = XmlLayout(
+        tables["positions"], tables["position_attributes"], tables["attributes"], units
+    )
     if old:
         layout.title_aliases, layout.commodity_aliases = old.title_aliases, old.commodity_aliases
     layout.save(folder)
@@ -160,7 +170,9 @@ def build_silver_cmd() -> None:
     fresh = new_labels_in(s.silver_dir / "unmapped_labels.json", latest)
     if fresh:
         log.error("silver.new_labels", month=latest, labels=fresh)
-        typer.echo("New unmapped labels in the latest report; add them to config/mappings.yaml:", err=True)
+        typer.echo(
+            "New unmapped labels in the latest report; add them to config/mappings.yaml:", err=True
+        )
         for label in fresh:
             typer.echo(f"  - {label}", err=True)
         raise typer.Exit(3)
@@ -177,7 +189,9 @@ def build_gold_cmd() -> None:
 
 @app.command()
 def publish(
-    tag: Annotated[str | None, typer.Option(help="Data release tag recorded in the manifest")] = None,
+    tag: Annotated[
+        str | None, typer.Option(help="Data release tag recorded in the manifest")
+    ] = None,
 ) -> None:
     """Write web JSON + Excel/Parquet/CSV download files from gold."""
     from wasde.manifest import Manifest
@@ -191,7 +205,9 @@ def publish(
 
 @app.command()
 def run(
-    tag: Annotated[str | None, typer.Option(help="Data release tag recorded in the manifest")] = None,
+    tag: Annotated[
+        str | None, typer.Option(help="Data release tag recorded in the manifest")
+    ] = None,
 ) -> None:
     """silver → gold → publish."""
     build_silver_cmd()

@@ -29,7 +29,6 @@ dependencies = [
 dbt = ["dbt-duckdb>=1.8"]
 dev = [
     "mypy>=1.11",
-    "pandas-stubs>=2.2",
     "pytest>=8.3",
     "pytest-cov>=5.0",
     "respx>=0.21",
@@ -55,7 +54,7 @@ src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP", "B", "SIM", "RUF"]
-ignore = ["RUF001", "RUF002", "RUF003"]
+ignore = ["E501", "RUF001", "RUF002", "RUF003"]  # line length is owned by `ruff format`
 
 [tool.mypy]
 python_version = "3.11"

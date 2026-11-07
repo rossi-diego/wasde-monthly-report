@@ -124,7 +124,9 @@ class XmlLayout:
 
         aliases_path = folder / "aliases.yaml"
         aliases = (
-            yaml.safe_load(aliases_path.read_text(encoding="utf-8")) if aliases_path.exists() else {}
+            yaml.safe_load(aliases_path.read_text(encoding="utf-8"))
+            if aliases_path.exists()
+            else {}
         ) or {}
         return cls(
             positions=read("positions"),
@@ -146,7 +148,10 @@ class XmlLayout:
     def _lookups(self) -> None:
         if hasattr(self, "_pos"):
             return
-        self._pos = {tuple(r[:4]): tuple(r[4:7]) for r in self.positions[[*POS, *TARGET]].itertuples(index=False)}
+        self._pos = {
+            tuple(r[:4]): tuple(r[4:7])
+            for r in self.positions[[*POS, *TARGET]].itertuples(index=False)
+        }
         self._pos_attr = {
             tuple(r[:5]): tuple(r[5:8])
             for r in self.position_attributes[[*POS, "xattr", *TARGET]].itertuples(index=False)
@@ -155,7 +160,10 @@ class XmlLayout:
         self._group3: dict[tuple, tuple[str, str, str | None]] = {}
         self._group2: dict[tuple, tuple[str, str, str | None]] = {}
         pos = self.positions.assign(votes=pd.to_numeric(self.positions["votes"]))
-        for keys, store in ((["xtitle", "matrix", "xcom"], self._group3), (["xtitle", "matrix"], self._group2)):
+        for keys, store in (
+            (["xtitle", "matrix", "xcom"], self._group3),
+            (["xtitle", "matrix"], self._group2),
+        ):
             for k, g in pos.groupby(keys):
                 tc = g.groupby(["report_title", "commodity"])["votes"].sum().sort_values()
                 if tc.iloc[-1] / tc.sum() < 0.95:
@@ -167,25 +175,33 @@ class XmlLayout:
                     com,
                     regions[0] if len(regions) == 1 else None,
                 )
-        self._attr = {(r.report_title, r.xattr): r.attribute for r in self.attributes.itertuples(index=False)}
-        vocab = collections.defaultdict(collections.Counter)
+        self._attr = {
+            (r.report_title, r.xattr): r.attribute for r in self.attributes.itertuples(index=False)
+        }
+        vocab: dict[str, collections.Counter[str]] = collections.defaultdict(collections.Counter)
         for r in self.attributes.itertuples(index=False):
             vocab[label_key(r.xattr)][r.attribute] += int(r.votes or 1)
         for a in self.units["attribute"].unique():
             vocab[label_key(a)][a] += 1
         self._attr_vocab = {k: c.most_common(1)[0][0] for k, c in vocab.items()}
         u = self.units
-        self._unit3 = {(r.report_title, r.commodity, r.attribute): r.unit for r in u.itertuples(index=False)}
+        self._unit3 = {
+            (r.report_title, r.commodity, r.attribute): r.unit for r in u.itertuples(index=False)
+        }
         self._unit2 = (
-            u.groupby(["report_title", "attribute"])["unit"].agg(lambda s: s.mode().iat[0]).to_dict()
+            u.groupby(["report_title", "attribute"])["unit"]
+            .agg(lambda s: s.mode().iat[0])
+            .to_dict()
         )
         per_title = u.groupby("report_title")["unit"].agg(lambda s: s.unique().tolist())
         self._unit1 = {t: us[0] for t, us in per_title.items() if len(us) == 1}
 
-    def _map_position(self, xtitle: str, matrix: str, xcom: str, xreg: str, xattr: str) -> tuple | None:
+    def _map_position(
+        self, xtitle: str, matrix: str, xcom: str, xreg: str, xattr: str
+    ) -> tuple | None:
         xtitle = self.title_aliases.get(xtitle, xtitle)
         xcom = self.commodity_aliases.get(xcom, xcom)
-        hit =self._pos_attr.get((xtitle, matrix, xcom, xreg, xattr)) or self._pos.get(
+        hit = self._pos_attr.get((xtitle, matrix, xcom, xreg, xattr)) or self._pos.get(
             (xtitle, matrix, xcom, xreg)
         )
         if hit:

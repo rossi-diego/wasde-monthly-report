@@ -16,6 +16,7 @@ import re
 from dataclasses import dataclass
 from datetime import date
 from pathlib import Path
+from typing import Protocol
 
 import pandas as pd
 from lxml import etree
@@ -164,6 +165,5 @@ def parse_xml(
     return mapped[RAW_COLUMNS].reset_index(drop=True)
 
 
-class XmlLayoutProtocol:  # pragma: no cover - structural typing helper
-    def apply(self, frame: pd.DataFrame) -> pd.DataFrame:
-        raise NotImplementedError
+class XmlLayoutProtocol(Protocol):
+    def apply(self, frame: pd.DataFrame) -> pd.DataFrame: ...

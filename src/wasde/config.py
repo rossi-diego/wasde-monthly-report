@@ -32,9 +32,7 @@ class Settings(BaseSettings):
     user_agent: str = BROWSER_USER_AGENT
     http_timeout_s: float = 90.0
 
-    usda_csv_url: str = (
-        "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-{year}-{month:02d}.csv"
-    )
+    usda_csv_url: str = "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-{year}-{month:02d}.csv"
     usda_calendar_url: str = (
         "https://www.usda.gov/about-usda/general-information/staff-offices/"
         "office-chief-economist/commodity-markets/wasde-report"

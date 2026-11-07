@@ -110,7 +110,9 @@ def harmonize(raw: pd.DataFrame, vocab: Vocabulary) -> tuple[pd.DataFrame, pd.Da
     # Exact repeats (same key and value, e.g. a country listed twice in old XML) are dropped.
     df = df.drop_duplicates([*SILVER_KEY, "value"]).copy()
     dup = df.groupby(SILVER_KEY, sort=False).cumcount()
-    df.loc[dup > 0, "attribute_id"] = df.loc[dup > 0, "attribute_id"] + "_" + (dup[dup > 0] + 1).astype(str)
+    df.loc[dup > 0, "attribute_id"] = (
+        df.loc[dup > 0, "attribute_id"] + "_" + (dup[dup > 0] + 1).astype(str)
+    )
 
     report = (
         pd.DataFrame(unmapped, columns=["kind", "label"]).drop_duplicates().reset_index(drop=True)
