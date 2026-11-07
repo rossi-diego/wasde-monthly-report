@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-07T02:58:49+00:00",
+  "updated_at": "2026-11-07T03:10:22+00:00",
   "latest_report": "2026-10",
   "latest_wasde_number": 676,
-  "data_release_tag": null,
+  "data_release_tag": "data-2026-10",
   "total_rows": 849133,
   "reports": {
     "2010-07": {

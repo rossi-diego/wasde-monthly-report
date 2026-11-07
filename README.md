@@ -1,151 +1,179 @@
-# WASDE Dashboard
+# WASDE Tracker
 
 [![CI](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/ci.yml/badge.svg)](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/ci.yml)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
+[![WASDE release](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/release.yml/badge.svg)](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/release.yml)
+[![Latest data](https://img.shields.io/github/v/release/rossi-diego/wasde-monthly-report?label=latest%20WASDE&color=14532d)](https://github.com/rossi-diego/wasde-monthly-report/releases/latest)
+![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
+![dbt-duckdb](https://img.shields.io/badge/dbt-duckdb-orange)
+![Next.js 16](https://img.shields.io/badge/Next.js-16-black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Production-grade data pipeline and REST API for USDA agricultural supply & demand data. Ingests three sources monthly through a Bronze → Silver → Gold medallion architecture, stores the final layer in DuckDB, and serves it via FastAPI.
+**Every USDA WASDE report since July 2010, as one harmonized table — updated automatically
+on release day, and turned into the view a trading desk actually needs: what changed, why,
+and where fundamentals sit versus history.**
 
-> **Experimental metrics.** `gold_export_pace` (pace vs. USDA target) and the stocks-to-use ratio in `gold_supply_demand` have known methodology issues under revision: export pace sums net sales across marketing years against a non-US target, and stocks-to-use uses domestic use only instead of total use. Treat both as experimental until the fix lands.
+🔗 **Live site:** https://wasde-tracker.vercel.app · 📦 **Data:** [latest release](https://github.com/rossi-diego/wasde-monthly-report/releases/latest)
+
+![This report](docs/screenshots/home-light.png)
 
 ---
+
+## Why this exists
+
+The USDA's *World Agricultural Supply and Demand Estimates* (WASDE) is the monthly reference
+balance sheet for grains, oilseeds, cotton, sugar and livestock. Markets move on it within
+seconds of 12:00 ET. What matters is not the snapshot but the **revision**: how USDA's view
+of a marketing year changed versus last month, which line drove it, and whether stocks are
+tight or loose by historical standards.
+
+USDA publishes isolated monthly files with shifting labels and formats (machine-readable CSV
+only since 2021; XML before that). Building the vintage history by hand is tedious and
+error-prone. This project does it end to end:
+
+| Question a desk asks | Where it's answered |
+|---|---|
+| What changed in today's report? | Ranked **headlines** with drivers, streaks and stocks-to-use |
+| Why did ending stocks move? | **Waterfall**: beginning stocks, area/yield, imports, use, exports |
+| How has USDA's estimate evolved? | **Revision paths** aligned on the crop cycle, vs previous years |
+| Is this tight or loose? | **Stocks-to-use history** since 2008/09 with percentile |
+| Can I get it in Excel? | Latest report workbook, per-commodity history, filtered exports |
 
 ## Architecture
 
+```mermaid
+flowchart LR
+    subgraph Sources
+        A[USDA OCE CSV<br/>2021+]
+        B[ESMIS API + XML<br/>2010-07+]
+        C[usda.gov<br/>release calendar]
+    end
+    subgraph Pipeline["Python package · GitHub Actions"]
+        D[detect<br/>calendar-driven]
+        E[bronze<br/>raw files + sha256]
+        F[silver<br/>parse + harmonize<br/>data contracts]
+        G[gold<br/>dbt-duckdb models + tests]
+        H[publish<br/>JSON · Parquet · Excel]
+    end
+    subgraph Serve
+        I[GitHub Release<br/>versioned data]
+        J[Next.js static site<br/>on Vercel]
+    end
+    K[monitor<br/>healthchecks.io · issue · live e2e]
+    C --> D --> E
+    A --> E
+    B --> E
+    E --> F --> G --> H --> I
+    H --> J --> K
 ```
-DATA SOURCES                  BRONZE              SILVER              GOLD               API
-                              (raw Parquet)       (cleaned Parquet)   (DuckDB tables)    (FastAPI)
 
-USDA FAS PSD API ──────────►  psd.parquet   ───►  psd.parquet   ───►  gold_supply_demand
-  (supply/demand)                                                     gold_export_pace   ──► /v1/supply-demand
-                                                                                          ──► /v1/exports/pace
-NOPA Monthly Crush ────────►  nopa.parquet  ───►  nopa.parquet  ───►  gold_nopa_crush    ──► /v1/nopa/crush
+**Monthly flow.** A scheduled workflow reads the official release calendar and polls from
+12:00 ET on release day. When the new report appears it ingests it (CSV first, ESMIS XML as
+fallback), rebuilds silver and gold deterministically from all bronze files, runs the dbt data
+tests, publishes a **versioned GitHub release** (`data-YYYY-MM`) with every file, deploys the
+site, and checks the live URL shows the new report. Skipped months (government shutdowns) are
+not failures; a report missing 3 days after its scheduled date is.
 
-USDA FAS Export Sales ─────►  exports.parquet ─►  exports.parquet ─►  gold_export_pace   ──► /v1/exports/pace
+### Key engineering decisions
 
-USDA WASDE CSV ────────────►  wasde/*.parquet ─►  wasde.parquet ───►  gold_wasde_latest  ──► /v1/wasde
-                                                                      gold_wasde_revisions
-```
-
----
-
-## Stack
-
-| Layer | Technology |
+| Decision | Why |
 |---|---|
-| Orchestration | Apache Airflow (TaskFlow API) + GitHub Actions |
-| Storage | Parquet (Bronze/Silver) + DuckDB (Gold) |
-| API | FastAPI + Pydantic v2 |
-| Frontend | HTML + Tailwind CSS + Chart.js |
-| Container | Docker Compose |
-| CI | GitHub Actions (ruff, mypy, pytest, coverage) |
-| Hosting | Render (free tier) |
+| **XML layout learned from the CSV overlap** | The pre-2021 XML does not label commodities or units. Matching 227k cells against the 2021–2025 CSVs learned the layout: 97% of CSV values reproduced exactly (100% of grain/oilseed balance sheets). Older releases fall back to table-level mappings. |
+| **Canonical vocabulary, fail on new labels** | `"Ending Stocks, Total"`, `"Ending stocks"` → `ending_stocks`, in reviewable YAML. A label never seen before stops the run instead of silently creating a new series. |
+| **Full rebuild every run** | ~850k rows rebuild in under a minute; no incremental-state bugs. |
+| **dbt-duckdb for gold** | Lineage, documented models and data tests (balance-sheet identity, key uniqueness, plausible stocks-to-use, monotonic WASDE numbers). |
+| **Static site + GitHub Releases** | Data changes monthly: no server to run, no cold starts, free hosting, every month's data versioned and downloadable. |
+| **Positive success criteria** | A run succeeds only if the expected report, a plausible row count and the schema all check out — the failure mode that silently broke v1. |
 
----
+## Data model (gold)
 
-## Data Sources
-
-| Source | What | Frequency |
+| Model | Grain | What it's for |
 |---|---|---|
-| USDA FAS PSD API | Supply & demand for wheat, corn, soybeans, soybean meal, soybean oil | Monthly |
-| NOPA | US soybean crush volume + oil stocks | Monthly |
-| USDA FAS Export Sales | Weekly export sales by commodity + destination | Weekly |
-| USDA WASDE CSV | World agricultural supply & demand estimates | Monthly |
+| `fct_wasde` | report × table × commodity × region × line × MY | The complete harmonized dataset |
+| `dim_reports` | report | Publication order, WASDE number, release date |
+| `fct_revisions` | series × MY × report | Value, Δ vs last report, Δ vs first projection, `cycle_month` |
+| `fct_balance_sheet` | report × table × commodity × region × MY | Wide balance sheet + stocks-to-use |
+| `fct_ending_stocks_drivers` | same | Exact decomposition of each ending-stocks revision |
+| `fct_changes` | series × MY × report | Seasonal materiality score + revision streaks |
 
----
+**Stocks-to-use:** World and World ex-China = ending stocks ÷ domestic use (trade nets out);
+U.S. and countries = ending stocks ÷ (domestic use + exports).
 
-## Quick Start
+## Quick Start (under 5 minutes)
+
+**Option A — the site with the latest published data (~2 min)**
 
 ```bash
 git clone https://github.com/rossi-diego/wasde-monthly-report.git
-cd wasde-monthly-report
-python run.py
+cd wasde-monthly-report/web && npm ci && cd ..
+make demo            # downloads the latest data release, starts http://localhost:3000
 ```
 
-The script installs dependencies, downloads WASDE data from the USDA (public, no API key needed), processes it through Bronze → Silver → Gold, and starts the API.
-
-### Manual Setup
+**Option B — run the pipeline yourself**
 
 ```bash
-pip install uv
-uv pip install -e ".[dev]"
-cp .env.example .env    # add USDA_PSD_KEY (free at https://api.data.gov/signup/)
-make run-api            # starts FastAPI on http://localhost:8000
+python -m pip install -e ".[dev,dbt]"
+wasde backfill       # every report since 2010-07 (~10 min the first time)
+wasde run            # silver → gold (dbt) → web data + Excel files in data/publish
+cd web && npm ci && npm run dev
 ```
 
-### Docker
+**Option C — everything in Docker:** `docker compose up` (pipeline, then site on :3000).
 
-```bash
-docker compose up       # Airflow + FastAPI
-```
+### CLI
 
-### Run Pipeline Manually
+| Command | Does |
+|---|---|
+| `wasde backfill [--seed-dir DIR]` | Ingest every missing report into bronze |
+| `wasde detect` | Ingest the latest scheduled report if it's out (used by the scheduler) |
+| `wasde refresh-calendar` | Update `config/release_calendar.yaml` from usda.gov |
+| `wasde build-silver` / `build-gold` / `publish` | Run one layer; `wasde run` runs all three |
+| `wasde learn-xml-layout --seed-dir DIR` | Re-learn the XML layout from the CSV overlap |
 
-Go to GitHub → Actions → **Monthly Data Update** → **Run workflow**. The pipeline fetches all sources, processes through Bronze → Silver → Gold, and commits the updated DuckDB.
+## Screenshots
 
----
+| Commodity page | Revision paths & stocks-to-use |
+|---|---|
+| ![Commodity](docs/screenshots/commodity-light.png) | ![Revisions](docs/screenshots/revisions-light.png) |
+| **Data & downloads** | **Dark mode** |
+| ![Downloads](docs/screenshots/downloads-light.png) | ![Dark](docs/screenshots/home-dark.png) |
 
-## API Endpoints
-
-Interactive docs at `/docs` when running.
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/health` | Health check |
-| `GET` | `/v1/supply-demand` | Supply & demand by commodity/country/year |
-| `GET` | `/v1/supply-demand/stock-to-use` | Stock-to-use ratio time series |
-| `GET` | `/v1/supply-demand/revisions` | Ending stocks revision history |
-| `GET` | `/v1/supply-demand/download` | Download as CSV or XLSX |
-| `GET` | `/v1/nopa/crush` | Monthly soybean crush volume |
-| `GET` | `/v1/nopa/crush/download` | Download crush data |
-| `GET` | `/v1/exports/pace` | Export pace vs USDA target |
-| `GET` | `/v1/exports/pace/download` | Download export pace |
-| `GET` | `/v1/wasde` | Latest WASDE estimates |
-
-### Download Data
-
-All data routes support CSV and XLSX download:
+## Project structure
 
 ```
-GET /v1/supply-demand/download?commodity=Soybeans&country=World&format=csv
-GET /v1/nopa/crush/download?format=xlsx
-GET /v1/exports/pace/download?commodity=Corn&format=csv
-```
-
----
-
-## Project Structure
-
-```
-dags/                       Airflow DAG (monthly pipeline)
+.github/workflows/   ci.yml · release.yml (detect → build → release → deploy → verify) · keepalive.yml
+config/              mappings.yaml · focus.yaml (commodities, highlight rules) · release_calendar.yaml · xml_layout/
 src/wasde/
-  config.py                 Pydantic settings
-  models/                   Pydantic schemas (PSD, NOPA, exports)
-  pipelines/
-    bronze/                 Raw ingestion → Parquet
-    silver/                 Validation + cleaning → Parquet
-    gold/                   Aggregation → DuckDB
-  api/
-    main.py                 FastAPI app
-    download.py             CSV/XLSX streaming helper
-    routers/                Endpoint modules
-frontend/                   Single-page HTML/JS dashboard
-tests/                      Unit + integration tests
+  sources/           USDA CSV, ESMIS API, release calendar
+  bronze.py          raw store, manifest, backfill, archive
+  silver/            CSV + XML parsers, learned XML layout, harmonization, contracts
+  gold.py            runs dbt
+  publish/           highlights, web JSON/Parquet, Excel workbooks
+  cli.py             `wasde` command
+dbt/                 staging + marts models, schema docs, data tests
+web/                 Next.js 16 static site (ECharts, hyparquet, SheetJS), Playwright tests
+tests/               unit + integration (dbt + publish on real fixture data)
+data/manifest.json   audit trail of every ingested report (data itself lives in releases)
 ```
 
----
+## Quality
 
-## Deploy to Render
+- **Python:** ruff, mypy, 73 pytest tests (89% coverage) including an end-to-end dbt + publish
+  run on real fixture data and XML-vs-CSV reconciliation.
+- **dbt:** schema tests + singular tests (balance identity, unique keys, plausible stocks-to-use,
+  monotonic WASDE numbers, complete latest report).
+- **Web:** ESLint, TypeScript, Playwright smoke tests (desktop + mobile), re-run against the live
+  site after every deploy.
+- **Charts:** colour palette validated for colour-vision deficiency and contrast in light and dark mode.
 
-1. Go to [render.com](https://render.com) → **New Web Service** → connect the repo
-2. Set **Dockerfile Path:** `./Dockerfile.api`
-3. Add env var: `USDA_PSD_KEY` from [api.data.gov](https://api.data.gov/signup/)
-4. Deploy
+## Known limitations
 
-The `render.yaml` Blueprint also supports one-click deployment.
-
----
+- History starts in July 2010 (earlier reports are PDF/text only).
+- Pre-2021 history excludes WASDE's projection-reliability tables and some quarterly
+  livestock/dairy lines.
+- Values are as published by USDA (rounded); tiny changes can be rounding.
 
 ## Author
 
-Diego Rossi — Market Risk & Data Engineering
+**Diego Rossi** — Market Risk & Data Engineering · commodity markets, derivatives, agribusiness.
+
+Data: USDA World Agricultural Outlook Board (public domain). Not affiliated with USDA.

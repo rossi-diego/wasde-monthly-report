@@ -1,0 +1,27 @@
+# Full stack with one command:  docker compose up
+#   1. pipeline: downloads every WASDE report since 2010-07 (first run ~10 min), builds
+#      silver/gold and writes the site data + Excel files
+#   2. web: builds the static Next.js site from that data and serves it on :3000
+services:
+  pipeline:
+    build: .
+    entrypoint: ["sh", "-c", "wasde backfill && wasde run"]
+    volumes:
+      - ./data:/app/data
+      - ./web/public/data:/app/web/public/data
+    env_file:
+      - path: .env
+        required: false
+
+  web:
+    image: node:22-alpine
+    working_dir: /web
+    command: ["sh", "-c", "npm ci && npm run build && npx --yes serve@14 out -l 3000"]
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./web:/web
+      - /web/node_modules
+    depends_on:
+      pipeline:
+        condition: service_completed_successfully
