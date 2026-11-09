@@ -459,7 +459,7 @@ def build_info(
     import json as _json
 
     from usda_reports.core.registry import load_registry
-    from usda_reports.detect import missed_since
+    from usda_reports.detect import missed_since, season_closed
     from usda_reports.insights.gates import make_gates
     from usda_reports.silver.build import failed_reports
 
@@ -474,16 +474,17 @@ def build_info(
         ts = datetime.fromisoformat(str(m["release_ts_utc"]).replace("Z", "+00:00"))
         age = (now - ts).days
         cfg = registry.reports.get(rid)
-        # A seasonal report (Crop Progress) with no scheduled release since its newest one is
-        # off-season, not stale: its final November release is the newest data until April.
-        off_season = (
-            cfg is not None
-            and cfg.seasonal
-            and not missed_since(
-                s.calendars_dir / f"{rid}.yaml", str(m["latest_release_key"]), now, cfg
-            )
-        )
-        stale = age > stale_after.get(rid, 45) and not off_season
+        # A seasonal report (Crop Progress) is off-season only once its season is closed: its
+        # final November release is then the newest data until April. In season it is stale
+        # only if a scheduled release has passed without arriving (missed_since): a gap
+        # between two weekly releases, or cancelled dates, is not staleness.
+        off_season = False
+        stale = age > stale_after.get(rid, 45)
+        if cfg is not None and cfg.seasonal:
+            cal = s.calendars_dir / f"{rid}.yaml"
+            latest_key = str(m["latest_release_key"])
+            off_season = season_closed(cal, latest_key, now)
+            stale = stale and not off_season and bool(missed_since(cal, latest_key, now, cfg))
         status = "failed" if rid in bad else ("stale" if stale else "ok")
         reports[rid] = {
             "latest_release_key": m["latest_release_key"],

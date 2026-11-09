@@ -10,6 +10,11 @@ rows of corn, soybeans, winter wheat and spring wheat; history from the 2010-06-
   date is more than a week past) the season is ``closed``: C1 keeps the crop's final rating
   ("Season closed: final GE X% vs 5-yr Y%") and is exempt from the staleness gate; C2/C3 are
   suppressed with ``season_closed``. The home page hides the card from December to March.
+* Crop season complete: a crop whose season ends before the report's (spring wheat after its
+  September harvest) is ``closed`` for that crop only (``season_scope = "crop"``) once it is
+  missing from the report's newest release and its last crop-calendar stage reached
+  ``CROP_DONE_PCT``: C1 shows its final rating vs the 5 prior finals, C2/C3 are
+  ``season_closed``, never ``stale_input``. Such a crop is not a home-card story.
 """
 
 from __future__ import annotations
@@ -37,8 +42,12 @@ NASS_AVG_N = 5
 # final release never arrived (cadence).
 CLOSE_AFTER_DAYS = 7
 HISTORY_START = "2010-06-07"
+# A crop missing from the newest release is "season complete" only if its last stage (the
+# harvest) had reached this share; otherwise a missing crop is a gap and goes stale.
+CROP_DONE_PCT = 90.0
 
 SeasonState = Literal["in_season", "closed"]
+SeasonScope = Literal["report", "crop"]
 
 
 @dataclass(frozen=True)
@@ -47,6 +56,7 @@ class SeasonInfo:
     season: int  # calendar year of the newest release
     latest_release_key: str
     last_scheduled: date | None  # the season's last scheduled release date
+    scope: SeasonScope = "report"  # "crop": this crop's season ended, the report's has not
 
 
 def season_info(latest_release_key: str, calendar: list[date], now: datetime) -> SeasonInfo:
@@ -81,6 +91,40 @@ def season_for(
     return season_info(key, load_calendar(settings.calendars_dir / "crop_progress.yaml"), now)
 
 
+def crop_season(
+    con: duckdb.DuckDBPyConnection, si: SeasonInfo, crop: str, order: list[str]
+) -> SeasonInfo:
+    """The season state of one crop: the report's, except a crop whose season is complete
+    while the report's is still open (missing from the newest release, harvest at least
+    ``CROP_DONE_PCT``), which is ``closed`` with ``scope="crop"`` and its own last release."""
+    if si.state == "closed" or not order:
+        return si
+    row = con.execute(
+        "select max(release_key) from fct_crop_progress_weekly "
+        "where crop = ? and kind = 'progress'",
+        [crop],
+    ).fetchone()
+    last_key = str(row[0]) if row and row[0] else None
+    if last_key is None or last_key >= si.latest_release_key:
+        return si
+    done = con.execute(
+        """select value_pct, season from fct_crop_progress_weekly
+           where crop = ? and kind = 'progress' and category = ?
+           order by week_ending desc limit 1""",
+        [crop, order[-1]],
+    ).fetchone()
+    if done is None or done[0] is None or float(done[0]) < CROP_DONE_PCT:
+        return si
+    return SeasonInfo("closed", int(done[1]), last_key, si.last_scheduled, scope="crop")
+
+
+def crop_seasons(
+    con: duckdb.DuckDBPyConnection, si: SeasonInfo, stage_order: dict[str, list[str]] | None
+) -> dict[str, SeasonInfo]:
+    """:func:`crop_season` of every crop (the report's state for all when no stage order)."""
+    return {c: crop_season(con, si, c, (stage_order or {}).get(c, [])) for c in CROPS}
+
+
 def stage_orders(settings: Settings) -> dict[str, list[str]]:
     """Stages per crop in crop-calendar order (config/reports/crop_progress/source.yaml)."""
     from usda_reports.reports.crop_progress.source import SourceConfig
@@ -101,6 +145,7 @@ def _season_params(si: SeasonInfo) -> dict[str, Any]:
         "season_state": si.state,
         "season": si.season,
         "season_last_scheduled": si.last_scheduled.isoformat() if si.last_scheduled else None,
+        "season_scope": si.scope,
         "history_start": HISTORY_START,
     }
 
@@ -171,9 +216,15 @@ def _inputs(cur: pd.Series) -> list[InputRef]:
     return [InputRef(report_id=REPORT_ID, release_key=str(key))]
 
 
-def c1_good_excellent(con: duckdb.DuckDBPyConnection, si: SeasonInfo) -> list[Insight]:
+def c1_good_excellent(
+    con: duckdb.DuckDBPyConnection,
+    report_si: SeasonInfo,
+    stage_order: dict[str, list[str]] | None = None,
+) -> list[Insight]:
     out = []
+    per_crop = crop_seasons(con, report_si, stage_order)
     for crop in CROPS:
+        si = per_crop[crop]
         cur = _latest_condition(con, crop)
         if cur is None:
             continue
@@ -224,9 +275,15 @@ def c1_good_excellent(con: duckdb.DuckDBPyConnection, si: SeasonInfo) -> list[In
     return out
 
 
-def c3_condition_index(con: duckdb.DuckDBPyConnection, si: SeasonInfo) -> list[Insight]:
+def c3_condition_index(
+    con: duckdb.DuckDBPyConnection,
+    report_si: SeasonInfo,
+    stage_order: dict[str, list[str]] | None = None,
+) -> list[Insight]:
     out = []
+    per_crop = crop_seasons(con, report_si, stage_order)
     for crop in CROPS:
+        si = per_crop[crop]
         cur = _latest_condition(con, crop)
         if cur is None:
             continue
@@ -289,10 +346,12 @@ def pick_stage(rows: pd.DataFrame, order: list[str]) -> pd.Series:
 
 
 def c2_stage_pace(
-    con: duckdb.DuckDBPyConnection, si: SeasonInfo, stage_order: dict[str, list[str]]
+    con: duckdb.DuckDBPyConnection, report_si: SeasonInfo, stage_order: dict[str, list[str]]
 ) -> list[Insight]:
     out = []
+    per_crop = crop_seasons(con, report_si, stage_order)
     for crop in CROPS:
+        si = per_crop[crop]
         df = con.execute(
             """select * from fct_crop_progress_weekly
                where crop = ? and kind = 'progress' and week_ending =

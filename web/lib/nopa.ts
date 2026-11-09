@@ -1,4 +1,5 @@
-// The only NOPA content on the site (plan §3): this exact note and an outbound link. NOPA data
+// The only NOPA content on the site (plan §3): this exact note (EN; i18n key
+// crush.nopa.note, with a faithful pt-BR translation) and an outbound link. NOPA data
 // is never ingested, shown or redistributed; pricing/distributor evidence lives only in
 // docs/DATA_LICENSES.md.
 export const NOPA_NOTE =

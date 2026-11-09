@@ -6,8 +6,10 @@ Stocks): list ESMIS releases, download each zip from ``files[]`` into bronze.
 * **Regular run**: page 0 only (the newest 25 releases): new releases are stored, and the
   newest ``recheck_last`` stored releases are downloaded again; changed bytes become a new
   edition of the same release key.
-* A release whose ``files[]`` has no zip (a reschedule notice, a text-only correction) is
-  recorded as ``skipped`` so it is not retried.
+* A release whose ``files[]`` has no zip (a reschedule notice, a text-only correction, or a
+  release whose zip is attached minutes after its PDF/TXT) is recorded as ``skipped``. Skipped
+  releases are looked at again on every later run: once a zip shows up in ``files[]`` it is
+  downloaded and stored as edition 1 (plan §11: a late posting is caught by the next run).
 * A release date listed more than once (ESMIS re-posts, e.g. Grain Stocks 2025-09-30 three
   times) keeps the highest ESMIS id.
 
@@ -102,8 +104,10 @@ def ingest_zips(
                 result.skipped.append(key)
                 log.warning(f"{log_prefix}.no_zip", release=key, files=names)
             continue
-        if old is not None and not force and (old.status != "ok" or key not in recheck):
+        if old is not None and not force and old.status == "ok" and key not in recheck:
             continue
+        if old is not None and old.status != "ok":
+            log.info(f"{log_prefix}.zip_appeared", release=key, url=url)
         try:
             data = fetch_zip(client, url)
         except NassZipError as exc:

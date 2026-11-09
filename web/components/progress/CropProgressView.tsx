@@ -61,16 +61,24 @@ export default function CropProgressView({
     { id: "prev", current: false, points: ge.map((r, i) => [i + 1, r[2]] as [number, number | null]) },
     { id: season, current: true, points: ge.map((r, i) => [i + 1, r[1]] as [number, number | null]) },
   ];
-  const geBand = ge.map((r, i) => ({ x: i + 1, mean: r[3], min: r[4], max: r[5] }));
+  // The 5-season band and mean are drawn only for weeks where all min_n seasons were rated
+  // (n per week is in the table); a week with fewer is a gap, never a "5-season" comparison.
+  const minN = v.minN;
+  const full = (r: (typeof ge)[number]) => r[6] >= minN;
+  const geBand = ge.map((r, i) => (full(r) ? { x: i + 1, mean: r[3], min: r[4], max: r[5] } : { x: i + 1, mean: null, min: null, max: null }));
+  const bandWeeks = ge.filter(full).length;
+  const thinWeeks = ge.length - bandWeeks;
+  const geHasPrev = ge.some((r) => r[2] !== null);
   const lastGe = [...ge].reverse().find((r) => r[1] !== null);
-  const geAria = t("cp.c1.aria", {
+  const geAriaVars = {
     crop: cname,
     season,
     v: pctInt(lastGe?.[1]),
     date: shortDate(lastGe?.[0], true, lang) ?? "—",
     min: pctInt(lastGe?.[4]),
     max: pctInt(lastGe?.[5]),
-  });
+  };
+  const geAria = lastGe && full(lastGe) ? t("cp.c1.aria", geAriaVars) : t("cp.c1.ariaNoBand", { ...geAriaVars, min: minN });
   const geRows = ge.map((r) => [shortDate(r[0], true, lang) ?? r[0], pctInt(r[1]), pctInt(r[2]), r[3] === null ? "—" : `${num(r[3], 1)}%`, pctInt(r[4]), pctInt(r[5]), r[6]]);
 
   // ---- chapter 2: stage in progress vs NASS's published 5-yr average
@@ -81,6 +89,8 @@ export default function CropProgressView({
     { id: season, current: true, points: sp.series.map((r, i) => [i + 1, r[1]] as [number, number | null]) },
   ];
   const spBand = sp.series.map((r, i) => ({ x: i + 1, mean: r[2], min: null, max: null }));
+  const spHasPrev = sp.series.some((r) => r[3] !== null);
+  const stagePrevNull = d.stages.some((s) => s.nass_prev_year_pct === null);
   const spStage = sp.stage ? stageName(sp.stage, lang) : "";
   const lastSp = [...sp.series].reverse().find((r) => r[1] !== null);
   const spAria = t("cp.c2.aria", { crop: cname, stage: spStage, season, v: pctInt(lastSp?.[1]), avg: pctInt(lastSp?.[2]) });
@@ -102,7 +112,7 @@ export default function CropProgressView({
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
           {v.closed && (
             <span className="rounded-full px-2.5 py-[2px] font-semibold text-white" style={{ background: "var(--pill-active)" }} data-testid="season-closed">
-              {t("card.eb.cpClosed")}
+              {v.cropDone ? t("cp.pill.cropDone") : t("card.eb.cpClosed")}
             </span>
           )}
           {d.n_states !== null && <span>{t("caveat.nass_selected_states_aggregate")} ({d.n_states})</span>}
@@ -116,7 +126,13 @@ export default function CropProgressView({
       </section>
 
       <Chapter n={1} color={GREEN} eyebrow="cp.c1.eb" title="cp.c1">
-        {c1 && c1.suppressed_reason !== null && <Suppressed i={c1} />}
+        {v.nBelowLine ? (
+          <p className="m-0 rounded-xl bg-bg px-3 py-2 text-[13px] text-muted" data-testid="suppressed" data-suppressed={c1?.suppressed_reason === "n_below_min" ? c1.id : c3?.id}>
+            {v.nBelowLine}
+          </p>
+        ) : (
+          c1 && c1.suppressed_reason !== null && <Suppressed i={c1} />
+        )}
         {v.geLine ? (
           <>
             <p className="m-0 text-[15px] leading-snug" data-testid="cp-ge-line">
@@ -146,19 +162,30 @@ export default function CropProgressView({
                 <Swatch kind="line" color={GREEN} />
                 {t("cp.c1.cur", { season })}
               </span>
-              <span className="flex items-center gap-1.5">
-                <Swatch kind="thin" />
-                {t("cp.c1.prevLine")}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Swatch kind="band" color={GREEN} />
-                {t("cp.c1.band")}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Swatch kind="dashed" />
-                {t("cp.c1.mean")}
-              </span>
+              {geHasPrev && (
+                <span className="flex items-center gap-1.5">
+                  <Swatch kind="thin" />
+                  {t("cp.c1.prevLine")}
+                </span>
+              )}
+              {bandWeeks > 0 && (
+                <>
+                  <span className="flex items-center gap-1.5">
+                    <Swatch kind="band" color={GREEN} />
+                    {t("cp.c1.band")}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Swatch kind="dashed" />
+                    {t("cp.c1.mean")}
+                  </span>
+                </>
+              )}
             </div>
+            {thinWeeks > 0 && (
+              <p className="m-0 text-xs text-muted" data-testid="cp-band-gap">
+                {t("cp.c1.bandGap", { k: thinWeeks, min: minN })}
+              </p>
+            )}
             <ChartTable
               caption={geAria}
               head={[t("cp.h.week"), t("cp.h.ge"), t("cp.h.prevYear"), t("esr.h.mean"), t("esr.h.min"), t("esr.h.max"), "n"]}
@@ -172,13 +199,19 @@ export default function CropProgressView({
             {v.ciLine}
           </p>
         )}
-        {c3 && c3.suppressed_reason !== null && !v.closed && <Suppressed i={c3} />}
+        {c3 && c3.suppressed_reason !== null && !v.closed && !(v.nBelowLine && c3.suppressed_reason === "n_below_min") && <Suppressed i={c3} />}
         {c3ok && <InsightMeta i={c3ok} chip={c3ok.params.position ? t(`pos.${c3ok.params.position as string}` as Key) : null} />}
       </Chapter>
 
       <div className="grid-fit-380">
         <Chapter n={2} color={GREEN} eyebrow="cp.c2.eb" title="cp.c2">
-          {c2 && c2.suppressed_reason !== null && <Suppressed i={c2} />}
+          {v.stageDoneLine ? (
+            <p className="m-0 rounded-xl bg-bg px-3 py-2 text-[13px] text-muted" data-testid="suppressed" data-suppressed={c2?.id}>
+              {v.stageDoneLine}
+            </p>
+          ) : (
+            c2 && c2.suppressed_reason !== null && <Suppressed i={c2} />
+          )}
           {v.stageLine && (
             <p className="m-0 text-[15px] leading-snug" data-testid="cp-stage-line">
               {v.stageLine}
@@ -207,10 +240,12 @@ export default function CropProgressView({
                   <Swatch kind="dashed" />
                   {t("cp.c2.avg")}
                 </span>
-                <span className="flex items-center gap-1.5">
-                  <Swatch kind="thin" />
-                  {t("cp.c2.prev")}
-                </span>
+                {spHasPrev && (
+                  <span className="flex items-center gap-1.5">
+                    <Swatch kind="thin" />
+                    {t("cp.c2.prev")}
+                  </span>
+                )}
               </div>
               <ChartTable caption={spAria} head={[t("cp.h.week"), season, t("cp.h.avg5"), t("cp.h.lastYear")]} rows={spRows} />
             </>
@@ -225,6 +260,11 @@ export default function CropProgressView({
               head={[t("cp.h.stage"), t("cp.h.thisWeek"), t("cp.h.lastWeek"), t("cp.h.lastYear"), t("cp.h.avg5"), t("cp.h.vsAvg")]}
               rows={d.stages.map((s) => [stageName(s.stage, lang), pctInt(s.value_pct), pctInt(s.nass_prev_week_pct), pctInt(s.nass_prev_year_pct), pctInt(s.nass_5yr_avg_pct), points(s.vs_5yr_avg_pp)])}
             />
+          )}
+          {d.stages.length > 0 && stagePrevNull && (
+            <p className="m-0 text-xs text-muted" data-testid="cp-prev-none">
+              {t("cp.c2.prevNoneNote", { y: d.season - 1 })}
+            </p>
           )}
         </Chapter>
 
@@ -248,10 +288,21 @@ export default function CropProgressView({
           <DataTable
             id="h-cp-crops"
             title={t("cp.c3.crops")}
-            head={[t("cp.h.crop"), t("cp.h.stage"), t("cp.h.thisWeek"), t("cp.h.vsAvg"), t("cp.h.ge"), t("cp.h.ci")]}
+            head={[t("cp.h.crop"), t("cp.h.week"), t("cp.h.stage"), t("cp.h.thisWeek"), t("cp.h.vsAvg"), t("cp.h.ge"), t("cp.h.ci")]}
             rows={crops.map((c) => {
               const s = c.stages.find((x) => x.stage === c.stage_pace.stage) ?? c.stages.at(-1);
-              return [cropTitle(c.crop, lang), s ? stageName(s.stage, lang) : "—", pctInt(s?.value_pct), points(s?.vs_5yr_avg_pp), pctInt(c.condition?.ge_pct), ciText(c.condition?.ci)];
+              const cw = c.condition?.week_ending ?? null;
+              // A rating from an older week than the row's stage table names its own week.
+              const dated = (txt: string) => (c.condition && cw && cw !== c.week_ending ? t("cp.c3.condWeek", { v: txt, date: shortDate(cw, false, lang) ?? cw }) : txt);
+              return [
+                cropTitle(c.crop, lang),
+                shortDate(c.week_ending ?? c.latest.week_ending, false, lang) ?? "—",
+                s ? stageName(s.stage, lang) : "—",
+                pctInt(s?.value_pct),
+                points(s?.vs_5yr_avg_pp),
+                c.condition ? dated(pctInt(c.condition.ge_pct)) : "—",
+                c.condition ? dated(ciText(c.condition.ci)) : "—",
+              ];
             })}
           />
         </Chapter>

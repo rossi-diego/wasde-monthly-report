@@ -241,8 +241,34 @@ def test_in_season_c2_uses_nass_average_as_published(con, calendar, stage_order)
     assert "nass_5yr_average_as_published" in corn.caveats
     assert c2["C2:winter_wheat"].params["stage"] == "emerged"  # in progress, after planted
     assert corn.suppressed_reason is None
-    # Spring wheat ended in September: stale in November.
-    assert c2["C2:spring_wheat"].suppressed_reason == "stale_input"
+    # Spring wheat's season ended in September (harvest 96 %, not in the Nov 2 release): its
+    # season is complete, not stale.
+    sw = c2["C2:spring_wheat"]
+    assert sw.suppressed_reason == "season_closed" and sw.params["season_scope"] == "crop"
+    assert corn.params["season_scope"] == "report"
+
+
+def test_crop_season_complete_spring_wheat_final_rating_not_stale(con, calendar, stage_order):
+    si = cp.season_info(cp.latest_release_key(con) or "", calendar, IN_SEASON)
+    seasons = cp.crop_seasons(con, si, stage_order)
+    assert seasons["corn"] is si and seasons["winter_wheat"] is si
+    sw = seasons["spring_wheat"]
+    assert sw.state == "closed" and sw.scope == "crop" and sw.latest_release_key == "2026-09-21"
+    c1 = {i.id: i for i in _gated(cp.c1_good_excellent(con, si, stage_order), IN_SEASON, con)}
+    final = c1["C1:spring_wheat"]
+    assert final.params["season_state"] == "closed" and final.params["final"] is True
+    assert final.window == "prior_5_seasons_final_rating" and final.suppressed_reason is None
+    assert final.params["k_of"] == final.n + 1
+    c3 = {i.id: i for i in _gated(cp.c3_condition_index(con, si, stage_order), IN_SEASON, con)}
+    assert c3["C3:spring_wheat"].suppressed_reason == "season_closed"
+    # Not a home story while the report's season is open.
+    assert crop_progress_card([final]) is None
+    # A crop missing from the newest release before its harvest is done is a gap: stale.
+    con.execute(
+        "update fct_crop_progress_weekly set value_pct = 50 "
+        "where crop = 'spring_wheat' and category = 'harvested'"
+    )
+    assert cp.crop_season(con, si, "spring_wheat", stage_order["spring_wheat"]) is si
 
 
 def test_in_season_c1_c3_own_5yr_and_small_samples_suppressed(con, calendar):
@@ -311,3 +337,17 @@ def test_missed_since_marks_the_off_season(config_dir):
     assert missed_since(cal, "2026-11-30", datetime(2027, 2, 15, tzinfo=UTC), cfg) == []
     # In season, a missing Monday is a missed release.
     assert missed_since(cal, "2026-10-26", IN_SEASON, cfg) == [date(2026, 11, 2), date(2026, 11, 9)]
+
+
+def test_build_info_off_season_only_when_the_season_is_closed(config_dir):
+    """build.json's off_season flag: not set between two in-season releases (nothing missed
+    yet, but the season is open), set once the final release is in or the season is over."""
+    from usda_reports.detect import missed_since, season_closed
+
+    cfg = load_registry(config_dir).get("crop_progress")
+    cal = config_dir / "calendars" / "crop_progress.yaml"
+    monday_noon = datetime(2026, 11, 9, 17, 0, tzinfo=UTC)  # 12:00 ET, before the 16:00 release
+    assert missed_since(cal, "2026-11-02", monday_noon, cfg) == []
+    assert not season_closed(cal, "2026-11-02", monday_noon)
+    assert season_closed(cal, "2026-11-30", datetime(2026, 11, 30, 23, 0, tzinfo=UTC))
+    assert season_closed(cal, "2026-11-30", datetime(2027, 2, 15, tzinfo=UTC))

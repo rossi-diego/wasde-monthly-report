@@ -82,6 +82,51 @@ test("in-season fixture: Crop Progress is open and its card is eligible for the 
   }
 });
 
+test("in-season fixture: a crop whose season ended (spring wheat) is final, not stale, and not in the next release", () => {
+  const doc = fixture<InsightsDoc>("cut-c/insights.json");
+  const idx = fixture<CropProgressIndex>("cut-c/reports/crop_progress/index.json");
+  const sw = fixture<CropProgressCrop>("cut-c/reports/crop_progress/spring_wheat.json");
+  expect(idx.season?.state).toBe("in_season");
+  expect(sw.season_state).toBe("closed");
+  expect(sw.season_scope).toBe("crop");
+  const ids = doc.insights.filter((i) => i.id.endsWith(":spring_wheat"));
+  for (const i of ids) expect(i.suppressed_reason, i.id).not.toBe("stale_input");
+  const c1 = doc.insights.find((i) => i.id === "C1:spring_wheat") as Insight;
+  expect(c1.suppressed_reason).toBeNull();
+  expect(c1.window).toBe("prior_5_seasons_final_rating");
+  // Never the home story while the report's season is open.
+  expect(doc.home_cards).not.toContain("C1:spring_wheat");
+  for (const lang of ["en", "pt"] as const) {
+    const v = cropProgressText(sw, doc, lang, idx.season?.last_scheduled ?? null);
+    expect(v.cropDone).toBe(true);
+    expect(v.stats.next).toBe("—"); // not "next release Nov 9" for a crop that release won't include
+    expect(v.lead).toContain(`n = ${c1.n}`);
+    if (lang === "en") {
+      expect(v.lead).toMatch(/^Spring wheat: season complete\. Final GE \d+%/);
+      expect(v.sub).toMatch(/^Season complete for this crop/);
+      expect(v.stageDoneLine).toMatch(/^Season complete: Spring wheat left the weekly report/);
+    }
+  }
+});
+
+test("in-season fixture: the header never shows a 5-yr comparison the gates hid", () => {
+  const doc = fixture<InsightsDoc>("cut-c/insights.json");
+  for (const crop of ["corn", "soybeans", "winter_wheat"]) {
+    const d = fixture<CropProgressCrop>(`cut-c/reports/crop_progress/${crop}.json`);
+    const c3 = doc.insights.find((i) => i.id === `C3:${crop}`) as Insight;
+    const v = cropProgressText(d, doc, "en");
+    if (c3.suppressed_reason !== null) {
+      expect(v.stats.ciSub, crop).toBe(`1–5 scale · not compared with the 5 prior seasons (n = ${c3.n})`);
+      if (d.condition?.ci_5yr_mean != null) expect(v.stats.ciSub, crop).not.toContain(num(d.condition.ci_5yr_mean, 2));
+    } else expect(v.stats.ciSub, crop).toContain(`n = ${c3.n}`);
+    // One specific note names what is hidden and its n, instead of two generic boxes.
+    const c1 = doc.insights.find((i) => i.id === `C1:${crop}`) as Insight;
+    if (c1.suppressed_reason === "n_below_min") expect(v.nBelowLine, crop).toContain("within ±3 days");
+    // "Last year" blanks say why.
+    if (d.condition && d.condition.nass_prev_year_ge_pct === null) expect(v.stats.geSub, crop).toContain("not published (no NASS release that week in 2025)");
+  }
+});
+
 test("G2 caveats are worded exactly as the plan states", () => {
   const doc = fixture<InsightsDoc>("cut-c/insights.json");
   const g2 = doc.insights.find((i) => i.rule === "G2" && i.suppressed_reason === null) as Insight;
@@ -248,6 +293,7 @@ test("Portuguese mode leaves no English UI copy on the new pages, the methodolog
     "/methodology/": ["How the numbers", "Sources", "Harmonization", "Season closed", "This page is available in English only"],
     "/data/": ["Download Excel", "Reports from", "Versioned copy", "Ready-made files", "values match"],
     "/": ["Also released", "One commodity, every report", "Open the chart"],
+    "/reports/oilseed-crush/": ["NOPA members represent", "proprietary and not redistributed", "About NOPA"],
   };
   for (const [url, list] of Object.entries(words)) {
     await page.goto(url);

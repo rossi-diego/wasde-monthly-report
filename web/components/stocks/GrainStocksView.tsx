@@ -113,7 +113,7 @@ export default function GrainStocksView({
         {rows1.length > 0 ? (
           <>
             <WeeklyBars
-              items={rows1.map((r) => ({ label: shortMy(r.market_year), value: r.surprise_mbu }))}
+              items={rows1.map((r, i) => ({ label: shortMy(r.market_year), value: r.surprise_mbu, current: i === rows1.length - 1 }))}
               color={VIOLET}
               format={(x) => num(x, 0)}
               ariaLabel={aria1}

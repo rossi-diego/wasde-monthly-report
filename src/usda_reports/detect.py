@@ -182,3 +182,13 @@ def missed_since(
         for d in load_calendar(calendar_path, until=now.date())
         if d > floor and release_datetime_utc(d, at) <= now
     ]
+
+
+def season_closed(calendar_path: Path, latest_key: str, now: datetime) -> bool:
+    """True only when a seasonal report's season is over (plan §6 off-season rule: the
+    season's final scheduled release is in, or that date is more than a week past, or the
+    newest release belongs to an earlier year). False in season, including between two
+    weekly releases and during a mid-season lapse; use :func:`missed_since` for staleness."""
+    from usda_reports.insights.rules.crop_progress import season_info
+
+    return season_info(latest_key, load_calendar(calendar_path), now).state == "closed"

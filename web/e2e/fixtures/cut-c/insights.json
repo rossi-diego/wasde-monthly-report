@@ -1821,6 +1821,7 @@
     "unit_id": "pct",
     "season_state": "in_season",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "report",
     "history_start": "2010-06-07",
     "final": false,
     "ge_pct": 56.0,
@@ -1835,6 +1836,7 @@
     "position": null,
     "outside_distance": null,
     "k": null,
+    "k_of": null,
     "order": "highest_first",
     "history": []
    },
@@ -1870,6 +1872,7 @@
     "unit_id": "pct",
     "season_state": "in_season",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "report",
     "history_start": "2010-06-07",
     "final": false,
     "ge_pct": 57.0,
@@ -1884,6 +1887,7 @@
     "position": "inside",
     "outside_distance": 0.0,
     "k": 2,
+    "k_of": 4,
     "order": "highest_first",
     "history": [
      {
@@ -1935,6 +1939,7 @@
     "unit_id": "pct",
     "season_state": "in_season",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "report",
     "history_start": "2010-06-07",
     "final": false,
     "ge_pct": 44.0,
@@ -1949,6 +1954,7 @@
     "position": "inside",
     "outside_distance": 0.0,
     "k": 3,
+    "k_of": 5,
     "order": "highest_first",
     "history": [
      {
@@ -2004,33 +2010,40 @@
     "release_key": "2026-08-24",
     "n_states": 6,
     "unit_id": "pct",
-    "season_state": "in_season",
+    "season_state": "closed",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "crop",
     "history_start": "2010-06-07",
-    "final": false,
+    "final": true,
     "ge_pct": 51.0,
     "good_pct": 44.0,
     "excellent_pct": 7.0,
     "nass_prev_week_ge_pct": 52.0,
     "nass_prev_year_ge_pct": 49.0,
     "vs_prev_year_pp": 2.0,
-    "hist_mean": 55.0,
-    "hist_min": 38.0,
+    "hist_mean": 46.8,
+    "hist_min": 11.0,
     "hist_max": 69.0,
     "position": "inside",
     "outside_distance": 0.0,
     "k": 3,
+    "k_of": 6,
     "order": "highest_first",
     "history": [
      {
+      "season": 2021,
+      "week_ending": "2021-08-15",
+      "ge_pct": 11.0
+     },
+     {
       "season": 2022,
-      "week_ending": "2022-08-21",
-      "ge_pct": 64.0
+      "week_ending": "2022-08-28",
+      "ge_pct": 68.0
      },
      {
       "season": 2023,
-      "week_ending": "2023-08-20",
-      "ge_pct": 38.0
+      "week_ending": "2023-08-27",
+      "ge_pct": 37.0
      },
      {
       "season": 2024,
@@ -2044,12 +2057,12 @@
      }
     ]
    },
-   "n": 4,
-   "window": "prior_5_seasons_same_week_doy_pm3",
+   "n": 5,
+   "window": "prior_5_seasons_final_rating",
    "robustness": "robust",
    "caveats": [
     "nass_selected_states_aggregate",
-    "own_5yr_same_week_by_day_of_year",
+    "own_5yr_final_rating",
     "small_sample"
    ],
    "inputs": [
@@ -2059,7 +2072,7 @@
     }
    ],
    "as_of": "2026-08-24T20:00:00Z",
-   "suppressed_reason": "stale_input"
+   "suppressed_reason": null
   },
   {
    "id": "C2:corn",
@@ -2076,6 +2089,7 @@
     "unit_id": "pct",
     "season_state": "in_season",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "report",
     "history_start": "2010-06-07",
     "stage": "harvested",
     "value_pct": 74.0,
@@ -2127,6 +2141,7 @@
     "unit_id": "pct",
     "season_state": "in_season",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "report",
     "history_start": "2010-06-07",
     "stage": "harvested",
     "value_pct": 88.0,
@@ -2178,6 +2193,7 @@
     "unit_id": "pct",
     "season_state": "in_season",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "report",
     "history_start": "2010-06-07",
     "stage": "emerged",
     "value_pct": 65.0,
@@ -2234,8 +2250,9 @@
     "release_key": "2026-09-21",
     "n_states": 6,
     "unit_id": "pct",
-    "season_state": "in_season",
+    "season_state": "closed",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "crop",
     "history_start": "2010-06-07",
     "stage": "harvested",
     "value_pct": 96.0,
@@ -2270,7 +2287,7 @@
     }
    ],
    "as_of": "2026-09-21T20:00:00Z",
-   "suppressed_reason": "stale_input"
+   "suppressed_reason": "season_closed"
   },
   {
    "id": "C3:corn",
@@ -2287,6 +2304,7 @@
     "unit_id": "index_1_5",
     "season_state": "in_season",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "report",
     "history_start": "2010-06-07",
     "final": false,
     "ci": 3.45,
@@ -2297,6 +2315,7 @@
     "position": null,
     "outside_distance": null,
     "k": null,
+    "k_of": null,
     "order": "highest_first",
     "history": []
    },
@@ -2332,6 +2351,7 @@
     "unit_id": "index_1_5",
     "season_state": "in_season",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "report",
     "history_start": "2010-06-07",
     "final": false,
     "ci": 3.5,
@@ -2342,6 +2362,7 @@
     "position": "inside",
     "outside_distance": 0.0,
     "k": 2,
+    "k_of": 4,
     "order": "highest_first",
     "history": [
      {
@@ -2393,6 +2414,7 @@
     "unit_id": "index_1_5",
     "season_state": "in_season",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "report",
     "history_start": "2010-06-07",
     "final": false,
     "ci": 3.27,
@@ -2403,6 +2425,7 @@
     "position": "inside",
     "outside_distance": 0.0,
     "k": 2,
+    "k_of": 5,
     "order": "highest_first",
     "history": [
      {
@@ -2458,10 +2481,11 @@
     "release_key": "2026-08-24",
     "n_states": 6,
     "unit_id": "index_1_5",
-    "season_state": "in_season",
+    "season_state": "closed",
     "season_last_scheduled": "2026-11-30",
+    "season_scope": "crop",
     "history_start": "2010-06-07",
-    "final": false,
+    "final": true,
     "ci": 3.41,
     "nass_prev_year_ci": 3.33,
     "hist_mean": 3.447,
@@ -2470,6 +2494,7 @@
     "position": "inside",
     "outside_distance": 0.0,
     "k": 3,
+    "k_of": 5,
     "order": "highest_first",
     "history": [
      {
@@ -2509,7 +2534,7 @@
     }
    ],
    "as_of": "2026-08-24T20:00:00Z",
-   "suppressed_reason": "stale_input"
+   "suppressed_reason": "season_closed"
   },
   {
    "id": "G1:corn",
@@ -3058,7 +3083,8 @@
       "as_of_date": "2025-09-01",
       "implied_disappearance_mbu": 3111.868
      }
-    ]
+    ],
+    "k_of": 6
    },
    "n": 5,
    "window": "prior_5_my_same_quarter",
@@ -3130,7 +3156,8 @@
       "as_of_date": "2025-09-01",
       "implied_disappearance_mbu": 691.163
      }
-    ]
+    ],
+    "k_of": 6
    },
    "n": 5,
    "window": "prior_5_my_same_quarter",
@@ -3202,7 +3229,8 @@
       "as_of_date": "2025-09-01",
       "implied_disappearance_mbu": 657.36
      }
-    ]
+    ],
+    "k_of": 6
    },
    "n": 5,
    "window": "prior_5_my_same_quarter",
@@ -3273,7 +3301,8 @@
       "as_of_date": "2025-09-01",
       "on_farm_share": 0.414624
      }
-    ]
+    ],
+    "k_of": 6
    },
    "n": 5,
    "window": "prior_5_years_same_stock_date",
@@ -3339,7 +3368,8 @@
       "as_of_date": "2025-09-01",
       "on_farm_share": 0.281707
      }
-    ]
+    ],
+    "k_of": 6
    },
    "n": 5,
    "window": "prior_5_years_same_stock_date",
@@ -3405,7 +3435,8 @@
       "as_of_date": "2025-09-01",
       "on_farm_share": 0.324383
      }
-    ]
+    ],
+    "k_of": 6
    },
    "n": 5,
    "window": "prior_5_years_same_stock_date",

@@ -128,6 +128,46 @@ def test_ingest_keeps_highest_esmis_id_and_skips_notices(tmp_path, cfg):
     assert r.skipped == ["2019-01-11"] and store.entries["2019-01-11"].status == "skipped"
 
 
+@respx.mock
+def test_ingest_retries_a_release_first_listed_without_a_zip(tmp_path, cfg):
+    """ESMIS posts the PDF/TXT first and attaches the zip minutes later: the first run
+    records the release as skipped, the next run (zip now in files[]) stores it as
+    edition 1 instead of ignoring it forever."""
+    page = json.loads((FX / "esmis_page0.json").read_text(encoding="utf-8"))
+    best = max((i for i in page["results"] if i["release_datetime"].startswith("2025-09-30")),
+               key=lambda i: int(i["id"]))  # fmt: skip
+    zip_url = next(f for f in best["files"] if f.endswith(".zip"))
+    early = {**best, "files": [f for f in best["files"] if not f.endswith(".zip")]}
+    one = lambda item: {**page, "results": [item]}  # noqa: E731
+    cfg2 = cfg.model_copy(update={"history_start": "2025-09-30"})
+    store = BronzeStore(tmp_path, Manifest(), "grain_stocks", "12:00")
+    route = respx.get(zip_url).mock(
+        return_value=httpx.Response(200, content=zip_bytes("2026-09-30"))
+    )
+    listing = respx.get(URL, params={"page": "0"})
+
+    def run():
+        with httpx.Client() as c:
+            return ingest_zips(
+                c, store, cfg2, title="Grain Stocks", log_prefix="gs", error=GrainStocksError,
+                pause_s=0,
+            )  # fmt: skip
+
+    listing.mock(return_value=httpx.Response(200, json=one(early)))
+    r = run()
+    assert r.skipped == ["2025-09-30"] and r.ingested == [] and route.call_count == 0
+    assert store.entries["2025-09-30"].status == "skipped"
+    # Same listing again: still no zip, nothing fetched, not re-recorded.
+    r = run()
+    assert r.skipped == [] and r.ingested == [] and route.call_count == 0
+    # The zip is attached: picked up as edition 1.
+    listing.mock(return_value=httpx.Response(200, json=one(best)))
+    r = run()
+    assert r.ingested == ["2025-09-30"] and route.call_count == 1
+    e = store.entries["2025-09-30"]
+    assert e.status == "ok" and e.edition == 1 and e.url == zip_url
+
+
 # ------------------------------------------------------------------ insights G1–G3
 
 

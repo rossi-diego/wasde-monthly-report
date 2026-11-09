@@ -72,7 +72,13 @@ def _crop_order(i: Insight) -> int:
 
 
 def crop_progress_card(insights: list[Insight]) -> Insight | None:
-    ok = [i for i in passing(insights) if i.report_id == "crop_progress"]
+    # A crop whose own season is complete while the report's is open (spring wheat in
+    # November) is page content, not the week's home story.
+    ok = [
+        i
+        for i in passing(insights)
+        if i.report_id == "crop_progress" and i.params.get("season_scope") != "crop"
+    ]
     closed = [i for i in ok if i.rule == "C1" and i.params.get("season_state") == "closed"]
     if closed:
         return min(closed, key=_crop_order)

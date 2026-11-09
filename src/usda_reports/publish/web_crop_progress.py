@@ -19,7 +19,13 @@ import duckdb
 
 from usda_reports.core.logs import get_logger
 from usda_reports.insights.rules.common import day, num, text, ts
-from usda_reports.insights.rules.crop_progress import CROPS, HISTORY_START, SeasonInfo, pick_stage
+from usda_reports.insights.rules.crop_progress import (
+    CROPS,
+    HISTORY_START,
+    SeasonInfo,
+    crop_season,
+    pick_stage,
+)
 from usda_reports.publish.web_json import _dump
 
 log = get_logger(__name__)
@@ -89,6 +95,9 @@ def crop_payload(
         "history_start": HISTORY_START,
         "season": season,
         "season_state": si.state if si else None,
+        # "crop": this crop's season is complete while the report's is open (spring wheat
+        # after harvest): final values, not stale, and not in the next release.
+        "season_scope": si.scope if si else None,
         "latest": {
             "release_key": text(newest.first_release_key) or text(newest.release_key),
             "release_ts_utc": ts(newest.first_release_ts_utc)
@@ -199,7 +208,9 @@ def build_crop_progress(
     items = []
     latest: dict[str, Any] = {}
     for crop in CROPS:
-        payload = crop_payload(con, crop, stage_order.get(crop, []), si, next_release)
+        order = stage_order.get(crop, [])
+        csi = crop_season(con, si, crop, order) if si is not None else None
+        payload = crop_payload(con, crop, order, csi, next_release)
         if payload is None:
             continue
         _dump(folder / f"{crop}.json", payload)

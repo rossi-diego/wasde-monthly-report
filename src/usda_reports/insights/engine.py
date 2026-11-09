@@ -80,9 +80,10 @@ def build(
     if _table_exists(con, "fct_crop_condition") and registry.reports["crop_progress"].enabled:
         si = cp_rules.season_for(con, settings, now)
         if si is not None:
-            c1 = cp_rules.c1_good_excellent(con, si)
-            c2 = cp_rules.c2_stage_pace(con, si, cp_rules.stage_orders(settings))
-            c3 = cp_rules.c3_condition_index(con, si)
+            orders = cp_rules.stage_orders(settings)
+            c1 = cp_rules.c1_good_excellent(con, si, orders)
+            c2 = cp_rules.c2_stage_pace(con, si, orders)
+            c3 = cp_rules.c3_condition_index(con, si, orders)
             raw += c1 + c2 + c3
             screened.update({"C1": len(c1), "C2": len(c2), "C3": len(c3)})
             seasons["crop_progress"] = SeasonStatus(

@@ -38,7 +38,9 @@ def range_params(
 ) -> dict[str, Any]:
     """5-year comparison block: mean / min / max of ``vals``, where ``value`` sits (below,
     inside, above the min–max range), how far outside (relative to the range width) and its
-    rank "k of n" among ``vals`` + itself (1 = highest unless ``high_first`` is False)."""
+    rank among ``vals`` + itself (1 = highest unless ``high_first`` is False). The rank's
+    denominator is ``k_of`` = len(vals) + 1, published next to ``k`` because the insight's
+    ``n`` counts the comparison seasons only (len(vals))."""
     out: dict[str, Any] = {
         "hist_mean": None,
         "hist_min": None,
@@ -46,6 +48,7 @@ def range_params(
         "position": None,
         "outside_distance": None,
         "k": None,
+        "k_of": None,
         "order": "highest_first" if high_first else "lowest_first",
     }
     if not vals:
@@ -57,4 +60,5 @@ def range_params(
         out["outside_distance"] = round(stats.outside_distance(value, lo, hi), max(nd, 4))
         rank = stats.rank_high_first if high_first else stats.rank_low_first
         out["k"] = rank(value, vals)[0]
+        out["k_of"] = len(vals) + 1
     return out

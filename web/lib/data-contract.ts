@@ -121,9 +121,11 @@ export type SeasonParams = {
   season_state: "in_season" | "closed"; // closed: "Season closed: final GE X% vs 5-yr Y%"
   season: number;
   season_last_scheduled: string | null;
+  season_scope: "report" | "crop"; // crop: this crop's season ended before the report's
   history_start: string; // "2010-06-07"
 };
-/** 5-year comparison block of C1, C3, G2, G3 (k = rank among history + current). */
+/** 5-year comparison block of C1, C3, G2, G3: k is the rank among history + current, so its
+ *  denominator is k_of (= n + 1, where the insight's n counts the history seasons only). */
 export type RangeParams = {
   hist_mean: number | null;
   hist_min: number | null;
@@ -131,6 +133,7 @@ export type RangeParams = {
   position: "below" | "inside" | "above" | null;
   outside_distance: number | null;
   k: number | null;
+  k_of: number | null;
   order: "highest_first" | "lowest_first";
 };
 export type C1Params = SeasonParams &
@@ -475,6 +478,8 @@ export type CropProgressCrop = {
   history_start: string;
   season: number;
   season_state: "in_season" | "closed" | null;
+  /** "crop": this crop's season is complete while the report's is open (final values). */
+  season_scope: "report" | "crop" | null;
   latest: CropProgressLatest;
   next_release: string | null;
   n_states: number | null; // NASS "<N> States" aggregate

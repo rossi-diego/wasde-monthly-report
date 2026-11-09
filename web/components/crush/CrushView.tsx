@@ -12,7 +12,7 @@ import type { CrushCommodity, Insight, InsightsDoc } from "@/lib/data-contract";
 import { bushels, bushelsAxis, bytes, lbPerBu, monthOf, monthYear, num, share, shortDate, shortTonsToMt, signed, tonnes } from "@/lib/format";
 import { byId, caveatText, suppressedText } from "@/lib/insight-text";
 import type { Key } from "@/lib/i18n";
-import { NOPA_NOTE, NOPA_URL } from "@/lib/nopa";
+import { NOPA_URL } from "@/lib/nopa";
 
 export type TakeFile = { file: string; dataset: string; format: string; href: string; bytes: number; rows: number };
 
@@ -453,8 +453,8 @@ export default function CrushView({
         <h2 id="h-nopa" className="m-0 text-[15px] font-bold">
           <T k="crush.nopa.title" />
         </h2>
-        <p className="m-0" lang="en">
-          {NOPA_NOTE}
+        <p className="m-0">
+          <T k="crush.nopa.note" />
         </p>
         <a href={NOPA_URL} rel="noopener noreferrer" className="inline-flex min-h-11 items-center self-start text-link">
           <T k="crush.nopa.link" />
