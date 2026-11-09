@@ -3,7 +3,22 @@ import { expect, test, type Page } from "@playwright/test";
 // Runs against the static export locally, and against the live URL after each deploy
 // (E2E_BASE_URL), where it also proves the site shows the latest ingested report.
 
-const ROUTES = ["/", "/reports/", "/reports/wasde/", "/reports/export-sales/", "/reports/oilseed-crush/", "/commodity/corn/", "/commodity/soybeans/", "/data/", "/downloads/", "/methodology/"];
+const ROUTES = [
+  "/",
+  "/reports/",
+  "/reports/wasde/",
+  "/reports/export-sales/",
+  "/reports/oilseed-crush/",
+  "/reports/crop-progress/",
+  "/reports/grain-stocks/",
+  "/commodities/soybeans/",
+  "/commodities/corn/",
+  "/commodity/corn/",
+  "/commodity/soybeans/",
+  "/data/",
+  "/downloads/",
+  "/methodology/",
+];
 
 type Hist = { market_year: string; stocks_to_use_pct: number | null; status: "final" | "current" };
 
@@ -67,7 +82,8 @@ test("reports index shows WASDE dates from meta.json", async ({ page }) => {
   await page.goto("/reports/");
   await expect(page.getByRole("heading", { name: /WASDE/ })).toBeVisible();
   await expect(page.locator("#wasde")).toContainText(meta.latest.label);
-  await expect(page.getByRole("heading", { name: "Other USDA reports" })).toBeVisible();
+  // Since cut C every v1 report is live: no placeholder section is left.
+  await expect(page.getByRole("heading", { name: "Other USDA reports" })).toHaveCount(0);
 });
 
 test("prebuilt downloads exist", async ({ page }) => {

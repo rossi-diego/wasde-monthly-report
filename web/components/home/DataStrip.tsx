@@ -19,10 +19,14 @@ export default function DataStrip({
     tag: string | null;
     esrReleases: string | null;
     crushReleases: string | null;
+    cpReleases?: string | null;
+    gsReleases?: string | null;
   };
 }) {
   const t = useT();
-  const titleKey = history.esrReleases
+  const titleKey = history.cpReleases || history.gsReleases
+    ? "data.titleAll"
+    : history.esrReleases
     ? history.crushReleases
       ? "data.titleEsrCrush"
       : "data.titleEsr"
@@ -54,6 +58,18 @@ export default function DataStrip({
             <>
               {" · "}
               <T k="data.subCrush" v={{ releases: history.crushReleases }} />
+            </>
+          )}
+          {history.cpReleases && (
+            <>
+              {" · "}
+              <T k="data.subCp" v={{ releases: history.cpReleases }} />
+            </>
+          )}
+          {history.gsReleases && (
+            <>
+              {" · "}
+              <T k="data.subGs" v={{ releases: history.gsReleases }} />
             </>
           )}
         </div>

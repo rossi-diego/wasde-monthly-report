@@ -66,15 +66,30 @@ export default function PaceChart({
   const m = { l: 44, r: 12, t: yUnit ? 24 : 12, b: 26 };
   const x = (v: number) => m.l + ((v - 1) / Math.max(xMax - 1, 1)) * (width - m.l - m.r);
   const y = (v: number) => height - m.b - ((v - lo) / (hi - lo || 1)) * (height - m.b - m.t);
-  const xTicks = xTickLabels ?? [1, 10, 20, 30, 40, 50].filter((w) => w <= xMax).map((w) => ({ x: w, label: String(w) }));
-  const bandPts = band.filter((b) => b.min !== null && b.max !== null) as { x: number; min: number; max: number; mean: number | null }[];
-  const area =
-    bandPts.length > 1
-      ? [
-          ...bandPts.map((b) => `${x(b.x).toFixed(1)},${y(b.max).toFixed(1)}`),
-          ...[...bandPts].reverse().map((b) => `${x(b.x).toFixed(1)},${y(b.min).toFixed(1)}`),
-        ].join(" ")
-      : null;
+  const xTicksAll = xTickLabels ?? [1, 10, 20, 30, 40, 50].filter((w) => w <= xMax).map((w) => ({ x: w, label: String(w) }));
+  // The band is drawn per run of weeks that have one: a week without a band (too few
+  // comparable seasons) leaves a gap, never a bridge.
+  const bandRuns: { x: number; min: number; max: number }[][] = [];
+  let curRun: { x: number; min: number; max: number }[] = [];
+  for (const b of band) {
+    if (b.min === null || b.max === null) {
+      if (curRun.length) bandRuns.push(curRun);
+      curRun = [];
+    } else curRun.push({ x: b.x, min: b.min, max: b.max });
+  }
+  if (curRun.length) bandRuns.push(curRun);
+  const areas = bandRuns
+    .filter((r) => r.length > 1)
+    .map((r) =>
+      [...r.map((b) => `${x(b.x).toFixed(1)},${y(b.max).toFixed(1)}`), ...[...r].reverse().map((b) => `${x(b.x).toFixed(1)},${y(b.min).toFixed(1)}`)].join(" "),
+    );
+  // Thin the x labels from the right (the newest week always keeps its label) so that two
+  // labels never collide on a narrow screen ("Sep 20ct 25" at 360 px).
+  const xTicks: { x: number; label: string }[] = [];
+  for (const tk of [...xTicksAll].reverse()) {
+    const prev = xTicks[0];
+    if (!prev || x(prev.x) - x(tk.x) >= (prev.label.length + tk.label.length) * 3.3 + 10) xTicks.unshift(tk);
+  }
   const meanRuns = runs(band.map((b) => [b.x, b.mean]));
   const ordered = [...lines].sort((a, b) => Number(a.current) - Number(b.current));
   const poly = (pts: [number, number][]) => pts.map((p) => `${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join(" ");
@@ -95,7 +110,9 @@ export default function PaceChart({
             {yUnit}
           </text>
         )}
-        {area && <polygon points={area} style={{ fill: color, opacity: 0.14 }} />}
+        {areas.map((pts, i) => (
+          <polygon key={`band-${i}`} points={pts} style={{ fill: color, opacity: 0.14 }} />
+        ))}
         {reference !== null && (
           <>
             <line x1={m.l} x2={width - m.r} y1={y(reference)} y2={y(reference)} style={{ stroke: "var(--muted)" }} strokeWidth={1} strokeDasharray="2 3" />
@@ -129,7 +146,8 @@ export default function PaceChart({
             return last ? <circle key={`${l.id}-dot`} cx={x(last[0])} cy={y(last[1] as number)} r={4.5} style={{ fill: color }} /> : null;
           })}
         {xTicks.map((w) => (
-          <text key={w.x} x={x(w.x)} y={height - 8} textAnchor="middle" fontSize={11} style={{ fill: "var(--muted)" }}>
+          // A label at the right edge is end-anchored so it is never clipped.
+          <text key={w.x} x={x(w.x)} y={height - 8} textAnchor={x(w.x) > width - m.r - 24 ? "end" : "middle"} fontSize={11} style={{ fill: "var(--muted)" }}>
             {w.label}
           </text>
         ))}

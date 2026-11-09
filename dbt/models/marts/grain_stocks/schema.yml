@@ -1,0 +1,103 @@
+version: 2
+models:
+- name: fct_grain_stocks_quarterly
+  description: U.S. corn, soybean and all-wheat stocks per stock date (December 1, March 1, June 1,
+    September 1) by position, NASS Grain Stocks table 1 since the 2010-06-30 release; latest revised
+    value with the release that first printed each date and the first print. Thousand bushels as
+    printed (metric tons through dim_unit). Published as grain_stocks__quarterly__v1.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: commodity_id
+    data_type: varchar
+    description: Canonical commodity id (corn, soybeans, wheat = all wheat).
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values: [corn, soybeans, wheat]
+  - name: market_year
+    data_type: varchar
+    description: Marketing year in which the stocks are held (corn/soybeans September-August, wheat
+      June-May), e.g. September 1, 2026 corn stocks belong to 2025/26 (its ending stocks).
+    data_tests:
+    - not_null
+  - name: my_start
+    data_type: integer
+    description: First calendar year of the marketing year.
+  - name: quarter_of_my
+    data_type: integer
+    description: 1-4 within the marketing year; 4 = ending stocks (corn/soy September 1, wheat June
+      1), 1 = the harvest quarter (corn/soy December 1, wheat September 1).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [1, 2, 3, 4]
+          quote: false
+  - name: as_of_date
+    data_type: date
+    description: Stock date (the first day of the month, ISO date).
+    data_tests:
+    - not_null
+  - name: unit_id
+    data_type: varchar
+    description: k_bu (thousand bushels) for the *_kbu columns.
+  - name: on_farm_kbu
+    data_type: double
+    description: Stocks stored on farms (thousand bushels), latest revision.
+  - name: off_farm_kbu
+    data_type: double
+    description: Stocks at mills, elevators, warehouses, terminals and processors (thousand bushels).
+  - name: total_kbu
+    data_type: double
+    description: Stocks in all positions (thousand bushels), latest revision.
+    data_tests:
+    - not_null
+  - name: total_mt
+    data_type: double
+    description: total_kbu in metric tons (dim_unit; corn 39.3679 bu/t, soybeans/wheat 36.7437 bu/t).
+  - name: on_farm_share
+    data_type: double
+    description: on_farm_kbu / total_kbu (G3).
+  - name: total_yoy_pct
+    data_type: double
+    description: total_kbu / the same date one year earlier − 1 (G3).
+  - name: total_first_kbu
+    data_type: double
+    description: Total as first printed (before later revisions).
+  - name: on_farm_first_kbu
+    data_type: double
+    description: On-farm stocks as first printed.
+  - name: is_revised
+    data_type: boolean
+    description: True when the latest total differs from the first print.
+  - name: first_release_key
+    data_type: varchar
+    description: Grain Stocks release (ESMIS release date, YYYY-MM-DD) that first printed the date.
+  - name: first_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (12:00 ET in UTC).
+  - name: first_printed_as
+    data_type: varchar
+    description: current = first printed as the release's newest date; earlier = first seen as an
+      older date (dates before the first ESMIS file used, 2010-06-30).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [current, earlier]
+  - name: latest_release_key
+    data_type: varchar
+    description: Release whose (latest revised) values are shown.
+  - name: latest_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (UTC).
+  - name: n_vintages
+    data_type: integer
+    description: How many releases printed the date.
+  - name: source_url
+    data_type: varchar
+    description: ESMIS zip of the release whose values are shown.
+  - name: is_latest
+    data_type: boolean
+    description: True on the commodity's newest stock date.

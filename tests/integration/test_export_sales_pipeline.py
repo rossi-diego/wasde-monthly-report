@@ -108,7 +108,8 @@ def test_insights_json_is_params_only_and_gated(built: Settings):
     assert by["E1:corn"].params["wasde_release_key"] == "2024-05"
     assert by["E3:soybeans"].suppressed_reason == "n_below_min"  # one MY of history only
     assert by["E3:soybeans"].params["china_share"] is not None
-    assert doc.hero.kind == "fallback" and doc.home_cards == []
+    # Only the fresh Crop Progress stage pace (NASS's own 5-year average, n = 5) passes.
+    assert doc.hero.kind == "fallback" and doc.home_cards == ["C2:corn"]
     # No prose anywhere: params hold numbers, ids, dates and lists of those only.
     for i in doc.insights:
         for v in i.params.values():

@@ -33,6 +33,12 @@ InsightKind = Literal[
     "crush_pace",  # F1
     "required_monthly_crush",  # F2
     "oil_yield",  # F3
+    "good_excellent",  # C1
+    "stage_pace",  # C2
+    "condition_index",  # C3
+    "stocks_vs_wasde",  # G1
+    "implied_disappearance",  # G2
+    "on_farm_share",  # G3
 ]
 SuppressedReason = Literal[
     "n_below_min",  # comparison sample smaller than gates.min_n
@@ -43,6 +49,7 @@ SuppressedReason = Literal[
     "no_data",  # the inputs needed are absent
     "first_projection",  # W3: a first projection has no revision to rank
     "gap_after_cancelled_report",  # W3: Δ spans 2+ months (a WASDE was cancelled)
+    "season_closed",  # C2/C3: Crop Progress season over (C1 shows the final rating instead)
 ]
 Caveat = Literal[
     "small_sample",  # n < 10
@@ -55,6 +62,15 @@ Caveat = Literal[
     "crush_history_from_2015",  # NASS crush history starts with the 2015-10 ESMIS file
     "nass_revises_previous_month",  # each NASS release revises the previous month
     "wasde_oil_year_oct_sep",  # WASDE soybean oil year is Oct–Sep, the crush year Sep–Aug
+    "nass_selected_states_aggregate",  # Crop Progress national = NASS's "<N> States" total
+    "own_5yr_same_week_by_day_of_year",  # C1/C3: NASS publishes no 5-yr for condition
+    "own_5yr_final_rating",  # C1 season closed: final rating vs the 5 prior final ratings
+    "nass_5yr_average_as_published",  # C2: NASS's own published 5-year average
+    "winter_wheat_fall_ratings_next_crop",  # fall winter-wheat ratings: next year's crop
+    "grain_stocks_first_print",  # G1: NASS stocks as first printed (later revised)
+    "imports_omitted_small_for_corn_soy",  # G2: imports left out of the identity
+    "nass_may_revise_production_same_day",  # G2: WASDE production as of the release is used
+    "nass_revises_previous_quarter",  # each Grain Stocks release revises earlier dates
 ]
 
 
@@ -69,8 +85,27 @@ class Insight(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str = Field(description="Stable id, e.g. 'E1:soybeans' or 'W2:corn'.")
-    rule: Literal["W1", "W2", "W3", "W4", "E1", "E2", "E3", "F1", "F2", "F3"]
-    report_id: Literal["wasde", "export_sales", "oilseed_crush", "cross"]
+    rule: Literal[
+        "W1",
+        "W2",
+        "W3",
+        "W4",
+        "E1",
+        "E2",
+        "E3",
+        "F1",
+        "F2",
+        "F3",
+        "C1",
+        "C2",
+        "C3",
+        "G1",
+        "G2",
+        "G3",
+    ]
+    report_id: Literal[
+        "wasde", "export_sales", "oilseed_crush", "crop_progress", "grain_stocks", "cross"
+    ]
     commodity_id: str | None
     kind: InsightKind
     params: dict[str, Any] = Field(description="Numbers and ids only; never prose.")
@@ -116,8 +151,25 @@ class Gates(BaseModel):
     small_sample_below: int = 10
     e2_min_weeks_remaining: int = 6
     f2_min_months_remaining: int = 5  # = min_n: F2 compares n = months_remaining months
+    # Months (1-12) in which a seasonal report's card is left off the home page (plan §6:
+    # Crop Progress off-season, December to March). Its report page still shows it.
+    home_hidden_months: dict[str, list[int]] = Field(
+        default_factory=lambda: {"crop_progress": [12, 1, 2, 3]}
+    )
     # Per-report staleness: cadence days + grace_days from config/reports.yaml.
     stale_after_days: dict[str, int] = Field(default_factory=dict)
+
+
+class SeasonStatus(BaseModel):
+    """Season state of a seasonal report (Crop Progress, April-November)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    state: Literal["in_season", "closed"]
+    season: int
+    latest_release_key: str
+    last_scheduled: str | None
+    shown_on_home: bool
 
 
 class InsightsDoc(BaseModel):
@@ -132,4 +184,8 @@ class InsightsDoc(BaseModel):
     )
     insights: list[Insight]
     home_cards: list[str] = Field(description="Insight ids for the home page, in order (≤ 5).")
+    seasons: dict[str, SeasonStatus] = Field(
+        default_factory=dict,
+        description="Season state of seasonal reports (crop_progress), for the report page.",
+    )
     hero: Hero

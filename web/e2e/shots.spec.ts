@@ -15,12 +15,15 @@ for (const scheme of ["light", "dark"] as const) {
     for (const [name, url] of [
       ["export-sales", "/reports/export-sales/"],
       ["crush", "/reports/oilseed-crush/"],
+      ["crop-progress", "/reports/crop-progress/"],
+      ["grain-stocks", "/reports/grain-stocks/"],
+      ["lens", "/commodities/soybeans/"],
       ["commodity", "/commodity/corn/"],
       ["downloads", "/data/"],
     ] as const) {
       await page.goto(url);
       await page.waitForTimeout(800);
-      await page.screenshot({ path: `${OUT}/${name}-${scheme}.png`, fullPage: name === "export-sales" || name === "crush" });
+      await page.screenshot({ path: `${OUT}/${name}-${scheme}.png`, fullPage: name !== "commodity" && name !== "downloads" });
     }
     if (process.env.SHOTS_ALL) {
       for (const [name, url] of [
@@ -35,6 +38,21 @@ for (const scheme of ["light", "dark"] as const) {
     }
   });
 }
+
+test("@shots pt", async ({ page }, info) => {
+  if (info.project.name !== "desktop") test.skip();
+  await page.addInitScript(() => localStorage.setItem("usda-lang", "pt"));
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.emulateMedia({ colorScheme: "light" });
+  for (const [name, url] of [
+    ["home-pt", "/"],
+    ["crop-progress-pt", "/reports/crop-progress/"],
+  ] as const) {
+    await page.goto(url);
+    await page.waitForTimeout(800);
+    await page.screenshot({ path: `${OUT}/${name}.png`, fullPage: true });
+  }
+});
 
 test("@shots mobile", async ({ page }, info) => {
   if (info.project.name !== "desktop") test.skip();

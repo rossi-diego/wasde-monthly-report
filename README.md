@@ -8,16 +8,38 @@
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Every USDA WASDE report since July 2010, every weekly U.S. Export Sales release since
-marketing year 2010/11 and every monthly NASS soybean crush release since October 2015,
-harmonized into one point-in-time data product — updated automatically on release day, and
-turned into the view a trading desk actually needs: what changed, whether it is tight or loose
-versus history, and whether export sales and crush are on pace for what USDA itself projected
-at the time.**
+**Five USDA reports — every WASDE since July 2010, every weekly Export Sales release since
+marketing year 2010/11, the monthly NASS soybean crush since October 2015, the weekly NASS Crop
+Progress since 2010 and the quarterly NASS Grain Stocks since 2010 — harmonized into one
+point-in-time data product, updated automatically on release day, and turned into the view a
+trading desk actually needs: what changed, whether it is tight or loose versus history, whether
+sales and crush are on pace for what USDA itself projected at the time, how the crop looks and
+whether stocks surprised USDA. In English and Brazilian Portuguese.**
 
 🔗 **Live site:** https://usda-reports.vercel.app · 📦 **Data:** [latest release](https://github.com/rossi-diego/usda-reports-dashboard/releases/latest)
 
 ![This report](docs/screenshots/home-light.png)
+
+## 30-second tour
+
+1. **[Home](https://usda-reports.vercel.app/)** — the hero line ("This week: …") and one card per
+   report: a number, its 5-year or since-2010 context, **n** and the source release on every card.
+   Crop Progress is green, Grain Stocks violet; off-season (December–March) Crop Progress steps
+   aside.
+2. **Open a card** — it lands on the report chapter it comes from, e.g.
+   [Crop Progress](https://usda-reports.vercel.app/reports/crop-progress/) (condition vs last year
+   and 5 years, stage pace vs NASS's own 5-yr average, season state) or
+   [Grain Stocks](https://usda-reports.vercel.app/reports/grain-stocks/) (stocks vs the WASDE
+   public at the release, implied use, on-farm share).
+3. **One commodity, every report** —
+   [/commodities/soybeans](https://usda-reports.vercel.app/commodities/soybeans/) puts the latest
+   WASDE, Export Sales, crush, Crop Progress and Grain Stocks numbers on one page, each linked to
+   its chapter and its files.
+4. **Take the data** — [/data](https://usda-reports.vercel.app/data/): every dataset as Parquet/CSV
+   with sha256, schema version and `datapackage.json`; vintages on GitHub Releases.
+5. **Switch to PT** (top right) — every string, date and number (1.234,5) follows; the
+   [methodology](https://usda-reports.vercel.app/methodology/) states every formula in both
+   languages.
 
 ---
 
@@ -42,6 +64,8 @@ error-prone. This project does it end to end:
 | Are export sales on pace for USDA? | **Commitments as % of the WASDE projection public at each ESR release**, vs the same week of the 5 prior years (each against *its* as-of WASDE) |
 | Who is buying? | China and **unknown destinations** shares of commitments, vs 5 years |
 | Is the crush on pace for USDA? | **NASS crush to date as % of the WASDE crush projection public when NASS printed the month**, what is still needed per month, and the oil yield per bushel vs 5 years and vs the WASDE-implied yield |
+| Is the crop ahead or behind, and in what shape? | **Crop Progress**: stage vs NASS's own published 5-yr average (C2), good-to-excellent vs NASS's previous year and an own 5-season comparison (C1), condition index 1–5 (C3); "season closed" off-season |
+| Did stocks surprise USDA? | **Grain Stocks** vs the WASDE ending stocks public at the release (G1, ranked since 2010), implied disappearance (G2) and on-farm share (G3) |
 | Can I get it in Excel / Parquet? | Latest report workbook, per-commodity history, versioned catalogue with `datapackage.json` |
 
 ### Reports
@@ -51,7 +75,11 @@ error-prone. This project does it end to end:
 | WASDE | USDA OCE/WAOB | monthly, 12:00 | OCE CSV (2021+) + ESMIS XML | 2010-07 → | [/reports/wasde](https://usda-reports.vercel.app/reports/wasde/) · [commodity pages](https://usda-reports.vercel.app/commodity/soybeans/) | live |
 | Export Sales (ESR) | USDA FAS | weekly, Thu 08:30 | FAS ESR API (`api.fas.usda.gov`, api.data.gov key) | MY 2010/11 → | [/reports/export-sales](https://usda-reports.vercel.app/reports/export-sales/) | live |
 | Fats & Oils: soybean crush | USDA NASS | monthly, ~1st business day 15:00 | ESMIS `FatsOils` → release zip → `cafo_all_tables.csv` (no key) | 2015-10 → (ESMIS limit) | [/reports/oilseed-crush](https://usda-reports.vercel.app/reports/oilseed-crush/) | live |
-| Crop Progress · Grain Stocks | USDA NASS | weekly · quarterly | ESMIS zip CSV | — | placeholder cards | planned |
+| Crop Progress (corn, soybeans, winter/spring wheat; national) | USDA NASS | weekly, Mon 16:00 (Apr–Nov; holiday → Tue) | ESMIS `CropProg` → release zip → `prog_all_tables.csv` (no key) | 2010-06 → | [/reports/crop-progress](https://usda-reports.vercel.app/reports/crop-progress/) | live (cut C) |
+| Grain Stocks (corn, soybeans, wheat; by position) | USDA NASS | quarterly, 12:00 | ESMIS `GraiStoc` → release zip → `grst_all_tables.csv` (no key) | 2010-06 → | [/reports/grain-stocks](https://usda-reports.vercel.app/reports/grain-stocks/) | live (cut C) |
+
+Commodity pages combining every report: [/commodities/soybeans](https://usda-reports.vercel.app/commodities/soybeans/) ·
+[/commodities/corn](https://usda-reports.vercel.app/commodities/corn/).
 
 Release dates, next releases and freshness of every report: [/reports](https://usda-reports.vercel.app/reports/)
 (a stale banner appears when a report is older than its cadence plus grace).
@@ -109,6 +137,61 @@ printed it, so a year-to-date sum always uses the NASS vintages public at that i
 > earlier; NOPA data is proprietary and not redistributed here. This site uses the
 > public-domain NASS Fats & Oils series, which covers all reporting facilities.
 > ([nopa.org](https://www.nopa.org/); licensing evidence in [`docs/DATA_LICENSES.md`](docs/DATA_LICENSES.md).)
+
+### Crop Progress on the site
+
+![Crop Progress](docs/screenshots/crop-progress-light.png)
+
+`/reports/crop-progress/` has a crop switcher (corn, soybeans, winter wheat, spring wheat; the
+national figure is NASS's own selected-states aggregate), the header numbers (stage in progress,
+good/excellent, condition index, next Monday release) and three chapters:
+
+1. **Condition (C1, C3)**: good + excellent by week against NASS's published previous-year value
+   and the 5 prior seasons at the nearest week by day of year (±3 days; NASS publishes no 5-yr
+   condition average, so that band is computed here and labelled so). The condition index
+   CI = (1·VP + 2·P + 3·F + 4·G + 5·E) ÷ 100 sits under it.
+2. **Stage pace (C2)**: the stage in progress against **NASS's own published 5-yr average**, used
+   exactly as published.
+3. **Season state**: in season, every crop's latest stage and rating; after the last scheduled
+   release, "Season closed: final GE X% vs 5-yr Y%" with the final ratings of the 5 prior seasons.
+   C2/C3 are then suppressed, the report reads *off-season* (not stale) and the home card is
+   hidden December–March. Both states are tested on a frozen-clock fixture
+   (`web/e2e/fixtures/offseason`).
+
+### Grain Stocks on the site
+
+![Grain Stocks](docs/screenshots/grain-stocks-light.png)
+
+`/reports/grain-stocks/` (corn, soybeans, wheat) shows total, on-farm and year-on-year stocks and:
+
+1. **Stocks vs USDA (G1)**: only for the stock date that closes the marketing year (corn and
+   soybeans September 1, wheat June 1): NASS first print minus the WASDE ending stocks public at
+   the release, in mil. bu and %, ranked by size since 2010 ("k-th largest of n"; a percentile only
+   from n ≥ 10).
+2. **Implied use (G2)**: start stocks + production (harvest quarter only, the WASDE figure public
+   at the release) − end stocks, vs the same quarter of 5 years. Caveats, verbatim: *imports
+   omitted; small for corn/soy* and *NASS may revise production on the same day (Small Grains
+   Summary / annual Crop Production); this uses the WASDE figure public at release*.
+3. **On-farm share (G3)** vs the same date of 5 years.
+
+### One commodity, every report
+
+![Soybeans: every report](docs/screenshots/lens-light.png)
+
+`/commodities/soybeans/` and `/commodities/corn/` (in the sidebar under *Commodities*) list the
+latest number of every report that covers the commodity — WASDE balance sheet, Export Sales
+commitments and pace, crush, Crop Progress, Grain Stocks — with its release date, a link to the
+exact chapter and the Parquet files, followed by one passing finding per report. The home page
+has the same view in miniature ("One commodity, every report").
+
+### Portuguese (pt-BR)
+
+![Portuguese](docs/screenshots/home-pt.png)
+
+Every string exists in both languages (`web/lib/i18n.ts` types PT as a complete record, so a
+missing translation fails the build), numbers and dates follow the language (1.234,5 · 9 nov 2026),
+and the methodology is written in both. Playwright runs axe on every route in EN and PT, light
+and dark, and checks that the PT pages carry no English UI copy.
 
 ## Architecture
 
@@ -273,13 +356,19 @@ variables (now `USDA_*`; see `.env.example`).
 
 ## Screenshots
 
-| Commodity page | Phone (360–390px) |
+| WASDE commodity page | Phone (360–390px) |
 |---|---|
 | ![Commodity](docs/screenshots/commodity-light.png) | <img src="docs/screenshots/home-mobile.png" alt="Home on a phone" width="260"> |
 | **Data catalogue** (by report or commodity; sha256, schema version, `datapackage.json`) | **Dark mode** |
 | ![Downloads](docs/screenshots/downloads-light.png) | ![Dark](docs/screenshots/home-dark.png) |
 | **Export Sales, dark** | **Soybean crush, dark** |
 | ![Export Sales dark](docs/screenshots/export-sales-dark.png) | ![Crush dark](docs/screenshots/crush-dark.png) |
+| **Crop Progress, dark** | **Grain Stocks, dark** |
+| ![Crop Progress dark](docs/screenshots/crop-progress-dark.png) | ![Grain Stocks dark](docs/screenshots/grain-stocks-dark.png) |
+| **Soybeans: every report, dark** | **Crop Progress in Portuguese** |
+| ![Soybeans lens dark](docs/screenshots/lens-dark.png) | ![Crop Progress PT](docs/screenshots/crop-progress-pt.png) |
+
+Screenshots are regenerated with `SHOTS_DIR=../docs/screenshots npx playwright test shots --project=desktop` (from `web/`).
 
 ## Project structure
 
@@ -303,7 +392,8 @@ src/usda_reports/
   cli.py             `usda-reports` command
 dbt/                 staging/{wasde,export_sales,oilseed_crush} · marts/{core,wasde,export_sales,oilseed_crush,cross} ·
                      seeds (dim_unit, dim_commodity, esr_corrections) · macros (assert_no_lookahead) · tests
-web/                 Next.js 16 static site (ECharts, hyparquet, SheetJS), Playwright tests
+web/                 Next.js 16 static site (ECharts, hyparquet, SheetJS), EN + pt-BR, Playwright tests
+                     app/reports/{wasde,export-sales,oilseed-crush,crop-progress,grain-stocks} · app/commodities/[slug]
 tests/               unit + integration (dbt + publish on real fixture data)
 data/manifest.json   audit trail of every ingested release (schema v2; data lives in releases)
 ```
@@ -325,11 +415,13 @@ data/manifest.json   audit trail of every ingested release (schema v2; data live
   layout, the 2022-03 header typo and the 2025 shutdown release) and a slice of the gold marts
   (`tests/fixtures/oilseed_crush/`); a dbt unit test pins the crush ASOF boundary and
   `assert_no_lookahead` runs on the WASDE crush, WASDE oil and NASS-vintage timestamps.
-- **Web:** ESLint, TypeScript, Playwright (desktop + mobile): smoke, axe in light and dark on
-  every route, 360px no-horizontal-scroll, and a copy-vs-JSON contract test for the hero, the
-  home cards, the Export Sales header and the crush card and page (plus the exact NOPA note);
-  re-run against the live site after every deploy. Until the first data release that carries
-  the crush JSON, CI overlays a recorded cut-B set (`web/e2e/fixtures/cut-b/`) on the
+- **Web:** ESLint, TypeScript, Playwright (desktop + mobile): smoke, axe in English and
+  Portuguese, light and dark, on every route, 360px no-horizontal-scroll, and a copy-vs-JSON
+  contract test for the hero, the home cards, the Export Sales header, the crush, Crop Progress
+  and Grain Stocks pages and the commodity pages, in EN and PT (plus the exact NOPA note and the
+  verbatim G2 caveats); the Crop Progress off-season state is tested on a frozen-clock fixture.
+  Re-run against the live site after every deploy. Until the first data release that carries
+  the Crop Progress JSON, CI overlays a recorded cut-C set (`web/e2e/fixtures/cut-c/`) on the
   downloaded release; afterwards it tests the real files.
 - **Charts:** colour palette validated for colour-vision deficiency and contrast in light and dark mode.
 

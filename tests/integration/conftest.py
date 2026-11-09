@@ -58,6 +58,30 @@ def build_crush_silver(settings: Settings, manifest: Manifest, fixtures: Path) -
     load_registry(settings.config_dir).spec("oilseed_crush", settings).build_silver(manifest)
 
 
+# Two weekly Crop Progress releases and two quarterly Grain Stocks releases, all before
+# BUILT_NOW (Crop Progress is in season then; the Grain Stocks dates are not WASDE-matched
+# with a soybean/wheat WASDE in the corn-only fixture, so G1 is asof_missing there).
+CROP_PROGRESS_FIXTURE_RELEASES = ("2025-09-02", "2025-09-08")
+GRAIN_STOCKS_FIXTURE_RELEASES = ("2025-03-31", "2025-06-30")
+
+
+def build_nass_silver(
+    settings: Settings, manifest: Manifest, fixtures: Path, report_id: str, keys: tuple[str, ...]
+) -> None:
+    """Store recorded NASS zips in bronze (as the shared ESMIS ingest would) and parse them."""
+    spec = load_registry(settings.config_dir).spec(report_id, settings)
+    store = BronzeStore(settings.bronze_dir, manifest, report_id, spec.config.release_time_et)
+    for key in keys:
+        store.put(
+            key,
+            (fixtures / report_id / f"{key}.zip").read_bytes(),
+            source="esmis_zip",
+            url=f"https://esmis.nal.usda.gov/fixture/{report_id}/{key}.zip",
+            release_date=key,
+        )
+    spec.build_silver(manifest)
+
+
 def mini_settings(root: Path) -> Settings:
     return Settings(
         data_dir=root / "data", web_data_dir=root / "web", config_dir=PROJECT_ROOT / "config"
@@ -118,6 +142,8 @@ def built(tmp_path_factory, request) -> Settings:
     manifest = write_wasde_silver(settings, fixtures)
     build_export_sales_silver(settings, manifest, fixtures)
     build_crush_silver(settings, manifest, fixtures)
+    build_nass_silver(settings, manifest, fixtures, "crop_progress", CROP_PROGRESS_FIXTURE_RELEASES)
+    build_nass_silver(settings, manifest, fixtures, "grain_stocks", GRAIN_STOCKS_FIXTURE_RELEASES)
 
     assert run_dbt(settings, command="run") == 0
     publish_all(settings, manifest, tag="data-2024-05", now=BUILT_NOW)

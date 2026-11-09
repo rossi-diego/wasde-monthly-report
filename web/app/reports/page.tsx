@@ -3,17 +3,16 @@ import Link from "next/link";
 
 import { DateText, MonthYear, T } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
-import { EsrLatestText, FreshnessChip, StaleBanner } from "@/components/Freshness";
-import Upcoming from "@/components/home/Upcoming";
+import { EsrLatestText, FreshnessChip, KeyDates, StaleBanner } from "@/components/Freshness";
 import { commodityPills, releaseInfo } from "@/lib/dashboard";
-import { getCrushIndex, getEsrIndex, getInsights, getMeta, getMetaReports, getReleaseCatalog } from "@/lib/data";
+import { getCropProgressIndex, getCrushIndex, getEsrIndex, getGrainStocksIndex, getInsights, getMeta, getReleaseCatalog, getReportsMeta } from "@/lib/data";
 import { num } from "@/lib/format";
 import type { Key } from "@/lib/i18n";
 
 export const metadata: Metadata = { title: "Reports · USDA Reports Dashboard" };
 
 // Cadence + grace when insights.json (gates.stale_after_days) is not in the build.
-const DEFAULT_STALE: Record<string, number> = { wasde: 76, export_sales: 17, oilseed_crush: 76 };
+const DEFAULT_STALE: Record<string, number> = { wasde: 76, export_sales: 17, oilseed_crush: 76, crop_progress: 17, grain_stocks: 192 };
 
 function Row({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -34,7 +33,14 @@ function LiveChip({ color = "var(--pill-active)" }: { color?: string }) {
 
 export default function ReportsPage() {
   const meta = getMeta();
-  const reports = getMetaReports();
+  const reports = getReportsMeta();
+  const cp = getCropProgressIndex();
+  const cpMeta = reports.crop_progress;
+  const cpTs = cpMeta?.release_ts_utc ?? cp?.latest.release_ts_utc ?? null;
+  const cpOff = cp?.season?.state === "closed";
+  const gs = getGrainStocksIndex();
+  const gsMeta = reports.grain_stocks;
+  const gsTs = gsMeta?.release_ts_utc ?? gs?.latest.release_ts_utc ?? null;
   const esr = getEsrIndex();
   const stale = { ...DEFAULT_STALE, ...(getInsights()?.gates.stale_after_days ?? {}) };
   const wasdeTs = reports.wasde?.release_ts_utc ?? meta.latest.release_date;
@@ -59,6 +65,12 @@ export default function ReportsPage() {
       )}
       {crush && (
         <StaleBanner reportId="oilseed_crush" name="report.crush" cadence="cadence.monthly" releaseTs={crushTs} maxDays={stale.oilseed_crush} />
+      )}
+      {cp && (
+        <StaleBanner reportId="crop_progress" name="report.crop_progress" cadence="cadence.weekly" releaseTs={cpTs} maxDays={stale.crop_progress} offSeason={cpOff} />
+      )}
+      {gs && (
+        <StaleBanner reportId="grain_stocks" name="report.grain_stocks" cadence="cadence.quarterly" releaseTs={gsTs} maxDays={stale.grain_stocks} />
       )}
 
       <div className="grid-fit-380">
@@ -208,9 +220,98 @@ export default function ReportsPage() {
             </div>
           </article>
         )}
-      </div>
 
-      <Upcoming />
+        {cp && (
+          <article id="crop_progress" aria-labelledby="h-cp" className="card flex flex-col gap-3 p-5" style={{ borderColor: "var(--r-progress)" }}>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div className="eyebrow" style={{ color: "var(--r-progress)" }}>
+                  <T k="cadence.d.weeklyMonSeason" />
+                </div>
+                <h2 id="h-cp" lang="en" className="m-0 text-[17px] font-bold">
+                  Crop Progress · USDA NASS
+                </h2>
+              </div>
+              <LiveChip color="var(--pill-progress)" />
+            </div>
+            <dl className="m-0 grid">
+              <Row label={<T k="reports.latest" />}>
+                <KeyDates k="reports.cpLatest" dates={{ week: cp.latest.week_ending, date: cp.latest.release_key }} />
+              </Row>
+              <Row label={<T k="reports.next" />}>
+                <DateText iso={cpMeta?.next_release ?? cp.next_release} />
+              </Row>
+              {cp.season && (
+                <Row label={<T k="reports.season" />}>
+                  <span data-testid="cp-season-state" data-state={cp.season.state}>
+                    {cpOff ? (
+                      <KeyDates k="reports.seasonClosed" dates={{ next: cp.next_release }} vars={{ season: cp.season.season }} />
+                    ) : (
+                      <KeyDates k="reports.seasonOpen" dates={{ last: cp.season.last_scheduled }} vars={{ season: cp.season.season }} />
+                    )}
+                  </span>
+                </Row>
+              )}
+              <Row label={<T k="reports.freshness" />}>
+                <FreshnessChip releaseTs={cpTs} maxDays={stale.crop_progress} offSeason={cpOff} />
+              </Row>
+              {cpMeta && (
+                <Row label={<T k="reports.history" />}>
+                  <T k="reports.releasesRows" v={{ releases: num(cpMeta.releases), rows: num(cpMeta.rows) }} />
+                </Row>
+              )}
+            </dl>
+            <div className="mt-auto flex flex-wrap gap-x-5">
+              <Link href="/reports/crop-progress/" className="inline-flex min-h-11 items-center font-semibold text-link">
+                <T k="reports.openCp" />
+              </Link>
+              <Link href="/data/#report-crop_progress" className="inline-flex min-h-11 items-center text-link">
+                <T k="reports.data" />
+              </Link>
+            </div>
+          </article>
+        )}
+
+        {gs && (
+          <article id="grain_stocks" aria-labelledby="h-gs" className="card flex flex-col gap-3 p-5" style={{ borderColor: "var(--r-stocks)" }}>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div className="eyebrow" style={{ color: "var(--r-stocks)" }}>
+                  <T k="cadence.d.quarterlyGs" />
+                </div>
+                <h2 id="h-gs" lang="en" className="m-0 text-[17px] font-bold">
+                  Grain Stocks · USDA NASS
+                </h2>
+              </div>
+              <LiveChip color="var(--pill-stocks)" />
+            </div>
+            <dl className="m-0 grid">
+              <Row label={<T k="reports.latest" />}>
+                <KeyDates k="reports.gsLatest" dates={{ as: gs.latest.as_of_date, date: gs.latest.release_key }} />
+              </Row>
+              <Row label={<T k="reports.next" />}>
+                <DateText iso={gsMeta?.next_release ?? gs.next_release} />
+              </Row>
+              <Row label={<T k="reports.freshness" />}>
+                <FreshnessChip releaseTs={gsTs} maxDays={stale.grain_stocks} />
+              </Row>
+              {gsMeta && (
+                <Row label={<T k="reports.history" />}>
+                  <T k="reports.releasesRows" v={{ releases: num(gsMeta.releases), rows: num(gsMeta.rows) }} />
+                </Row>
+              )}
+            </dl>
+            <div className="mt-auto flex flex-wrap gap-x-5">
+              <Link href="/reports/grain-stocks/" className="inline-flex min-h-11 items-center font-semibold text-link">
+                <T k="reports.openGs" />
+              </Link>
+              <Link href="/data/#report-grain_stocks" className="inline-flex min-h-11 items-center text-link">
+                <T k="reports.data" />
+              </Link>
+            </div>
+          </article>
+        )}
+      </div>
     </>
   );
 }

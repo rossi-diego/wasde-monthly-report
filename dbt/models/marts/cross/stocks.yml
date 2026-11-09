@@ -1,0 +1,273 @@
+version: 2
+models:
+- name: fct_stocks_vs_wasde
+  description: 'Grain Stocks vs. USDA, point in time (plan §6 G1): NASS total stocks on the dates that
+    are a WASDE ending stock (corn/soybeans September 1, wheat June 1), as first printed on their own
+    release day, against the U.S. ending stocks of that old-crop marketing year in the latest WASDE
+    public at the release (ASOF). Published as cross__stocks_vs_wasde__v1.'
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: commodity_id
+    data_type: varchar
+    description: Canonical commodity id (corn, soybeans, wheat).
+    data_tests:
+    - not_null
+  - name: market_year
+    data_type: varchar
+    description: Old-crop marketing year whose ending stocks these are, e.g. 2025/26.
+    data_tests:
+    - not_null
+  - name: my_start
+    data_type: integer
+    description: First calendar year of the marketing year.
+  - name: as_of_date
+    data_type: date
+    description: Stock date (September 1 for corn and soybeans, June 1 for wheat).
+    data_tests:
+    - not_null
+  - name: release_key
+    data_type: varchar
+    description: Grain Stocks release (YYYY-MM-DD) that first printed the date.
+  - name: release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (12:00 ET in UTC).
+    data_tests:
+    - not_null
+  - name: unit_id
+    data_type: varchar
+    description: m_bu (million bushels) for the *_mbu columns.
+  - name: nass_total_kbu
+    data_type: double
+    description: NASS stocks in all positions as first printed (thousand bushels).
+  - name: nass_total_mbu
+    data_type: double
+    description: The same in million bushels.
+  - name: wasde_release_key
+    data_type: varchar
+    description: WASDE report month (YYYY-MM) public at the release (ASOF join).
+  - name: wasde_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that WASDE (12:00 ET in UTC); always <= release_ts_utc.
+  - name: wasde_proj_est_flag
+    data_type: varchar
+    description: WASDE flag of the ending-stocks figure (est / proj).
+  - name: wasde_unit_id
+    data_type: varchar
+    description: Native WASDE unit (m_bu).
+  - name: wasde_ending_stocks_mbu
+    data_type: double
+    description: U.S. ending stocks of the marketing year in that WASDE (million bushels).
+  - name: surprise_mbu
+    data_type: double
+    description: nass_total_mbu − wasde_ending_stocks_mbu (G1).
+  - name: surprise_pct
+    data_type: double
+    description: surprise_mbu / wasde_ending_stocks_mbu.
+  - name: is_latest
+    data_type: boolean
+    description: True on the commodity's newest date.
+  data_tests:
+  - assert_no_lookahead:
+      arguments:
+        left_ts: release_ts_utc
+        right_ts: wasde_release_ts_utc
+
+- name: fct_stocks_disappearance
+  description: 'Implied disappearance per quarter, point in time (plan §6 G2): stocks of the previous
+    date (as printed in the same release) + WASDE production as of the release in the harvest quarter
+    only (corn/soybeans September 1 → December 1, wheat June 1 → September 1) − stocks of the new date
+    (first print). Imports omitted; NASS may revise production the same day. Published as
+    cross__stocks_disappearance__v1.'
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: commodity_id
+    data_type: varchar
+    description: Canonical commodity id (corn, soybeans, wheat).
+    data_tests:
+    - not_null
+  - name: market_year
+    data_type: varchar
+    description: Marketing year in which the stocks of as_of_date are held.
+  - name: my_start
+    data_type: integer
+    description: First calendar year of the marketing year.
+  - name: quarter_of_my
+    data_type: integer
+    description: Quarter of the marketing year ending on as_of_date (1 = harvest quarter, 4 = the
+      quarter ending with the marketing year's ending stocks).
+  - name: as_of_date
+    data_type: date
+    description: Stock date that ends the quarter.
+    data_tests:
+    - not_null
+  - name: prev_as_of_date
+    data_type: date
+    description: Stock date that starts the quarter (three months earlier).
+  - name: release_key
+    data_type: varchar
+    description: Grain Stocks release (YYYY-MM-DD) that first printed as_of_date.
+  - name: release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (12:00 ET in UTC).
+    data_tests:
+    - not_null
+  - name: unit_id
+    data_type: varchar
+    description: k_bu (thousand bushels).
+  - name: stocks_kbu
+    data_type: double
+    description: Stocks in all positions on as_of_date, first print.
+  - name: prev_stocks_kbu
+    data_type: double
+    description: Stocks on prev_as_of_date as printed in the same release (revised that day).
+  - name: prev_vintage_ts_utc
+    data_type: timestamp with time zone
+    description: Release instant of the prev_stocks_kbu vintage (= release_ts_utc).
+  - name: is_harvest_quarter
+    data_type: boolean
+    description: True when production enters the identity.
+  - name: wasde_release_key
+    data_type: varchar
+    description: WASDE report month whose production is used (harvest quarter only).
+  - name: wasde_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that WASDE; always <= release_ts_utc.
+  - name: wasde_production_mbu
+    data_type: double
+    description: U.S. production of the marketing year in that WASDE (million bushels).
+  - name: production_kbu
+    data_type: double
+    description: Production used in the identity (thousand bushels; 0 outside the harvest quarter).
+  - name: implied_disappearance_kbu
+    data_type: double
+    description: prev_stocks_kbu + production_kbu − stocks_kbu (G2; imports omitted).
+  - name: is_latest
+    data_type: boolean
+    description: True on the commodity's newest date.
+  data_tests:
+  - assert_no_lookahead:
+      arguments:
+        left_ts: release_ts_utc
+        right_ts: wasde_release_ts_utc
+  - assert_no_lookahead:
+      arguments:
+        left_ts: release_ts_utc
+        right_ts: prev_vintage_ts_utc
+
+- name: fct_commodity_lens
+  description: 'One commodity, every report (plan §5): the latest value of each headline metric per
+    commodity × report × metric (WASDE, Export Sales, NASS crush, Crop Progress, Grain Stocks), with the
+    release it comes from. Feeds the /commodities lens pages.'
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: commodity_id
+    data_type: varchar
+    description: Canonical commodity id.
+    data_tests:
+    - not_null
+  - name: report_id
+    data_type: varchar
+    description: Report the value comes from.
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [wasde, export_sales, oilseed_crush, crop_progress, grain_stocks]
+  - name: metric
+    data_type: varchar
+    description: Metric id (production, exports, ending_stocks, crush, total_commitment, pct_of_usda_target,
+      month_crushed, <stage>_pct, good_excellent_pct, condition_index, total_stocks, on_farm_share,
+      ending_stocks_vs_usda).
+    data_tests:
+    - not_null
+  - name: value
+    data_type: double
+    description: Latest value.
+  - name: unit_id
+    data_type: varchar
+    description: Unit (m_bu, mt, bu, k_bu, pct, share, index_1_5).
+  - name: period
+    data_type: varchar
+    description: Period the value refers to (marketing year, week ending, month or stock date).
+  - name: period_date
+    data_type: date
+    description: The same as a date when it is one.
+  - name: market_year
+    data_type: varchar
+    description: Marketing year (or crop-progress season) of the value.
+  - name: release_key
+    data_type: varchar
+    description: Release that published the value.
+  - name: release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (UTC).
+  - name: source_url
+    data_type: varchar
+    description: Source file of the value when known (NASS ESMIS zips).
+
+unit_tests:
+  # Same-timestamp boundary (plan §5): the WASDE published at exactly the Grain Stocks instant
+  # (January and some September days) counts as public; one a second later does not. Only the
+  # first print of the date (column_role current) is used; a later revision is ignored.
+  - name: stocks_vs_wasde_asof_same_timestamp_boundary
+    model: fct_stocks_vs_wasde
+    given:
+      - input: ref('stg_grain_stocks')
+        rows:
+          - {commodity_id: corn, market_year: 2025/26, my_start: 2025, as_of_date: 2026-09-01,
+             release_key: 2026-09-30, release_ts_utc: "2026-09-30 16:00:00+00", edition: 1,
+             position: total, quarter_of_my: 4, column_role: current, value: 2000000}
+          - {commodity_id: corn, market_year: 2025/26, my_start: 2025, as_of_date: 2026-09-01,
+             release_key: 2027-01-12, release_ts_utc: "2027-01-12 17:00:00+00", edition: 1,
+             position: total, quarter_of_my: 4, column_role: earlier, value: 2100000}
+      - input: ref('int_wasde_asof')
+        rows:
+          - {commodity_id: corn, market_year: 2025/26, wasde_release_key: 2026-08,
+             wasde_release_ts_utc: "2026-08-12 16:00:00+00", unit_id: m_bu, ending_stocks_native: 2500}
+          - {commodity_id: corn, market_year: 2025/26, wasde_release_key: 2026-09,
+             wasde_release_ts_utc: "2026-09-30 16:00:00+00", unit_id: m_bu, ending_stocks_native: 1600}
+          - {commodity_id: corn, market_year: 2025/26, wasde_release_key: 2026-10,
+             wasde_release_ts_utc: "2026-09-30 16:00:01+00", unit_id: m_bu, ending_stocks_native: 9999}
+    expect:
+      rows:
+        - {release_key: 2026-09-30, wasde_release_key: 2026-09, nass_total_mbu: 2000,
+           wasde_ending_stocks_mbu: 1600, surprise_mbu: 400, surprise_pct: 0.25}
+
+  # G2: production enters only the harvest quarter and comes from the WASDE public at the
+  # release; the previous stock date is taken as printed in the same release.
+  - name: stocks_disappearance_harvest_quarter
+    model: fct_stocks_disappearance
+    given:
+      - input: ref('stg_grain_stocks')
+        rows:
+          - {commodity_id: corn, market_year: 2026/27, my_start: 2026, as_of_date: 2026-12-01,
+             release_key: 2027-01-12, release_ts_utc: "2027-01-12 17:00:00+00", edition: 1,
+             position: total, quarter_of_my: 1, column_role: current, value: 12000000}
+          - {commodity_id: corn, market_year: 2025/26, my_start: 2025, as_of_date: 2026-09-01,
+             release_key: 2027-01-12, release_ts_utc: "2027-01-12 17:00:00+00", edition: 1,
+             position: total, quarter_of_my: 4, column_role: earlier, value: 2100000}
+          - {commodity_id: corn, market_year: 2025/26, my_start: 2025, as_of_date: 2026-09-01,
+             release_key: 2026-09-30, release_ts_utc: "2026-09-30 16:00:00+00", edition: 1,
+             position: total, quarter_of_my: 4, column_role: current, value: 2000000}
+          - {commodity_id: corn, market_year: 2025/26, my_start: 2025, as_of_date: 2026-06-01,
+             release_key: 2026-09-30, release_ts_utc: "2026-09-30 16:00:00+00", edition: 1,
+             position: total, quarter_of_my: 3, column_role: earlier, value: 5000000}
+      - input: ref('int_wasde_asof')
+        rows:
+          - {commodity_id: corn, market_year: 2026/27, wasde_release_key: 2026-12,
+             wasde_release_ts_utc: "2026-12-10 17:00:00+00", production_native: 16000}
+          - {commodity_id: corn, market_year: 2026/27, wasde_release_key: 2027-01,
+             wasde_release_ts_utc: "2027-01-12 17:00:00+00", production_native: 15000}
+          - {commodity_id: corn, market_year: 2025/26, wasde_release_key: 2026-09,
+             wasde_release_ts_utc: "2026-09-12 16:00:00+00", production_native: 14000}
+    expect:
+      rows:
+        - {as_of_date: 2026-09-01, prev_stocks_kbu: 5000000, production_kbu: 0,
+           wasde_release_key: null, implied_disappearance_kbu: 3000000}
+        - {as_of_date: 2026-12-01, prev_stocks_kbu: 2100000, production_kbu: 15000000,
+           wasde_release_key: 2027-01, implied_disappearance_kbu: 5100000}

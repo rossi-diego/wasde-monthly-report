@@ -33,19 +33,40 @@ def apply(
     Order: an explicit rule-level reason (no_data, asof_missing, …) is kept; then stale
     inputs; then sample size. ``min_n=None`` uses ``gates.min_n``; rules whose comparison
     window is fixed by definition (E2: 4 weeks) pass their own minimum.
+
+    A seasonal report after its season (``params.season_state == "closed"``, Crop Progress
+    December to March) is not stale: its final release is the newest data there is, shown
+    as "season closed" (plan §6), so the staleness gate does not apply to it.
+
+    The insight's own report (e.g. ``grain_stocks`` for G1) is measured against ``now``. A
+    point-in-time input from another report (the WASDE public at that release) is measured
+    against the own report's release instant: it must not have been stale *then*. Otherwise a
+    quarterly Grain Stocks insight would go stale with its as-of WASDE after 76 days although
+    the quarterly report itself is current for 192. Cross insights (``report_id = cross``)
+    have no own report: every input is measured against ``now``.
     """
     caveats = list(insight.caveats)
     small = insight.n is not None and insight.n < gates.small_sample_below
     if small and "small_sample" not in caveats:
         caveats.append("small_sample")
     reason = insight.suppressed_reason
-    if reason is None:
+    season_closed = insight.params.get("season_state") == "closed"
+    own_ts = next(
+        (
+            input_ts.get((r.report_id, r.release_key))
+            for r in insight.inputs
+            if r.report_id == insight.report_id
+        ),
+        None,
+    )
+    if reason is None and not season_closed:
         for ref in insight.inputs:
             ts = input_ts.get((ref.report_id, ref.release_key))
             limit = gates.stale_after_days.get(ref.report_id)
             if ts is None or limit is None:
                 continue
-            if now - ts > timedelta(days=limit):
+            ref_time = now if ref.report_id == insight.report_id or own_ts is None else own_ts
+            if ref_time - ts > timedelta(days=limit):
                 reason = "stale_input"
                 break
     if reason is None:

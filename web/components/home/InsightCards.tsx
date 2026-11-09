@@ -5,8 +5,8 @@ import Link from "next/link";
 import RangeBar from "@/components/charts/RangeBar";
 import { T, useLang, useT } from "@/components/chrome/I18n";
 import type { Insight, InsightsDoc } from "@/lib/data-contract";
-import { lbPerBu, num, share } from "@/lib/format";
-import { cardView, finding, heroView, type CardView } from "@/lib/insight-text";
+import { cardView, finding, heroView, rangeText, rangeTick, type CardView } from "@/lib/insight-text";
+import { alsoReleased } from "@/lib/lens";
 
 /** "small sample" chip: shown whenever the insight carries the small_sample caveat (n < 10). */
 export function SmallChip() {
@@ -17,17 +17,23 @@ export function SmallChip() {
   );
 }
 
-export function InsightCard({ v, dataHref }: { v: CardView; dataHref?: string }) {
+export function InsightCard({ v, dataHref, also }: { v: CardView; dataHref?: string; also?: string }) {
   const t = useT();
   const hid = `h-card-${v.id.replace(/[^a-z0-9]+/gi, "-")}`;
   return (
     <article
       aria-labelledby={hid}
-      data-testid="insight-card"
+      // "also released" cards are not part of insights.json home_cards (the ≤5 row)
+      data-testid={also ? "also-card" : "insight-card"}
       data-insight-id={v.id}
       className="card flex min-w-0 flex-col gap-2 p-[18px]"
       style={{ borderTop: `4px solid ${v.color}` }}
     >
+      {also && (
+        <span className="self-start rounded-full border border-line px-2 py-[1px] text-[11px] font-semibold text-muted" data-testid="also-chip">
+          {also}
+        </span>
+      )}
       <div className="text-xs font-bold uppercase tracking-[0.04em]" style={{ color: v.color }}>
         {v.eyebrow}
       </div>
@@ -47,11 +53,11 @@ export function InsightCard({ v, dataHref }: { v: CardView; dataHref?: string })
           mean={v.range.mean}
           value={v.range.value}
           color={v.color}
-          fromZero={v.rangeUnit === "share"}
-          format={(x) => (v.rangeUnit === "share" ? share(x, 0) : num(x, 2))}
+          fromZero={v.rangeUnit === "share" || v.rangeUnit === "pct"}
+          format={(x) => rangeTick(v.rangeUnit, x)}
           ariaLabel={t("card.rangeAria", {
-            min: v.rangeUnit === "share" ? share(v.range.lo) : lbPerBu(v.range.lo),
-            max: v.rangeUnit === "share" ? share(v.range.hi) : lbPerBu(v.range.hi),
+            min: rangeText(v.rangeUnit, v.range.lo),
+            max: rangeText(v.rangeUnit, v.range.hi),
             v: v.value,
           })}
         />
@@ -119,15 +125,20 @@ export function HeroLine({ doc }: { doc: InsightsDoc }) {
 
 const dataAnchor = (i: Insight) => `/data/#report-${i.report_id === "cross" ? "export_sales" : i.report_id}`;
 
-/** The home cards (insights.json `home_cards`, in order): one per report plus the cross card. */
+/** The home cards (insights.json `home_cards`, in order): one per report plus the cross card,
+ *  then the "also released" cards of reports the capped row left out (lib/lens.ts alsoReleased). */
 export default function InsightCards({ doc }: { doc: InsightsDoc }) {
+  const t = useT();
   const { lang } = useLang();
   const cards = doc.home_cards
     .map((id) => finding(doc, id))
     .filter((i): i is Insight => Boolean(i))
     .map((i) => ({ i, v: cardView(i, lang) }))
     .filter((x): x is { i: Insight; v: CardView } => x.v !== null);
-  if (!cards.length) return null;
+  const extra = alsoReleased(doc)
+    .map((i) => ({ i, v: cardView(i, lang) }))
+    .filter((x): x is { i: Insight; v: CardView } => x.v !== null);
+  if (!cards.length && !extra.length) return null;
   return (
     <section aria-labelledby="h-cards" className="flex flex-col gap-2.5">
       <div className="flex flex-wrap items-baseline gap-2.5">
@@ -141,6 +152,9 @@ export default function InsightCards({ doc }: { doc: InsightsDoc }) {
       <div className="grid-fit-240">
         {cards.map(({ i, v }) => (
           <InsightCard key={v.id} v={v} dataHref={dataAnchor(i)} />
+        ))}
+        {extra.map(({ i, v }) => (
+          <InsightCard key={v.id} v={v} dataHref={dataAnchor(i)} also={t("also.title")} />
         ))}
       </div>
     </section>

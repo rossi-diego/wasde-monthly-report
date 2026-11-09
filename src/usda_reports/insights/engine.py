@@ -14,10 +14,12 @@ from usda_reports.core.logs import get_logger
 from usda_reports.core.registry import load_registry
 from usda_reports.insights import gates as gates_mod
 from usda_reports.insights.hero import build_hero, home_cards
+from usda_reports.insights.rules import crop_progress as cp_rules
 from usda_reports.insights.rules import crush as crush_rules
 from usda_reports.insights.rules import export_sales as es_rules
+from usda_reports.insights.rules import grain_stocks as gs_rules
 from usda_reports.insights.rules import wasde as wasde_rules
-from usda_reports.insights.schema import Insight, InsightsDoc
+from usda_reports.insights.schema import Insight, InsightsDoc, SeasonStatus
 from usda_reports.publish.focus import Focus
 
 log = get_logger(__name__)
@@ -74,6 +76,28 @@ def build(
             raw += f1 + f2 + f3
             screened.update({"F1": len(f1), "F2": len(f2), "F3": len(f3)})
 
+    seasons: dict[str, SeasonStatus] = {}
+    if _table_exists(con, "fct_crop_condition") and registry.reports["crop_progress"].enabled:
+        si = cp_rules.season_for(con, settings, now)
+        if si is not None:
+            orders = cp_rules.stage_orders(settings)
+            c1 = cp_rules.c1_good_excellent(con, si, orders)
+            c2 = cp_rules.c2_stage_pace(con, si, orders)
+            c3 = cp_rules.c3_condition_index(con, si, orders)
+            raw += c1 + c2 + c3
+            screened.update({"C1": len(c1), "C2": len(c2), "C3": len(c3)})
+            seasons["crop_progress"] = SeasonStatus(
+                state=si.state,
+                season=si.season,
+                latest_release_key=si.latest_release_key,
+                last_scheduled=si.last_scheduled.isoformat() if si.last_scheduled else None,
+                shown_on_home=now.month not in gates.home_hidden_months.get("crop_progress", []),
+            )
+
+    gs, n_gs = gs_rules.all_rules(con)
+    raw += gs
+    screened.update(n_gs)
+
     idx = release_index(con)
     out = []
     for i in raw:
@@ -90,7 +114,8 @@ def build(
         gates=gates,
         n_screened=screened,
         insights=out,
-        home_cards=home_cards(out),
+        home_cards=home_cards(out, now, gates.home_hidden_months),
+        seasons=seasons,
         hero=build_hero(out, releases, wasde_date),
     )
     log.info(

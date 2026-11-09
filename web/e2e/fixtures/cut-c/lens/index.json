@@ -1,0 +1,1 @@
+{"schema_version":1,"commodities":[{"id":"soybeans","label":"Soybeans","n_reports":5,"file":"lens/soybeans.json"},{"id":"corn","label":"Corn","n_reports":4,"file":"lens/corn.json"}]}

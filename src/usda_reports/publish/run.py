@@ -17,6 +17,7 @@ from usda_reports.core.manifest import Manifest
 from usda_reports.core.registry import Registry, load_registry
 from usda_reports.gold import dbt_target_dir
 from usda_reports.insights import engine as insights_engine
+from usda_reports.insights.rules import crop_progress as cp_rules
 from usda_reports.publish.catalog import build_catalog
 from usda_reports.publish.catalogue import (
     ALL_DATASETS,
@@ -27,8 +28,11 @@ from usda_reports.publish.catalogue import (
 from usda_reports.publish.datapackage import build_datapackage, write_datapackage
 from usda_reports.publish.excel import history_workbook, latest_report_workbook
 from usda_reports.publish.focus import Focus
+from usda_reports.publish.web_commodity import build_commodity_lenses
+from usda_reports.publish.web_crop_progress import build_crop_progress
 from usda_reports.publish.web_crush import build_crush
 from usda_reports.publish.web_export_sales import build_export_sales
+from usda_reports.publish.web_grain_stocks import build_grain_stocks
 from usda_reports.publish.web_json import (
     _dump,
     build_commodities,
@@ -182,6 +186,16 @@ def publish_all(
     nxt = next_releases(settings, registry, now)
     build_export_sales(con, web, nxt.get("export_sales"))
     build_crush(con, web, nxt.get("oilseed_crush"))
+    if registry.reports["crop_progress"].enabled:
+        build_crop_progress(
+            con,
+            web,
+            nxt.get("crop_progress"),
+            cp_rules.stage_orders(settings),
+            cp_rules.season_for(con, settings, now),
+        )
+    if registry.reports["grain_stocks"].enabled:
+        build_grain_stocks(con, web, nxt.get("grain_stocks"))
 
     wasde_next = nxt.get(REPORT_ID)
     meta = build_meta(
@@ -198,6 +212,7 @@ def publish_all(
     doc = insights_engine.build(con, settings, tag, now)
     insights_engine.write(doc, web / "insights.json")
     shutil.copy2(web / "insights.json", pub / "insights.json")
+    build_commodity_lenses(con, web, registry, nxt, doc)
     con.close()
 
     package = build_datapackage(

@@ -33,7 +33,7 @@ export default function Explore({ series }: { series: Series }) {
         </span>
       </summary>
       {open && (
-        <div className="pt-3" lang="en">
+        <div className="pt-3">
           <RevisionChart series={series} />
         </div>
       )}

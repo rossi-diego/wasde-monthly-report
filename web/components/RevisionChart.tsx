@@ -1,28 +1,30 @@
 "use client";
 
-import { useCallback, useMemo, useState } from "react";
+import { useState } from "react";
 
+import { useLang, useT } from "@/components/chrome/I18n";
 import EChart, { axisCommon, baseOption, type Tokens } from "@/components/EChart";
-import { CYCLE_LABEL, decimals, monthLabel, num } from "@/lib/format";
+import { decimals, monthOf, num } from "@/lib/format";
+import type { Key } from "@/lib/i18n";
 import type { Series } from "@/lib/types";
 
-const ATTR_LABEL: Record<string, string> = {
-  ending_stocks: "Ending stocks",
-  production: "Production",
-  stocks_to_use_pct: "Stocks-to-use %",
-  exports: "Exports",
-  domestic_total: "Domestic use",
-  yield: "Yield",
-};
+const ATTRS = ["ending_stocks", "production", "stocks_to_use_pct", "exports", "domestic_total", "yield"] as const;
 
 export default function RevisionChart({ series }: { series: Series }) {
-  const attrs = Object.keys(ATTR_LABEL).filter((a) => series.revisions[a]?.length);
+  const t0 = useT();
+  const { lang } = useLang();
+  const label = (a: string) => t0(`rc.attr.${a}` as Key);
+  // cycle month 0 = May of the marketing-year start; +1y after twelve months
+  const cycle = (m: number) => `${monthOf(((m + 4) % 12) + 1, "short", lang)}${m >= 12 ? ` +${Math.floor(m / 12)}${lang === "pt" ? "a" : "y"}` : ""}`;
+  const monthText = (m: string) => `${monthOf(Number(m.slice(5, 7)), "short", lang)} ${m.slice(0, 4)}`;
+  const ATTR_LABEL = Object.fromEntries(ATTRS.map((a) => [a, label(a)])) as Record<string, string>;
+  const attrs = ATTRS.filter((a) => series.revisions[a]?.length) as string[];
   const [attr, setAttr] = useState("ending_stocks");
   const active = attrs.includes(attr) ? attr : attrs[0];
-  const lines = useMemo(() => series.revisions[active] ?? [], [series, active]);
+  const lines = series.revisions[active] ?? [];
 
-  const option = useCallback(
-    (t: Tokens) => {
+  // The React compiler memoizes this callback on its inputs (lines, unit, language).
+  const option = (t: Tokens) => {
       const n = lines.length;
       const unit = active === "stocks_to_use_pct" ? "%" : active === "yield" ? "" : series.unit_label ?? "";
       const sample = lines.at(-1)?.points.at(-1)?.[1] ?? 0;
@@ -47,12 +49,12 @@ export default function RevisionChart({ series }: { series: Series }) {
           axisPointer: { type: "line", lineStyle: { color: t.axis, width: 1 } },
           formatter: (ps: { seriesName: string; value: [number, number, string]; color: string }[]) => {
             if (!ps.length) return "";
-            const head = `<b>${CYCLE_LABEL(ps[0].value[0])}</b> · month ${ps[0].value[0]} of the cycle`;
+            const head = `<b>${cycle(ps[0].value[0])}</b> · ${t0("rc.month", { m: ps[0].value[0] })}`;
             const rows = [...ps]
               .reverse()
               .map(
                 (p) =>
-                  `<span style="display:inline-block;width:8px;height:8px;border-radius:4px;background:${p.color};margin-right:6px"></span>${p.seriesName}: <b>${num(p.value[1], d)}</b> <span style="color:${t.muted}">(${monthLabel(p.value[2], "short")})</span>`,
+                  `<span style="display:inline-block;width:8px;height:8px;border-radius:4px;background:${p.color};margin-right:6px"></span>${p.seriesName}: <b>${num(p.value[1], d)}</b> <span style="color:${t.muted}">(${monthText(p.value[2])})</span>`,
               )
               .join("<br/>");
             return `${head}<br/>${rows}`;
@@ -65,7 +67,7 @@ export default function RevisionChart({ series }: { series: Series }) {
           interval: 3,
           ...axisCommon(t),
           splitLine: { show: false },
-          axisLabel: { color: t.muted, fontSize: 11, hideOverlap: true, formatter: (v: number) => CYCLE_LABEL(v) },
+          axisLabel: { color: t.muted, fontSize: 11, hideOverlap: true, formatter: (v: number) => cycle(v) },
         },
         yAxis: {
           type: "value",
@@ -97,21 +99,19 @@ export default function RevisionChart({ series }: { series: Series }) {
                     silent: true,
                     symbol: "none",
                     lineStyle: { color: t.axis, width: 1, type: "solid" },
-                    label: { formatter: "Proj. → Est.", color: t.muted, fontSize: 10, position: "insideEndTop" },
+                    label: { formatter: t0("rc.projEst"), color: t.muted, fontSize: 10, position: "insideEndTop" },
                     data: [{ xAxis: 12 }],
                   }
                 : undefined,
           };
         }),
       };
-    },
-    [lines, active, series.unit, series.unit_label],
-  );
+    };
 
-  if (!attrs.length) return <p className="text-sm text-muted">No revision history for this region.</p>;
+  if (!attrs.length) return <p className="text-sm text-muted">{t0("rc.none")}</p>;
   return (
     <div>
-      <div className="mb-3 flex flex-wrap gap-1" role="tablist" aria-label="Balance-sheet line">
+      <div className="mb-3 flex flex-wrap gap-1" role="tablist" aria-label={t0("rc.tabs")}>
         {attrs.map((a) => (
           <button
             key={a}
@@ -125,11 +125,8 @@ export default function RevisionChart({ series }: { series: Series }) {
           </button>
         ))}
       </div>
-      <EChart option={option} height={380} ariaLabel={`${ATTR_LABEL[active]} revision paths by marketing year`} />
-      <p className="mt-2 text-xs text-muted">
-        Blue = current marketing year, orange = previous, gray = the six years before. Hover to compare years at the same point
-        of the season.
-      </p>
+      <EChart option={option} height={380} ariaLabel={t0("rc.aria", { attr: ATTR_LABEL[active] })} />
+      <p className="mt-2 text-xs text-muted">{t0("rc.note")}</p>
     </div>
   );
 }

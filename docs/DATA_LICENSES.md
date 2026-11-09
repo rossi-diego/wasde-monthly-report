@@ -13,12 +13,20 @@ Works of the U.S. federal government are not subject to copyright in the United 
 | WASDE | USDA OCE / WAOB | `www.usda.gov` CSV (2021+), ESMIS XML (2010-07 → 2020) | none | USDA OCE/WAOB, *World Agricultural Supply and Demand Estimates* |
 | Export Sales (ESR) | USDA FAS | `api.fas.usda.gov` (api.data.gov key, `FAS_API_KEY` / `USDA_PSD_KEY`) | yes (free) | USDA FAS, Export Sales Reporting Program |
 | Fats & Oils: Oilseed Crushings, Production, Consumption and Stocks | USDA NASS | ESMIS `findByIdentifier/FatsOils` → release zip from `files[]` → `cafo_all_tables.csv` | none | USDA NASS, *Fats and Oils: Oilseed Crushings, Production, Consumption and Stocks* |
+| Crop Progress | USDA NASS | ESMIS `findByIdentifier/CropProg` → release zip from `files[]` → `prog_all_tables.csv` | none | USDA NASS, *Crop Progress* |
+| Grain Stocks | USDA NASS | ESMIS `findByIdentifier/GraiStoc` → release zip from `files[]` → `grst_all_tables.csv` (table 1) | none | USDA NASS, *Grain Stocks* |
 
 Notes on the NASS files (spike of 2026-11-09):
 
 * ESMIS (Cornell University / USDA National Agricultural Library) lists 134 FatsOils releases,
   2015-10-01 → 2026-11-02; 133 carry a zip. The exception (2019-01-02) is a reschedule notice.
   History used here therefore starts with the **2015-10-01** release ("2015-10+").
+* CropProg: 1,116 releases (1995-04-03 → 2026-11-02), zips from 2001-05-14 but the
+  `prog_all_tables.csv` layout only from 2010-05-24; history used here starts with the
+  **2010-06-07** release (the 2010-05-24 file is a one-off layout). National ("<N> States")
+  rows only.
+* GraiStoc: 221 releases back to 1973-10-24, zips on 105 of them from 2001-06-29, the
+  `grst_all_tables.csv` layout from **2010-06-30**, where the history used here starts.
 * No NASS API key is used. The NASS Quick Stats API (which would reach further back) is a v2
   item; if it is ever used, the README and the site footer must carry NASS's required notice
   ("This product uses the NASS API but is not endorsed or certified by NASS").

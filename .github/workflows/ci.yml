@@ -35,6 +35,42 @@ jobs:
       - name: dbt parse (models compile)
         run: dbt parse --project-dir dbt --profiles-dir dbt
 
+  catalog-diff:
+    # Schema guard of the download catalogue (plan §7). The python job's pytest already proves
+    # that docs/schemas/catalog.schema.json matches the dbt models (built from fixtures); this
+    # job compares that snapshot with (1) the base branch's committed snapshot and (2) the
+    # datapackage.json the live site serves, and fails on a column removed, renamed or retyped,
+    # or a dataset removed, unless config/datasets.yaml bumps that dataset's schema_version.
+    name: Catalogue · breaking schema changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      SITE_URL: ${{ vars.SITE_URL || 'https://usda-reports.vercel.app' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          activate-environment: true
+      - run: uv pip install -e .
+      - name: Against the base branch's snapshot
+        run: |
+          if git show "origin/${{ github.base_ref }}:docs/schemas/catalog.schema.json" > /tmp/base.json 2>/dev/null; then
+            usda-reports catalog-diff /tmp/base.json docs/schemas/catalog.schema.json
+          else
+            echo "The base branch has no catalogue snapshot yet: nothing to compare." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Against the live catalogue (datapackage.json served by the site)
+        run: |
+          if curl -fsS -m 30 "$SITE_URL/data/datapackage.json" -o /tmp/live.json; then
+            usda-reports catalog-diff /tmp/live.json docs/schemas/catalog.schema.json
+          else
+            echo "::warning::live datapackage.json unreachable: compared with the base branch only"
+          fi
+
   web:
     name: Web · lint, types, build, e2e
     runs-on: ubuntu-latest
@@ -57,15 +93,16 @@ jobs:
           echo "Using $tag"
           gh release download "$tag" --pattern web-data.tar.gz --dir /tmp
           mkdir -p web/public && tar -xzf /tmp/web-data.tar.gz -C web/public
-      - name: Overlay cut-B fixtures when the data release predates them
-        # Until the first data release with NASS crush exists, the e2e contract tests run on a
-        # recorded cut-B set (web/e2e/fixtures/cut-b: insights, catalogue, Export Sales and crush
-        # page JSON from one local full run). Once a release carries the crush JSON, this step is
-        # a no-op and CI tests the real published files.
+      - name: Overlay cut-C fixtures when the data release predates them
+        # Until the first data release with Crop Progress and Grain Stocks exists, the e2e
+        # contract tests run on a recorded cut-C set (web/e2e/fixtures/cut-c: insights, catalogue,
+        # datapackage, every report page JSON and the commodity lenses, from one local full run).
+        # Once a release carries the Crop Progress JSON, this step is a no-op and CI tests the real
+        # published files. (web/e2e/fixtures/offseason is a frozen-clock run for unit tests only.)
         run: |
-          if [ ! -f web/public/data/reports/oilseed_crush/soybeans.json ]; then
-            echo "data release has no crush JSON: overlaying web/e2e/fixtures/cut-b"
-            cp -r web/e2e/fixtures/cut-b/. web/public/data/
+          if [ ! -f web/public/data/reports/crop_progress/index.json ]; then
+            echo "data release has no Crop Progress JSON: overlaying web/e2e/fixtures/cut-c"
+            cp -r web/e2e/fixtures/cut-c/. web/public/data/
           fi
       - run: npm run build && npm run typecheck
         working-directory: web

@@ -11,6 +11,8 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date, datetime, timedelta
+from pathlib import Path
+from typing import TYPE_CHECKING
 
 import httpx
 
@@ -18,12 +20,16 @@ from usda_reports.bronze.store import BronzeStore
 from usda_reports.core.calendar import (
     is_overdue,
     latest_due,
+    load_calendar,
     parse_time_et,
     release_datetime_utc,
 )
 from usda_reports.core.logs import get_logger
 from usda_reports.reports.wasde.ingest import ingest_month
 from usda_reports.reports.wasde.sources.esmis import EsmisRelease, list_releases
+
+if TYPE_CHECKING:
+    from usda_reports.core.registry import ReportConfig
 
 log = get_logger(__name__)
 
@@ -152,6 +158,37 @@ def weekly_due(
         missing = latest is None or latest < floor
         if missing and now - release_datetime_utc(due, at) > timedelta(days=overdue_days):
             problems.append(f"release scheduled for {due} is still missing")
-    if latest and (now.date() - date.fromisoformat(latest)).days > cadence_days + grace_days:
+    # Staleness is measured up to the newest scheduled release plus one cadence, never beyond:
+    # a seasonal report (Crop Progress, April-November) has nothing due from December to
+    # March, so its final November release must not count as stale all winter. For reports
+    # released all year the reference is simply today (the calendar always has a date within
+    # one cadence; an exhausted calendar is its own problem above).
+    ref = now.date() if due is None else min(now.date(), due + timedelta(days=cadence_days))
+    if latest and (ref - date.fromisoformat(latest)).days > cadence_days + grace_days:
         problems.append(f"newest release is {latest}: data is going stale")
     return WeeklyDue(due=due, have_latest=latest, missing=missing, problems=problems)
+
+
+def missed_since(
+    calendar_path: Path, latest_key: str, now: datetime, cfg: ReportConfig
+) -> list[date]:
+    """Scheduled releases of a date-keyed report whose publication instant has passed since
+    ``latest_key`` (3-day tolerance, as in :func:`weekly_due`). Empty for a seasonal report
+    between its final release and the next season: nothing was due, so nothing is stale."""
+    at = parse_time_et(cfg.release_time_et)
+    floor = date.fromisoformat(latest_key) + timedelta(days=3)
+    return [
+        d
+        for d in load_calendar(calendar_path, until=now.date())
+        if d > floor and release_datetime_utc(d, at) <= now
+    ]
+
+
+def season_closed(calendar_path: Path, latest_key: str, now: datetime) -> bool:
+    """True only when a seasonal report's season is over (plan §6 off-season rule: the
+    season's final scheduled release is in, or that date is more than a week past, or the
+    newest release belongs to an earlier year). False in season, including between two
+    weekly releases and during a mid-season lapse; use :func:`missed_since` for staleness."""
+    from usda_reports.insights.rules.crop_progress import season_info
+
+    return season_info(latest_key, load_calendar(calendar_path), now).state == "closed"

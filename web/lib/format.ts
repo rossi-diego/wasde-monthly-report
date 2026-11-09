@@ -36,9 +36,33 @@ export function decimals(unit?: string | null, v = 0): number {
   return 0;
 }
 
+// Number locale: "1,234.5" in EN, "1.234,5" in pt-BR. The language provider sets it while it
+// renders (every text consumer re-renders on a language switch), and the pure view functions
+// that take a `lang` argument run inside withNumberLang(lang, …), so their output never depends
+// on whichever language rendered last.
+let NUM_LANG: Lang = "en";
+
+/** Sets the number locale for the following renders (called by the language provider). */
+export function setNumberLang(lang: Lang) {
+  NUM_LANG = lang;
+}
+
+/** Runs `fn` with the number locale of `lang`, then restores the previous one. */
+export function withNumberLang<T>(lang: Lang, fn: () => T): T {
+  const prev = NUM_LANG;
+  NUM_LANG = lang;
+  try {
+    return fn();
+  } finally {
+    NUM_LANG = prev;
+  }
+}
+
+const locale = () => (NUM_LANG === "pt" ? "pt-BR" : "en-US");
+
 export function num(v: number | null | undefined, d = 0): string {
   if (v === null || v === undefined || Number.isNaN(v)) return "—";
-  return v.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  return v.toLocaleString(locale(), { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 
 export function qty(v: number | null | undefined, unit?: string | null, lang: Lang = "en"): string {
@@ -48,14 +72,14 @@ export function qty(v: number | null | undefined, unit?: string | null, lang: La
 
 export function signed(v: number | null | undefined, d = 0): string {
   if (v === null || v === undefined || Number.isNaN(v)) return "—";
-  if (v === 0) return "unch.";
-  const s = Math.abs(v).toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
+  if (v === 0) return NUM_LANG === "pt" ? "inalt." : "unch.";
+  const s = Math.abs(v).toLocaleString(locale(), { minimumFractionDigits: d, maximumFractionDigits: d });
   return `${v > 0 ? "+" : "−"}${s}`;
 }
 
 export function pct(v: number | null | undefined, d = 1): string {
   if (v === null || v === undefined || Number.isNaN(v)) return "—";
-  return `${v.toFixed(d)}%`;
+  return `${num(v, d)}%`;
 }
 
 export function monthLabel(m: string, style: "long" | "short" = "long"): string {
@@ -118,7 +142,7 @@ export const ordinalIn = (n: number, lang: Lang = "en") => (lang === "pt" ? `${n
 /** A share (0.6554) as a percentage: "65.5%". */
 export function share(v: number | null | undefined, d = 1): string {
   if (v === null || v === undefined || Number.isNaN(v)) return "—";
-  return `${(v * 100).toFixed(d)}%`;
+  return `${num(v * 100, d)}%`;
 }
 
 /** Metric tonnes, scaled with at least 3 significant digits: "30.23 MMT", "361 thou. t",
@@ -177,6 +201,35 @@ export function bytes(n: number): string {
 
 /** "proj" -> "Proj.", "est" -> "Est." */
 export const flagLabel = (f?: string | null) => (f ? `${f[0].toUpperCase()}${f.slice(1)}.` : "");
+
+/** A whole percentage (NASS prints 74, not 0.74): "74%" / "74%". */
+export const pctInt = (v: number | null | undefined) => (v === null || v === undefined || Number.isNaN(v) ? "—" : `${num(v, 0)}%`);
+
+/** Signed difference of two percentages, in points: "+4 pts" / "+4 p.p.", "−3 pts", "0 pts". */
+export function points(v: number | null | undefined, d = 0): string {
+  if (v === null || v === undefined || Number.isNaN(v)) return "—";
+  const unit = NUM_LANG === "pt" ? "p.p." : "pts";
+  if (Math.abs(v) < 0.5 * 10 ** -d) return `0 ${unit}`;
+  return `${signed(v, d)} ${unit}`;
+}
+
+/** Million bushels as NASS/WASDE print them: "2,095 mil. bu" / "2.095 mi bu". */
+export const mbu = (v: number | null | undefined, d = 0) =>
+  v === null || v === undefined || Number.isNaN(v) ? "—" : `${num(v, d)} ${unitShort("m_bu", NUM_LANG)}`;
+
+/** Signed million bushels: "+173 mil. bu", "−10 mil. bu". */
+export const signedMbu = (v: number | null | undefined, d = 0) =>
+  v === null || v === undefined || Number.isNaN(v) ? "—" : `${signed(v, d)} ${unitShort("m_bu", NUM_LANG)}`;
+
+/** Condition index on the 1–5 scale, two decimals as computed: "3.45" / "3,45". */
+export const ciText = (v: number | null | undefined) => num(v, 2);
+
+/** A signed share as points of a percentage: 0.09 -> "+9.0%". */
+export function signedShare(v: number | null | undefined, d = 1): string {
+  if (v === null || v === undefined || Number.isNaN(v)) return "—";
+  if (v === 0) return share(0, d);
+  return `${v > 0 ? "+" : "−"}${share(Math.abs(v), d)}`;
+}
 
 export const CYCLE_LABEL = (m: number) => {
   // cycle month 0 = May of the marketing-year start

@@ -12,9 +12,9 @@ import { T, useLang, useT } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills, type ReleaseInfo } from "@/components/chrome/TopBar";
 import DataStrip from "@/components/home/DataStrip";
 import InsightCards, { HeroLine } from "@/components/home/InsightCards";
-import Upcoming from "@/components/home/Upcoming";
+import LensTeaser from "@/components/home/LensTeaser";
 import type { CommodityPanel, HomeData } from "@/lib/dashboard";
-import type { InsightsDoc } from "@/lib/data-contract";
+import type { CommodityLens, InsightsDoc } from "@/lib/data-contract";
 import { num } from "@/lib/format";
 import type { Lang } from "@/lib/i18n";
 
@@ -135,6 +135,7 @@ export default function HomeView({
   release,
   pills,
   insights,
+  lenses = [],
 }: {
   /** Every derived string in each language (computed at build time). */
   data: Record<Lang, HomeData>;
@@ -142,6 +143,8 @@ export default function HomeView({
   pills: { id: string; label: string }[];
   /** insights.json (null in a build without it: the home then shows WASDE only). */
   insights: InsightsDoc | null;
+  /** lens/<commodity>.json (cut C): the "one commodity, every report" section. */
+  lenses?: CommodityLens[];
 }) {
   const t = useT();
   const { lang } = useLang();
@@ -193,6 +196,8 @@ export default function HomeView({
       </section>
 
       {insights && <InsightCards doc={insights} />}
+
+      {lenses.length > 0 && <LensTeaser lenses={lenses} />}
 
       {panel && (
         <div className="grid-fit-380">
@@ -267,7 +272,7 @@ export default function HomeView({
         </article>
       </div>
 
-      <Upcoming />
+
 
       <DataStrip links={data.downloads} history={data.history} />
     </>

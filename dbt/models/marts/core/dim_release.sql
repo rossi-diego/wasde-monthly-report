@@ -43,6 +43,36 @@ with releases as (
         count(*)                  as n_rows
     from {{ ref('stg_oilseed_crush') }}
     group by report_id, release_key
+
+    union all
+
+    -- NASS Crop Progress: one release per ESMIS release date (as published).
+    select
+        report_id,
+        release_key,
+        min(release_ts_utc)       as release_ts_utc,
+        max(edition)              as edition,
+        min(source)               as source,
+        any_value(bronze_sha256)  as bronze_sha256,
+        min(vintage_quality)      as vintage_quality,
+        count(*)                  as n_rows
+    from {{ ref('stg_crop_progress') }}
+    group by report_id, release_key
+
+    union all
+
+    -- NASS Grain Stocks: one release per ESMIS release date (as published).
+    select
+        report_id,
+        release_key,
+        min(release_ts_utc)       as release_ts_utc,
+        max(edition)              as edition,
+        min(source)               as source,
+        any_value(bronze_sha256)  as bronze_sha256,
+        min(vintage_quality)      as vintage_quality,
+        count(*)                  as n_rows
+    from {{ ref('stg_grain_stocks') }}
+    group by report_id, release_key
 )
 
 select

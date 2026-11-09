@@ -4,7 +4,7 @@ import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 import { I18nProvider, T } from "@/components/chrome/I18n";
 import Sidebar from "@/components/chrome/Sidebar";
 import { themeBootScript } from "@/components/chrome/ThemeToggle";
-import { getMeta, getMetaReports } from "@/lib/data";
+import { getMeta, getReportsMeta } from "@/lib/data";
 
 import "./globals.css";
 
@@ -24,13 +24,14 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "USDA Reports Dashboard",
   description:
-    "Every USDA WASDE report since 2010, harmonized and updated automatically on release day: revisions, drivers and stocks-to-use for corn, soybeans, wheat and cotton.",
+    "Five USDA reports (WASDE, Export Sales, NASS crush, Crop Progress, Grain Stocks), harmonized point-in-time since 2010 and updated automatically on release day, in English and Portuguese.",
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const meta = getMeta();
+  const reports = getReportsMeta();
   return (
     <html lang="en" suppressHydrationWarning className={`${plexSans.variable} ${plexMono.variable}`}>
       <head>
@@ -45,8 +46,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <T k="skip" />
           </a>
           <div className="flex min-h-screen flex-wrap">
-            <Sidebar reports={meta.history.reports} rows={meta.history.rows} esrReleases={getMetaReports().export_sales?.releases ?? null}
-              crushReleases={getMetaReports().oilseed_crush?.releases ?? null}
+            <Sidebar
+              reports={meta.history.reports}
+              rows={meta.history.rows}
+              esrReleases={reports.export_sales?.releases ?? null}
+              crushReleases={reports.oilseed_crush?.releases ?? null}
+              cpReleases={reports.crop_progress?.releases ?? null}
+              gsReleases={reports.grain_stocks?.releases ?? null}
             />
             <main
               id="main"
@@ -67,9 +73,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <T
                     k="footer.data"
                     v={{
-                      tag: meta.data_release_tag ?? "local build",
+                      ...(meta.data_release_tag ? { tag: meta.data_release_tag } : {}),
                       at: new Date(meta.generated_at).toISOString().slice(0, 16).replace("T", " "),
                     }}
+                    keys={meta.data_release_tag ? undefined : { tag: "footer.local" }}
                   />
                 </span>
               </footer>

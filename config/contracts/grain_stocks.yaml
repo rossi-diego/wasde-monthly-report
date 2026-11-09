@@ -1,0 +1,39 @@
+# Silver contract for NASS Grain Stocks (checked by usda_reports.core.contracts on every build
+# and on every downloaded zip before it reaches bronze).
+# Silver keeps every printed value: one row per (release, commodity, stock date, position).
+report_id: grain_stocks
+release_column: release_key
+release_label: Grain Stocks releases
+key:
+  - release_key
+  - commodity_id
+  - as_of_date
+  - position
+not_null:
+  - release_key
+  - commodity_id
+  - as_of_date
+  - position
+  - market_year
+  - quarter_of_my
+  - unit_id
+  - column_role
+  - reported_as_of
+# 3 commodities × at least 5 printed dates × 3 positions (a January release prints 8 dates).
+min_rows_per_release: 45
+# The newest stock date of corn, soybeans and wheat must be in every release, all positions.
+required_per_release:
+  label: current-quarter stocks
+  filter: {column_role: current}
+  columns: [commodity_id, position]
+  rows:
+    - [corn, total]
+    - [corn, on_farm]
+    - [corn, off_farm]
+    - [soybeans, total]
+    - [soybeans, on_farm]
+    - [soybeans, off_farm]
+    - [wheat, total]
+    - [wheat, on_farm]
+    - [wheat, off_farm]
+envelope: true

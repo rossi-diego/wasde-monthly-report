@@ -5,7 +5,28 @@
 // JSON (never computed here); 5-yr windows are labelled small sample.
 
 import type { Caveat, Hero, HeroClause, Insight, InsightsDoc, SuppressedReason } from "./data-contract";
-import { bushels, decimals, lbPerBu, monthOf, monthYear, num, ordinalIn, share, shortDate, signed, signedQty, tonnes, unitShort } from "./format";
+import {
+  bushels,
+  ciText,
+  decimals,
+  lbPerBu,
+  mbu,
+  monthOf,
+  monthYear,
+  num,
+  ordinalIn,
+  pctInt,
+  points,
+  share,
+  shortDate,
+  signed,
+  signedMbu,
+  signedQty,
+  signedShare,
+  tonnes,
+  unitShort,
+  withNumberLang,
+} from "./format";
 import { translate, type Key, type Lang } from "./i18n";
 import { attrName, commodityName, commodityNounPt, regionName } from "./labels";
 
@@ -37,21 +58,35 @@ export function finding(doc: InsightsDoc | null, id: string): Insight | undefine
 
 export const isSmall = (i: Insight) => i.caveats.includes("small_sample");
 
-export const caveatText = (c: Caveat, lang: Lang) => translate(lang, `caveat.${c}` as Key);
+/** Caveat text; Grain Stocks history is against the WASDE ending stocks, not a % of a projection. */
+export const caveatText = (c: Caveat, lang: Lang, rule?: string) =>
+  translate(lang, (c === "history_point_in_time" && rule?.startsWith("G") ? "caveat.history_point_in_time.g" : `caveat.${c}`) as Key);
 export const suppressedText = (r: SuppressedReason, lang: Lang) => translate(lang, `supp.${r}` as Key);
 
 /** "ESR Nov 5, 2026 · WASDE October 2026" from an insight's inputs. */
+const SRC_KEY: Record<string, Key> = {
+  export_sales: "card.src.export_sales",
+  oilseed_crush: "card.src.oilseed_crush",
+  crop_progress: "card.src.crop_progress",
+  grain_stocks: "card.src.grain_stocks",
+};
+
 export function sourceText(i: Insight, lang: Lang): string {
   return i.inputs
     .map((r) =>
       r.report_id === "wasde"
         ? translate(lang, "card.src.wasde", { month: monthYear(r.release_key, lang) })
-        : translate(lang, r.report_id === "oilseed_crush" ? "card.src.oilseed_crush" : "card.src.export_sales", {
+        : translate(lang, SRC_KEY[r.report_id] ?? "card.src.export_sales", {
             date: shortDate(r.release_key, true, lang) ?? r.release_key,
           }),
     )
     .join(" · ");
 }
+
+/** "corn" / "winter wheat" (lower case), "Corn" / "Winter wheat" (title case). */
+export const cropName = (crop: string, lang: Lang) => translate(lang, `crop.${crop}` as Key);
+export const cropTitle = (crop: string, lang: Lang) => translate(lang, `cropT.${crop}` as Key);
+export const stageName = (stage: string, lang: Lang) => translate(lang, `stage.${stage}` as Key);
 
 // ------------------------------------------------------------------------------- hero
 
@@ -62,7 +97,7 @@ export function heroClauseText(c: HeroClause, lang: Lang): string {
 
 export type HeroView = { kind: Hero["kind"]; text: string; clauses: string[]; sub: string | null };
 
-export function heroView(h: Hero, lang: Lang): HeroView {
+function heroViewImpl(h: Hero, lang: Lang): HeroView {
   const since = shortDate(h.since, true, lang) ?? "—";
   if (h.kind === "fallback" || h.clauses.length === 0) {
     return { kind: "fallback", text: translate(lang, h.n_reports === 1 ? "hero.fallback1" : "hero.fallback", { n: h.n_reports, date: since }), clauses: [], sub: null };
@@ -96,7 +131,7 @@ export type CardView = {
   chip: string | null;
   range: { lo: number; hi: number; mean: number | null; value: number } | null;
   /** How the range strip labels its ends: shares (0.38 → 38%) or pounds per bushel. */
-  rangeUnit: "share" | "lb_per_bu";
+  rangeUnit: "share" | "lb_per_bu" | "pct" | "index" | "mbu";
   n: number | null;
   small: boolean;
   caveats: string[];
@@ -104,7 +139,14 @@ export type CardView = {
   href: string;
 };
 
-const COLOR = { wasde: "var(--r-wasde)", export_sales: "var(--r-esr)", oilseed_crush: "var(--r-crush)", cross: "var(--r-esr)" } as const;
+const COLOR = {
+  wasde: "var(--r-wasde)",
+  export_sales: "var(--r-esr)",
+  oilseed_crush: "var(--r-crush)",
+  crop_progress: "var(--r-progress)",
+  grain_stocks: "var(--r-stocks)",
+  cross: "var(--r-esr)",
+} as const;
 
 /** "Crush (NASS) · September 2026": the data month of a crush insight. */
 function crushEyebrow(i: Insight, lang: Lang) {
@@ -127,7 +169,7 @@ function rangeVars(i: Insight) {
   return { mean: share(p(i, "hist_mean")), min: share(p(i, "hist_min")), max: share(p(i, "hist_max")) };
 }
 
-export function cardView(i: Insight, lang: Lang): CardView | null {
+function cardViewImpl(i: Insight, lang: Lang): CardView | null {
   const c = i.commodity_id ?? "";
   const us = (lang === "pt" ? `${commodityName(c, "pt", c)} (EUA)` : `U.S. ${noun(c, "en")}`) as string;
   const release = i.inputs.find((r) => r.report_id === "wasde")?.release_key ?? "";
@@ -137,7 +179,7 @@ export function cardView(i: Insight, lang: Lang): CardView | null {
     color: COLOR[i.report_id],
     n: i.n,
     small: isSmall(i),
-    caveats: i.caveats.filter((x) => x !== "small_sample").map((x) => caveatText(x, lang)),
+    caveats: i.caveats.filter((x) => x !== "small_sample").map((x) => caveatText(x, lang, i.rule)),
     source: sourceText(i, lang),
     valueNote: null as string | null,
     chip: null as string | null,
@@ -311,14 +353,206 @@ export function cardView(i: Insight, lang: Lang): CardView | null {
         href: "/reports/oilseed-crush/",
       };
     }
+    case "C1": {
+      const crop = p<string>(i, "crop");
+      const lo = p<number | null>(i, "hist_min");
+      const hi = p<number | null>(i, "hist_max");
+      const ge = p<number | null>(i, "ge_pct");
+      if (ge === null || ge === undefined) return null;
+      const closed = p<string>(i, "season_state") === "closed";
+      const rv = { mean: pctMean(p(i, "hist_mean")), min: pctInt(lo), max: pctInt(hi) };
+      const ctx: string[] = [];
+      if (closed) ctx.push(translate(lang, "card.c1.closed", { v: pctInt(ge), ...rv }));
+      else if (lo !== null && hi !== null) ctx.push(translate(lang, "card.c1.range", rv));
+      const prev = p<number | null>(i, "nass_prev_year_ge_pct");
+      if (prev !== null && prev !== undefined) {
+        ctx.push(translate(lang, "card.c1.prevYear", { v: `${pctInt(prev)} (${points(p<number | null>(i, "vs_prev_year_pp"))})` }));
+      }
+      return {
+        ...base,
+        eyebrow: closed ? translate(lang, "card.eb.cpClosed") : cpEyebrow(i, lang),
+        title: translate(lang, closed ? "card.c1.closedTitle" : "card.c1.title", { crop: cropTitleFor(crop, lang) }),
+        value: pctInt(ge),
+        valueParam: "ge_pct",
+        valueNote: translate(lang, "card.c1.note"),
+        context: ctx,
+        chip: p<string | null>(i, "position") ? translate(lang, `pos.${p<string>(i, "position")}` as Key) : null,
+        range: lo !== null && hi !== null ? { lo, hi, mean: p(i, "hist_mean"), value: ge } : null,
+        rangeUnit: "pct",
+        href: `/reports/crop-progress/?c=${crop}#ch-${closed ? 3 : 1}`,
+      };
+    }
+    case "C2": {
+      const crop = p<string>(i, "crop");
+      const v = p<number | null>(i, "value_pct");
+      if (v === null || v === undefined) return null;
+      const ctx = [
+        translate(lang, "card.c2.vs", {
+          d: points(p<number | null>(i, "pace_vs_5yr_pp")),
+          avg: pctInt(p<number | null>(i, "nass_5yr_avg_pct")),
+          years: p<string | null>(i, "avg_years") ?? "—",
+        }),
+      ];
+      const prev = p<number | null>(i, "nass_prev_year_pct");
+      if (prev !== null && prev !== undefined) ctx.push(translate(lang, "card.c2.prevYear", { v: pctInt(prev) }));
+      return {
+        ...base,
+        eyebrow: cpEyebrow(i, lang),
+        title: translate(lang, "card.c2.title", { crop: cropTitleFor(crop, lang), stage: stageName(p<string>(i, "stage"), lang) }),
+        value: pctInt(v),
+        valueParam: "value_pct",
+        valueNote: translate(lang, "card.c2.note"),
+        context: ctx,
+        chip: p<string | null>(i, "position") ? translate(lang, `pos.${p<string>(i, "position")}` as Key) : null,
+        href: `/reports/crop-progress/?c=${crop}#ch-2`,
+      };
+    }
+    case "C3": {
+      const crop = p<string>(i, "crop");
+      const v = p<number | null>(i, "ci");
+      if (v === null || v === undefined) return null;
+      const lo = p<number | null>(i, "hist_min");
+      const hi = p<number | null>(i, "hist_max");
+      return {
+        ...base,
+        eyebrow: cpEyebrow(i, lang),
+        title: translate(lang, "card.c3.title", { crop: cropTitleFor(crop, lang) }),
+        value: ciText(v),
+        valueParam: "ci",
+        valueNote: translate(lang, "card.c3.note"),
+        context:
+          lo !== null && hi !== null
+            ? [translate(lang, "card.c3.range", { mean: ciText(p(i, "hist_mean")), min: ciText(lo), max: ciText(hi) })]
+            : [],
+        chip: p<string | null>(i, "position") ? translate(lang, `pos.${p<string>(i, "position")}` as Key) : null,
+        range: lo !== null && hi !== null ? { lo, hi, mean: p(i, "hist_mean"), value: v } : null,
+        rangeUnit: "index",
+        href: `/reports/crop-progress/?c=${crop}#ch-1`,
+      };
+    }
+    case "G1": {
+      const s = p<number | null>(i, "surprise_mbu");
+      if (s === null || s === undefined) return null;
+      const ctx = [
+        translate(lang, "card.g1.vs", {
+          nass: mbu(p(i, "nass_total_mbu")),
+          wasde: mbu(p(i, "wasde_ending_stocks_mbu")),
+          my: p<string>(i, "market_year"),
+        }),
+      ];
+      const k = p<number | null>(i, "k");
+      if (k !== null && k !== undefined) {
+        ctx.push(
+          translate(lang, "card.g1.rank", {
+            nth: ordinalIn(k, lang),
+            n: i.n ?? 0,
+            first: p<string | null>(i, "first_market_year") ?? "—",
+            last: p<string>(i, "market_year"),
+          }),
+        );
+      }
+      const pctl = p<number | null>(i, "percentile_larger_than");
+      if (pctl !== null && pctl !== undefined) ctx.push(translate(lang, "card.g1.pctl", { p: num(pctl, 0) }));
+      return {
+        ...base,
+        eyebrow: gsEyebrow(i, lang),
+        title: translate(lang, "card.g1.title", { what: gsWhat(c, lang), date: shortDate(p<string>(i, "as_of_date"), false, lang) ?? "" }),
+        value: signedMbu(s),
+        valueParam: "surprise_mbu",
+        valueNote: translate(lang, "card.g1.note", {
+          pct: signedShare(p(i, "surprise_pct")),
+          month: monthYear(p<string | null>(i, "wasde_release_key"), lang),
+        }),
+        context: ctx,
+        chip: p<string | null>(i, "direction") ? translate(lang, `dir.${p<string>(i, "direction")}` as Key) : null,
+        href: `/reports/grain-stocks/?c=${c}#ch-1`,
+      };
+    }
+    case "G2": {
+      const v = p<number | null>(i, "implied_disappearance_mbu");
+      if (v === null || v === undefined) return null;
+      const lo = p<number | null>(i, "hist_min");
+      const hi = p<number | null>(i, "hist_max");
+      return {
+        ...base,
+        eyebrow: gsEyebrow(i, lang),
+        title: translate(lang, "card.g2.title", {
+          what: gsWhat(c, lang),
+          from: shortDate(p<string | null>(i, "prev_as_of_date"), false, lang) ?? "—",
+          to: shortDate(p<string>(i, "as_of_date"), false, lang) ?? "",
+        }),
+        value: mbu(v),
+        valueParam: "implied_disappearance_mbu",
+        valueNote: translate(lang, "card.g2.note"),
+        context: lo !== null && hi !== null ? [translate(lang, "card.g2.range", { mean: mbu(p(i, "hist_mean")), min: num(lo, 0), max: mbu(hi) })] : [],
+        chip: p<string | null>(i, "position") ? translate(lang, `pos.${p<string>(i, "position")}` as Key) : null,
+        range: lo !== null && hi !== null ? { lo, hi, mean: p(i, "hist_mean"), value: v } : null,
+        rangeUnit: "mbu",
+        href: `/reports/grain-stocks/?c=${c}#ch-2`,
+      };
+    }
+    case "G3": {
+      const v = p<number | null>(i, "on_farm_share");
+      if (v === null || v === undefined) return null;
+      const lo = p<number | null>(i, "hist_min");
+      const hi = p<number | null>(i, "hist_max");
+      const ctx = lo !== null && hi !== null ? [translate(lang, "card.g3.range", { ...rangeVars(i) })] : [];
+      const yoy = p<number | null>(i, "total_yoy_pct");
+      if (yoy !== null && yoy !== undefined) ctx.push(translate(lang, "card.g3.yoy", { v: signedShare(yoy) }));
+      return {
+        ...base,
+        eyebrow: gsEyebrow(i, lang),
+        title: translate(lang, "card.g3.title", { what: gsWhat(c, lang), date: shortDate(p<string>(i, "as_of_date"), false, lang) ?? "" }),
+        value: share(v),
+        valueParam: "on_farm_share",
+        valueNote: translate(lang, "card.g3.note", { total: mbu(p(i, "total_mbu")) }),
+        context: ctx,
+        chip: p<string | null>(i, "position") ? translate(lang, `pos.${p<string>(i, "position")}` as Key) : null,
+        range: lo !== null && hi !== null ? { lo, hi, mean: p(i, "hist_mean"), value: v } : null,
+        rangeUnit: "share",
+        href: `/reports/grain-stocks/?c=${c}#ch-3`,
+      };
+    }
     default:
       return null;
   }
 }
 
+/** A 5-yr mean of whole percentages keeps one decimal ("55.7%"); the values themselves are whole. */
+const pctMean = (v: number | null | undefined) => (v === null || v === undefined ? "—" : `${num(v, 1)}%`);
+/** "U.S. corn" style title fragment: "Corn" / "Milho" ("Winter wheat" / "Trigo de inverno"). */
+const cropTitleFor = (crop: string, lang: Lang) => (lang === "pt" ? cropTitle(crop, lang) : cropName(crop, lang));
+const cpEyebrow = (i: Insight, lang: Lang) =>
+  translate(lang, "card.eb.cp", { date: shortDate(p<string>(i, "week_ending"), true, lang) ?? "" });
+const gsEyebrow = (i: Insight, lang: Lang) =>
+  translate(lang, "card.eb.gs", { date: shortDate(p<string>(i, "as_of_date"), true, lang) ?? "" });
+/** "corn" in "U.S. corn stocks …" / "Milho" in "Milho (EUA): …". */
+const gsWhat = (c: string, lang: Lang) => (lang === "pt" ? commodityName(c, "pt", c) : noun(c, "en"));
+
+/** Tick text of a card's range strip, by unit. */
+export function rangeTick(unit: CardView["rangeUnit"], x: number): string {
+  if (unit === "share") return share(x, 0);
+  if (unit === "lb_per_bu" || unit === "index") return num(x, 2);
+  if (unit === "pct") return `${num(x, 0)}%`;
+  return num(x, 0);
+}
+
+/** Full text of a range end, by unit (the strip's accessible name). */
+export function rangeText(unit: CardView["rangeUnit"], x: number): string {
+  if (unit === "share") return share(x);
+  if (unit === "lb_per_bu") return lbPerBu(x);
+  if (unit === "pct") return pctInt(x);
+  if (unit === "index") return ciText(x);
+  return mbu(x);
+}
+
 /** The formatted text of one param, as the cards print it (for the contract test). */
-export function formatParam(i: Insight, param: string, lang: Lang = "en"): string {
+function formatParamImpl(i: Insight, param: string, lang: Lang): string {
   const v = i.params[param] as number;
+  if (param === "ge_pct" || param === "value_pct") return pctInt(v);
+  if (param === "ci") return ciText(v);
+  if (param === "surprise_mbu") return signedMbu(v);
+  if (param === "implied_disappearance_mbu") return mbu(v);
   if (param === "stocks_to_use_pct") return `${num(v, 1)}%`;
   if (param === "delta") return signedNum(v, i.params.unit_id as string);
   if (param.endsWith("_mt")) return `${tonnes(v, lang)}${translate(lang, "unit.perWeek")}`;
@@ -331,7 +565,7 @@ export function formatParam(i: Insight, param: string, lang: Lang = "en"): strin
 
 export type ChangeView = { id: string; what: string; value: string; delta: string; pct: string; score: string; headline: boolean };
 
-export function changeView(i: Insight, lang: Lang): ChangeView {
+function changeViewImpl(i: Insight, lang: Lang): ChangeView {
   const c = i.commodity_id ?? "";
   const us = lang === "pt" ? `${commodityName(c, "pt", c)} (EUA)` : `U.S. ${noun(c, "en")}`;
   const aid = p<string>(i, "attribute_id");
@@ -351,5 +585,13 @@ export function changeView(i: Insight, lang: Lang): ChangeView {
     headline: Boolean(i.params.headline),
   };
 }
+
+// Public entry points: each runs in the number locale of its `lang`, so the contract tests
+// (which call them outside React) and the page print the same digits.
+export const heroView = (h: Hero, lang: Lang): HeroView => withNumberLang(lang, () => heroViewImpl(h, lang));
+export const cardView = (i: Insight, lang: Lang): CardView | null => withNumberLang(lang, () => cardViewImpl(i, lang));
+export const formatParam = (i: Insight, param: string, lang: Lang = "en"): string =>
+  withNumberLang(lang, () => formatParamImpl(i, param, lang));
+export const changeView = (i: Insight, lang: Lang): ChangeView => withNumberLang(lang, () => changeViewImpl(i, lang));
 
 export { cap };

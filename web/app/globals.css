@@ -30,6 +30,8 @@
   --pill-esr: #0f766e;
   --r-crush: #b45309;
   --pill-crush: #b45309; /* white text 5:1 */
+  --pill-progress: #15803d; /* white text 5:1 */
+  --pill-stocks: #6d28d9; /* white text 7:1 */
   --r-progress: #15803d;
   --r-stocks: #6d28d9;
   /* KPI tiles: white text >= 5:1 on each */
@@ -66,6 +68,8 @@
     --pill-esr: #0f766e; /* white text stays >= 4.5:1 */
     --r-crush: #f59e0b;
     --pill-crush: #b45309; /* white text stays >= 4.5:1 */
+    --pill-progress: #15803d;
+    --pill-stocks: #6d28d9;
     --r-progress: #4ade80;
     --r-stocks: #a78bfa;
     --tile-1: #1d4ed8;
@@ -101,6 +105,8 @@
   --pill-esr: #0f766e; /* white text stays >= 4.5:1 */
   --r-crush: #f59e0b;
   --pill-crush: #b45309; /* white text stays >= 4.5:1 */
+  --pill-progress: #15803d;
+  --pill-stocks: #6d28d9;
   --r-progress: #4ade80;
   --r-stocks: #a78bfa;
   --tile-1: #1d4ed8;
@@ -201,6 +207,11 @@ details > summary {
   display: grid;
   gap: 16px;
   grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+}
+.grid-fit-180 {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
 }
 
 .data-table {

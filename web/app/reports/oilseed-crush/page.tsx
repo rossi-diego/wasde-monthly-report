@@ -5,7 +5,7 @@ import TopBar from "@/components/chrome/TopBar";
 import CrushView, { type TakeFile } from "@/components/crush/CrushView";
 import { releaseInfo } from "@/lib/dashboard";
 import { getCrush, getInsights, getReleaseCatalog, servedPath } from "@/lib/data";
-import { NOPA_NOTE, NOPA_URL } from "@/lib/nopa";
+import { NOPA_URL } from "@/lib/nopa";
 
 export const metadata: Metadata = { title: "Soybean crush (NASS) · USDA Reports Dashboard" };
 
@@ -32,8 +32,8 @@ export default function OilseedCrushPage() {
           <T k="crush.none" />
         </p>
         <aside className="card flex flex-col gap-1.5 p-5 text-[13px]" data-testid="nopa-note">
-          <p className="m-0" lang="en">
-            {NOPA_NOTE}
+          <p className="m-0">
+            <T k="crush.nopa.note" />
           </p>
           <a href={NOPA_URL} rel="noopener noreferrer" className="inline-flex min-h-11 items-center self-start text-link">
             <T k="crush.nopa.link" />

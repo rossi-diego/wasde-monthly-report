@@ -10,6 +10,8 @@
 #   spec             import path of the ReportSpec implementation
 #   release_key_format  month (YYYY-MM, WASDE) | date (YYYY-MM-DD, weekly reports and NASS
 #                    monthly reports, whose release month can hold two releases after a shutdown)
+#   seasonal         true = released only part of the year (Crop Progress, April-November):
+#                    after the season's final release the insights show "season closed"
 reports:
   wasde:
     enabled: true
@@ -61,19 +63,33 @@ reports:
     release_key_format: date
     spec: usda_reports.reports.oilseed_crush.spec:OilseedCrushSpec
 
-  # Planned (plan §3). Kept disabled until their stage lands.
+  # NASS Crop Progress (ESMIS findByIdentifier/CropProg → zip from files[] →
+  # prog_all_tables.csv), national rows of corn, soybeans, winter and spring wheat. Weekly on
+  # Mondays at 16:00 ET from April through November (holiday Monday → Tuesday); off-season the
+  # insight shows a "season closed" state instead of going stale. History from 2010-06-07.
+  # Source details verified in the spike: config/reports/crop_progress/source.yaml.
   crop_progress:
-    enabled: false
+    enabled: true
     title: Crop Progress
     agency: USDA NASS
     cadence: weekly
     release_time_et: "16:00"
-    window_h: 6
+    window_h: 8
     grace_days: 10
     key_env: null
-    licence: "US Government work, public domain; cite USDA NASS"
+    licence: "US Government work, public domain; cite USDA NASS (Crop Progress)"
+    min_rows: 1
+    history_start: "2010-06-07"
+    release_key_format: date
+    seasonal: true
+    spec: usda_reports.reports.crop_progress.spec:CropProgressSpec
+
+  # NASS Grain Stocks (ESMIS findByIdentifier/GraiStoc → zip from files[] →
+  # grst_all_tables.csv, table 1), U.S. corn, soybeans and all wheat by position. Quarterly at
+  # 12:00 ET (January, end of March, June and September). History from 2010-06-30.
+  # Source details verified in the spike: config/reports/grain_stocks/source.yaml.
   grain_stocks:
-    enabled: false
+    enabled: true
     title: Grain Stocks
     agency: USDA NASS
     cadence: quarterly
@@ -81,4 +97,8 @@ reports:
     window_h: 6
     grace_days: 100
     key_env: null
-    licence: "US Government work, public domain; cite USDA NASS"
+    licence: "US Government work, public domain; cite USDA NASS (Grain Stocks)"
+    min_rows: 45
+    history_start: "2010-06"
+    release_key_format: date
+    spec: usda_reports.reports.grain_stocks.spec:GrainStocksSpec
