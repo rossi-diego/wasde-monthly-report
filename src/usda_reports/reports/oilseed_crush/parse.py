@@ -25,16 +25,12 @@ September–August, WASDE notation ``2026/27``), ``month_of_my`` (1 = September)
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
-import pyarrow as pa
-import pyarrow.parquet as pq
 
-from usda_reports.bronze.store import file_sha256
 from usda_reports.core.contracts import Contract, ContractError
 from usda_reports.core.logs import get_logger
 from usda_reports.core.manifest import Manifest, release_ts_utc
@@ -44,6 +40,12 @@ from usda_reports.nass_common.csv_tables import (
     find_tables,
     parse_nass_csv,
     parse_value,
+)
+from usda_reports.nass_common.spec import (
+    StoredRelease,
+    arrow_schema,
+    load_stored_releases,
+    write_parquet,
 )
 from usda_reports.nass_common.zipfetch import NassZipError, read_member
 from usda_reports.reports.oilseed_crush.source import REPORT_ID, SOURCE, NassError, SourceConfig
@@ -75,23 +77,7 @@ SILVER_COLUMNS = [
 ]
 _INT = {"edition", "my_start", "month_of_my"}
 _DATES = {"month", "reported_month"}
-SILVER_SCHEMA = pa.schema(
-    [
-        (
-            c,
-            pa.timestamp("ns", tz="UTC")
-            if c == "release_ts_utc"
-            else pa.float64()
-            if c == "value"
-            else pa.date32()
-            if c in _DATES
-            else pa.int32()
-            if c in _INT
-            else pa.string(),
-        )
-        for c in SILVER_COLUMNS
-    ]
-)
+SILVER_SCHEMA = arrow_schema(SILVER_COLUMNS, ints=_INT, floats={"value"}, dates=_DATES)
 # Marketing year of the soybean crush (dbt/seeds/dim_commodity.csv: soybeans start month 9).
 MY_START_MONTH = 9
 
@@ -101,10 +87,7 @@ _TITLE_MONTH_RE = re.compile(r":\s*(?:[A-Z][a-z]+ \d{4}\s*[-–]\s*)?([A-Z][a-z]
 
 
 def write_silver(df: pd.DataFrame, path: Path) -> Path:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    table = pa.Table.from_pandas(df[SILVER_COLUMNS], schema=SILVER_SCHEMA, preserve_index=False)
-    pq.write_table(table, path)
-    return path
+    return write_parquet(df, SILVER_COLUMNS, SILVER_SCHEMA, path)
 
 
 def month_label(s: str) -> date:
@@ -241,15 +224,6 @@ def parse_release(data: bytes, cfg: SourceConfig, release_key: str | None = None
     return pd.DataFrame(rows)
 
 
-@dataclass(frozen=True)
-class StoredRelease:
-    key: str
-    sha256: str
-    edition: int
-    url: str | None
-    data: bytes
-
-
 def check_lag(key: str, reported: date, cfg: SourceConfig) -> None:
     lag = months_between(reported, date.fromisoformat(key))
     if not cfg.lag_months.min <= lag <= cfg.lag_months.max:
@@ -287,25 +261,9 @@ def build_frame(
 
 
 def load_releases(bronze_dir: Path, manifest: Manifest, strict: bool = True) -> list[StoredRelease]:
-    """Every ok crush bronze entry in release order, sha256-verified.
-
-    ``strict=False`` (the last-good fallback) stops at the first missing or altered file and
-    returns the verified releases before it."""
-    out = []
-    for key, e in manifest.report(REPORT_ID).ok().items():
-        assert e.file is not None
-        path = bronze_dir / e.file
-        if not path.exists() or file_sha256(path) != e.sha256:
-            if not strict:
-                log.error("silver.oilseed_crush_bad_bronze", file=e.file)
-                break
-            raise NassError(f"bronze {e.file}: missing or sha256 mismatch")
-        out.append(
-            StoredRelease(
-                key=key, sha256=str(e.sha256), edition=e.edition, url=e.url, data=path.read_bytes()
-            )
-        )
-    return out
+    """Every ok crush bronze entry in release order, sha256-verified (see
+    :func:`usda_reports.nass_common.spec.load_stored_releases`)."""
+    return load_stored_releases(bronze_dir, manifest, REPORT_ID, NassError, strict)
 
 
 def validate(silver: pd.DataFrame, contract: Contract) -> None:

@@ -1,0 +1,53 @@
+{
+ "filters": [],
+ "pager": {
+  "current_page": 0,
+  "items_per_page": 25,
+  "total_pages": 1,
+  "total_results": 3
+ },
+ "results": [
+  {
+   "id": "796135",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/796135/prog4426.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796135/prog4426.txt",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796135/prog4426.zip"
+   ],
+   "title": "Crop Progress",
+   "release_datetime": "2026-11-02T12:00:00+0000",
+   "identifier": [
+    "CropProg"
+   ],
+   "agency_acronym": "NASS"
+  },
+  {
+   "id": "796124",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/796124/prog4326.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796124/prog4326.txt",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796124/prog4326.zip"
+   ],
+   "title": "Crop Progress",
+   "release_datetime": "2026-10-26T12:00:00+0000",
+   "identifier": [
+    "CropProg"
+   ],
+   "agency_acronym": "NASS"
+  },
+  {
+   "id": "796110",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/796110/prog4226.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796110/prog4226.txt",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796110/prog4226.zip"
+   ],
+   "title": "Crop Progress",
+   "release_datetime": "2026-10-19T12:00:00+0000",
+   "identifier": [
+    "CropProg"
+   ],
+   "agency_acronym": "NASS"
+  }
+ ]
+}

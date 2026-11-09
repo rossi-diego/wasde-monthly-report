@@ -1,0 +1,66 @@
+{
+ "filters": [],
+ "pager": {
+  "current_page": 0,
+  "items_per_page": 25,
+  "total_pages": 1,
+  "total_results": 4
+ },
+ "results": [
+  {
+   "id": "795399",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/1v53mw90b/r494xm22x/grst0925.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/1v53mw90b/n009z187s/grst0925.zip",
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/1v53mw90b/9c67zn924/grst0925.txt"
+   ],
+   "title": "Grain Stocks",
+   "release_datetime": "2025-09-30T12:00:00+0000",
+   "identifier": [
+    "GraiStoc"
+   ],
+   "agency_acronym": "NASS"
+  },
+  {
+   "id": "795406",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/k643d172b/zc77vr89p/grst0925.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/k643d172b/8623m001p/grst0925.zip",
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/k643d172b/1n79k437q/grst0925.txt"
+   ],
+   "title": "Grain Stocks",
+   "release_datetime": "2025-09-30T12:00:00+0000",
+   "identifier": [
+    "GraiStoc"
+   ],
+   "agency_acronym": "NASS"
+  },
+  {
+   "id": "795431",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/4q77hr39m/1257ct53j/grst0925.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/4q77hr39m/gb19h595p/grst0925.zip",
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/4q77hr39m/jw829c41h/grst0925.txt"
+   ],
+   "title": "Grain Stocks",
+   "release_datetime": "2025-09-30T12:00:00+0000",
+   "identifier": [
+    "GraiStoc"
+   ],
+   "agency_acronym": "NASS"
+  },
+  {
+   "id": "738288",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/5999n859k/gb19fc354/01-30-19_Report_Reschedule_ASB_Notice_Final.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/xg94hp534/5999n859k/tm70n155v/01-30-19_Report_Reschedule_ASB_Notice_Final.txt"
+   ],
+   "title": "Grain Stocks",
+   "release_datetime": "2019-01-11T12:00:00+0000",
+   "identifier": [
+    "GraiStoc"
+   ],
+   "agency_acronym": "NASS"
+  }
+ ]
+}

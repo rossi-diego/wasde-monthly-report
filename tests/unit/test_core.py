@@ -50,9 +50,15 @@ def test_usda_prefix_and_fas_key_fallback(monkeypatch):
 # ── registry / spec ─────────────────────────────────────────────────────────
 
 
-def test_registry_enables_wasde_export_sales_and_crush(config_dir):
+def test_registry_enables_every_v1_report(config_dir):
     reg = load_registry(config_dir)
-    assert [r.id for r in reg.enabled()] == ["wasde", "export_sales", "oilseed_crush"]
+    assert [r.id for r in reg.enabled()] == [
+        "wasde",
+        "export_sales",
+        "oilseed_crush",
+        "crop_progress",
+        "grain_stocks",
+    ]
     assert {"export_sales", "oilseed_crush", "crop_progress", "grain_stocks"} <= set(reg.reports)
     spec = reg.spec("wasde", Settings(config_dir=config_dir))
     assert isinstance(spec, WasdeSpec)
@@ -64,8 +70,16 @@ def test_registry_enables_wasde_export_sales_and_crush(config_dir):
     esr = reg.spec("export_sales", Settings(config_dir=config_dir))
     assert isinstance(esr, ExportSalesSpec)
     assert esr.config.release_time_et == "08:30" and esr.config.cadence == "weekly"
+    cp = reg.spec("crop_progress", Settings(config_dir=config_dir))
+    assert type(cp).__name__ == "CropProgressSpec" and cp.isolated
+    assert type(reg.spec("grain_stocks", Settings(config_dir=config_dir))).__name__ == (
+        "GrainStocksSpec"
+    )
+    reg.reports["planned"] = reg.get("grain_stocks").model_copy(
+        update={"id": "planned", "spec": None}
+    )
     with pytest.raises(ValueError, match="no spec"):
-        reg.spec("crop_progress", Settings(config_dir=config_dir))
+        reg.spec("planned", Settings(config_dir=config_dir))
 
 
 def test_every_non_wasde_report_is_date_keyed(config_dir):

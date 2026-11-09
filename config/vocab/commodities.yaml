@@ -1,16 +1,18 @@
 # Canonical commodity ids shared by every report (plan §3/§5). Ids match WASDE silver's
-# commodity_id. Aliases are labels used by other reports (FAS ESR, NASS commodity_desc).
+# commodity_id. Aliases are labels used by other reports (FAS ESR, NASS commodity_desc, NASS
+# Crop Progress / Grain Stocks table labels; Crop Progress keeps winter and spring wheat apart
+# in its own `crop` column, both map to wheat here).
 kind: commodity
 items:
   corn:
     label: Corn
-    aliases: [CORN]
+    aliases: [CORN, "Corn"]
   soybeans:
     label: Soybeans
-    aliases: [SOYBEANS]
+    aliases: [SOYBEANS, "Soybean"]
   wheat:
     label: Wheat
-    aliases: [WHEAT, "All Wheat", "Wheat - All Classes"]
+    aliases: [WHEAT, "All Wheat", "All wheat", "Wheat - All Classes", "Winter Wheat", "Spring Wheat"]
   soybean_meal:
     label: Soybean Meal
     aliases: ["CAKE & MEAL, SOYBEAN", "Soybean Cake & Meal", "Soybean cake & meal (ESR 901)"]

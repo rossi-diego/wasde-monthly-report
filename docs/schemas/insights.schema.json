@@ -28,6 +28,16 @@
           "title": "F2 Min Months Remaining",
           "type": "integer"
         },
+        "home_hidden_months": {
+          "additionalProperties": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "title": "Home Hidden Months",
+          "type": "object"
+        },
         "stale_after_days": {
           "additionalProperties": {
             "type": "integer"
@@ -170,7 +180,13 @@
             "E3",
             "F1",
             "F2",
-            "F3"
+            "F3",
+            "C1",
+            "C2",
+            "C3",
+            "G1",
+            "G2",
+            "G3"
           ],
           "title": "Rule",
           "type": "string"
@@ -180,6 +196,8 @@
             "wasde",
             "export_sales",
             "oilseed_crush",
+            "crop_progress",
+            "grain_stocks",
             "cross"
           ],
           "title": "Report Id",
@@ -207,7 +225,13 @@
             "china_share_soy",
             "crush_pace",
             "required_monthly_crush",
-            "oil_yield"
+            "oil_yield",
+            "good_excellent",
+            "stage_pace",
+            "condition_index",
+            "stocks_vs_wasde",
+            "implied_disappearance",
+            "on_farm_share"
           ],
           "title": "Kind",
           "type": "string"
@@ -262,7 +286,16 @@
               "partial_denominator",
               "crush_history_from_2015",
               "nass_revises_previous_month",
-              "wasde_oil_year_oct_sep"
+              "wasde_oil_year_oct_sep",
+              "nass_selected_states_aggregate",
+              "own_5yr_same_week_by_day_of_year",
+              "own_5yr_final_rating",
+              "nass_5yr_average_as_published",
+              "winter_wheat_fall_ratings_next_crop",
+              "grain_stocks_first_print",
+              "imports_omitted_small_for_corn_soy",
+              "nass_may_revise_production_same_day",
+              "nass_revises_previous_quarter"
             ],
             "type": "string"
           },
@@ -299,7 +332,8 @@
                 "months_remaining_below_min",
                 "no_data",
                 "first_projection",
-                "gap_after_cancelled_report"
+                "gap_after_cancelled_report",
+                "season_closed"
               ],
               "type": "string"
             },
@@ -325,6 +359,52 @@
         "as_of"
       ],
       "title": "Insight",
+      "type": "object"
+    },
+    "SeasonStatus": {
+      "additionalProperties": false,
+      "description": "Season state of a seasonal report (Crop Progress, April-November).",
+      "properties": {
+        "state": {
+          "enum": [
+            "in_season",
+            "closed"
+          ],
+          "title": "State",
+          "type": "string"
+        },
+        "season": {
+          "title": "Season",
+          "type": "integer"
+        },
+        "latest_release_key": {
+          "title": "Latest Release Key",
+          "type": "string"
+        },
+        "last_scheduled": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Last Scheduled"
+        },
+        "shown_on_home": {
+          "title": "Shown On Home",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "state",
+        "season",
+        "latest_release_key",
+        "last_scheduled",
+        "shown_on_home"
+      ],
+      "title": "SeasonStatus",
       "type": "object"
     }
   },
@@ -376,6 +456,14 @@
       },
       "title": "Home Cards",
       "type": "array"
+    },
+    "seasons": {
+      "additionalProperties": {
+        "$ref": "#/$defs/SeasonStatus"
+      },
+      "description": "Season state of seasonal reports (crop_progress), for the report page.",
+      "title": "Seasons",
+      "type": "object"
     },
     "hero": {
       "$ref": "#/$defs/Hero"

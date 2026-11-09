@@ -1,0 +1,41 @@
+# NASS Crop Progress: weekly on Mondays at 16:00 ET, April through November, covering the week
+# that ended the day before (Sunday). A federal holiday on the Monday moves the report to
+# Tuesday (Memorial Day, Labor Day, Columbus Day): holiday_shift_days: 1.
+#
+# The rule was checked against every ESMIS findByIdentifier/CropProg release with a zip in
+# files[] from 2010-06-07 to 2026-11-02 (spike 2026-11-09). The rule matches all of them
+# except the dates pinned below. Three ESMIS releases are not modelled by the rule at all
+# (2018-09-11, a reissue next to 2018-09-10; 2019-12-02 and 2019-12-09, the late-harvest
+# December extension): ingestion never depends on this file (every run lists ESMIS and
+# ingests whatever was released); the dates only drive the "due" gate, dim_calendar and the
+# overdue watchdog. Late NASS postings are picked up by the Tuesday runs (plan §11).
+#
+# Off-season (December to March) there is nothing due, and the stale watchdog measures the
+# newest release against the last scheduled date, not against today (detect.weekly_due).
+source: https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/CropProg
+release_time_et: "16:00"
+rule:
+  weekday: monday
+  # First release used: 2010-06-07 (the first prog_all_tables.csv in the regular layout).
+  start: "2010-06-07"
+  lag_days: 1
+  holiday_shift_days: 1
+  months: [4, 5, 6, 7, 8, 9, 10, 11]
+# Rule-scheduled Monday -> actual release date (from ESMIS release_datetime).
+overrides:
+  "2012-04-16": "2012-04-17"  # the zip was posted on Tuesday (Monday has a text file only)
+  "2012-10-29": "2012-10-31"  # Hurricane Sandy closed federal offices in Washington
+  "2014-04-07": "2014-04-08"
+  "2016-04-04": "2016-04-05"  # the zip was posted on Tuesday (Monday has a text file only)
+  "2017-07-03": "2017-07-05"  # Independence Day on Tuesday
+  "2022-11-28": "2022-11-29"
+# Rule-scheduled Mondays with no release (federal funding lapses).
+cancelled:
+  - "2013-10-07"
+  - "2013-10-14"
+  - "2025-10-06"
+  - "2025-10-13"
+  - "2025-10-20"
+  - "2025-10-27"
+  - "2025-11-03"
+  - "2025-11-10"

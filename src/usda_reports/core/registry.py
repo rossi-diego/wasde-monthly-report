@@ -30,6 +30,9 @@ class ReportConfig(BaseModel):
     # month = YYYY-MM keys (WASDE); date = YYYY-MM-DD keys (weekly reports, NASS monthly
     # reports whose release month can hold two releases after a shutdown).
     release_key_format: Literal["month", "date"] = "month"
+    # Released only part of the year (Crop Progress): the off-season is a "season closed"
+    # state, not stale data.
+    seasonal: bool = False
     spec: str | None = None  # "package.module:ClassName"
 
     @property

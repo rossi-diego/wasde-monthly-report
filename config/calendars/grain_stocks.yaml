@@ -1,0 +1,87 @@
+# NASS Grain Stocks: quarterly at 12:00 ET (January, with the annual Crop Production and the
+# January WASDE; then the last business day of March, June and September), covering stocks on
+# December 1, March 1, June 1 and September 1.
+#
+# History: the actual release dates listed by ESMIS findByIdentifier/GraiStoc with a zip in
+# files[], from 2010-06-30 (the first release whose zip holds grst_all_tables.csv) to
+# 2026-09-30 (spike 2026-11-09). The 2018-19 funding lapse moved the January 2019 report to
+# 2019-02-08 (ESMIS lists a reschedule notice on 2019-01-11); 2013-11-19 is a text notice
+# only. 2025-09-30 is listed three times on ESMIS (re-posted files): the highest id is used.
+#
+# Future dates follow that pattern and must be checked against the NASS Agricultural
+# Statistics Board calendar each December (https://www.nass.usda.gov/Publications/Calendar/).
+# Detection never depends on them: every run lists ESMIS and ingests what was released; the
+# dates only drive the "due" gate, dim_calendar and the overdue watchdog.
+source: https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/GraiStoc
+release_time_et: '12:00'
+releases:
+- '2010-06-30'
+- '2010-09-30'
+- '2011-01-12'
+- '2011-03-31'
+- '2011-06-30'
+- '2011-09-30'
+- '2012-01-12'
+- '2012-03-30'
+- '2012-06-29'
+- '2012-09-28'
+- '2013-01-11'
+- '2013-03-28'
+- '2013-06-28'
+- '2013-09-30'
+- '2014-01-10'
+- '2014-03-31'
+- '2014-06-30'
+- '2014-09-30'
+- '2015-01-12'
+- '2015-03-31'
+- '2015-06-30'
+- '2015-09-30'
+- '2016-01-12'
+- '2016-03-31'
+- '2016-06-30'
+- '2016-09-30'
+- '2017-01-12'
+- '2017-03-31'
+- '2017-06-30'
+- '2017-09-29'
+- '2018-01-12'
+- '2018-03-29'
+- '2018-06-29'
+- '2018-09-28'
+- '2019-02-08'
+- '2019-03-29'
+- '2019-06-28'
+- '2019-09-30'
+- '2020-01-10'
+- '2020-03-31'
+- '2020-06-30'
+- '2020-09-30'
+- '2021-01-12'
+- '2021-03-31'
+- '2021-06-30'
+- '2021-09-30'
+- '2022-01-12'
+- '2022-03-31'
+- '2022-06-30'
+- '2022-09-30'
+- '2023-01-12'
+- '2023-03-31'
+- '2023-06-30'
+- '2023-09-29'
+- '2024-01-12'
+- '2024-03-28'
+- '2024-06-28'
+- '2024-09-30'
+- '2025-01-10'
+- '2025-03-31'
+- '2025-06-30'
+- '2025-09-30'
+- '2026-01-12'
+- '2026-03-31'
+- '2026-06-30'
+- '2026-09-30'
+- '2027-01-12'
+- '2027-03-31'
+- '2027-06-30'
+- '2027-09-30'

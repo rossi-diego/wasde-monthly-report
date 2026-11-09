@@ -129,15 +129,19 @@ def detect(
         str | None, typer.Option(help="Ingest this YYYY-MM regardless of calendar")
     ] = None,
     report: Annotated[
-        str, typer.Option(help="Report to detect (wasde | export_sales | oilseed_crush)")
+        str,
+        typer.Option(
+            help="Report to detect (wasde | export_sales | oilseed_crush | crop_progress | "
+            "grain_stocks)"
+        ),
     ] = WASDE,
     force: Annotated[bool, typer.Option(help="Date-keyed reports: pull even if not due")] = False,
 ) -> None:
     """Ingest the latest scheduled release (or a revised edition) of one report if it is out.
 
     WASDE sets GitHub outputs ``new_report`` (true/false), ``report_month`` and ``problems``;
-    date-keyed reports (Export Sales, oilseed crush) set ``new_<report>``, ``<report>_release``
-    and ``<report>_problems``.
+    date-keyed reports (Export Sales, NASS crush, Crop Progress, Grain Stocks) set
+    ``new_<report>``, ``<report>_release`` and ``<report>_problems``.
     Exit code 2 = a watchdog fired (overdue report, stale data, empty calendar);
     exit code 1 = a forced month could not be found / the source failed.
     """
@@ -455,25 +459,39 @@ def build_info(
     import json as _json
 
     from usda_reports.core.registry import load_registry
+    from usda_reports.detect import missed_since
     from usda_reports.insights.gates import make_gates
     from usda_reports.silver.build import failed_reports
 
     s = get_settings()
     meta = _json.loads((s.web_data_dir / "meta.json").read_text(encoding="utf-8"))
-    stale_after = make_gates(load_registry(s.config_dir)).stale_after_days
+    registry = load_registry(s.config_dir)
+    stale_after = make_gates(registry).stale_after_days
     now = datetime.now(UTC)
     bad = set(failed.split()) | failed_reports(s)
     reports = {}
     for rid, m in (meta.get("reports") or {}).items():
         ts = datetime.fromisoformat(str(m["release_ts_utc"]).replace("Z", "+00:00"))
         age = (now - ts).days
-        status = "failed" if rid in bad else ("stale" if age > stale_after.get(rid, 45) else "ok")
+        cfg = registry.reports.get(rid)
+        # A seasonal report (Crop Progress) with no scheduled release since its newest one is
+        # off-season, not stale: its final November release is the newest data until April.
+        off_season = (
+            cfg is not None
+            and cfg.seasonal
+            and not missed_since(
+                s.calendars_dir / f"{rid}.yaml", str(m["latest_release_key"]), now, cfg
+            )
+        )
+        stale = age > stale_after.get(rid, 45) and not off_season
+        status = "failed" if rid in bad else ("stale" if stale else "ok")
         reports[rid] = {
             "latest_release_key": m["latest_release_key"],
             "release_ts_utc": m["release_ts_utc"],
             "next_release": m.get("next_release"),
             "age_days": age,
             "status": status,
+            **({"off_season": off_season} if cfg and cfg.seasonal else {}),
         }
     body = {
         "sha": sha,
@@ -541,6 +559,82 @@ def insights_schema(
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(_json.dumps(json_schema(), indent=2) + "\n", encoding="utf-8")
     log.info("insights.schema_written", path=str(out))
+
+
+@app.command("catalog-schema")
+def catalog_schema(
+    out: Annotated[Path, typer.Option(help="Where to write the snapshot")] = Path(
+        "docs/schemas/catalog.schema.json"
+    ),
+) -> None:
+    """Write the catalogue schema snapshot (every dataset's columns and types) from gold."""
+    import json as _json
+
+    import duckdb
+
+    from usda_reports.publish.schema_diff import snapshot_from_duckdb
+
+    s = get_settings()
+    con = duckdb.connect(str(s.duckdb_path), read_only=True)
+    try:
+        snap = snapshot_from_duckdb(con)
+    finally:
+        con.close()
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(_json.dumps(snap, indent=2) + "\n", encoding="utf-8")
+    log.info("catalog.schema_written", path=str(out), datasets=len(snap["datasets"]))
+
+
+@app.command("catalog-diff")
+def catalog_diff(
+    old: Annotated[Path, typer.Argument(help="Baseline: a snapshot or a datapackage.json")],
+    new: Annotated[Path, typer.Argument(help="Candidate: a snapshot or a datapackage.json")],
+) -> None:
+    """Fail (exit 1) on a breaking catalogue change: a column removed, renamed or retyped, or
+    a dataset removed, without a new major schema_version. Additive changes only print."""
+    from usda_reports.publish.schema_diff import compare, load_snapshot
+
+    diff = compare(load_snapshot(old), load_snapshot(new))
+    for line in diff.additive:
+        typer.echo(f"additive: {line}")
+    for line in diff.breaking:
+        typer.echo(f"::error::breaking catalogue change: {line}", err=True)
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:
+        with open(summary, "a", encoding="utf-8") as fh:
+            fh.write(f"### catalog-diff: {old.name} → {new.name}\n\n")
+            for line in diff.breaking:
+                fh.write(f"- **breaking**: {line}\n")
+            for line in diff.additive:
+                fh.write(f"- additive: {line}\n")
+            if not diff.breaking and not diff.additive:
+                fh.write("- no change\n")
+    log.info("catalog.diff", breaking=len(diff.breaking), additive=len(diff.additive))
+    if not diff.ok:
+        raise typer.Exit(1)
+
+
+@app.command("retention-plan")
+def retention_plan(
+    releases: Annotated[
+        Path, typer.Option(help="gh release list --json tagName,createdAt,isPrerelease,…")
+    ],
+    protect: Annotated[str, typer.Option(help="Space-separated tags never to prune")] = "",
+    keep_days: Annotated[int, typer.Option(help="Keep weekly releases this recent")] = 90,
+    keep_min: Annotated[int, typer.Option(help="Always keep this many newest weekly")] = 8,
+) -> None:
+    """Print the superseded weekly-* prereleases that retention may delete, one per line
+    (never data-*, the Latest release or bronze-store). Sets GitHub output ``prune``."""
+    import json as _json
+
+    from usda_reports.publish.retention import parse_gh_list, select_prunable
+
+    rows = parse_gh_list(_json.loads(releases.read_text(encoding="utf-8")))
+    tags = select_prunable(rows, datetime.now(UTC), keep_days, keep_min, protected=protect.split())
+    _gh_output(prune=" ".join(tags))
+    log.info("retention.plan", candidates=len(rows), prune=tags)
+    for t in tags:
+        typer.echo(t)
 
 
 @app.command("latest-key")

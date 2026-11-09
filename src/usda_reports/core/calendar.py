@@ -3,10 +3,11 @@
 Two forms are supported:
 
 * explicit dates (``releases: [YYYY-MM-DD, …]``), used by WASDE;
-* a weekly rule (``rule: {weekday, start, holiday_shift_days}``) plus ``overrides``
+* a weekly rule (``rule: {weekday, start, holiday_shift_days, months}``) plus ``overrides``
   (scheduled date → actual date) and ``cancelled`` dates, used by weekly reports such as
   Export Sales. A U.S. federal holiday from Monday up to the scheduled weekday moves that
-  week's release ``holiday_shift_days`` later.
+  week's release ``holiday_shift_days`` later. ``months`` (optional) limits the rule to a
+  season: NASS Crop Progress is weekly on Mondays from April through November only.
 
 Release times always come from config (ET), never from the source's metadata: ESMIS stamps
 many files with a dummy 12:00Z.
@@ -73,9 +74,13 @@ def weekly_releases(raw: dict[str, Any], until: date | None = None) -> list[date
     start = date.fromisoformat(str(rule["start"]))
     start += timedelta(days=(wd - start.weekday()) % 7)
     end = until or (datetime.now(UTC).date() + timedelta(days=RULE_HORIZON_DAYS))
+    months = {int(m) for m in rule.get("months") or range(1, 13)}
     out = []
     d = start
     while d <= end:
+        if d.month not in months:
+            d += timedelta(days=7)
+            continue
         actual = _shift(d, raw)
         if actual is not None:
             out.append(actual)

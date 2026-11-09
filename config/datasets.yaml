@@ -122,3 +122,73 @@ datasets:
     description: >-
       Export commitments as a share of the USDA (WASDE) export projection that was public at
       each ESR release (point in time), with the same week of the 5 prior marketing years.
+  - report_id: crop_progress
+    dataset: weekly
+    schema_version: 1
+    model: fct_crop_progress_weekly
+    columns: "*"
+    order_by: crop, kind, category, week_ending
+    coverage: week_ending
+    release_column: release_key
+    site_preview: true
+    description: >-
+      NASS Crop Progress, national ("<N> States") rows for corn, soybeans, winter wheat and
+      spring wheat since the 2010-06-07 release: cumulative % of acreage per stage (planted …
+      harvested) with NASS's published previous-week, previous-year and 5-year-average columns,
+      and % of acreage per condition rating (very poor … excellent), one row per week.
+  - report_id: crop_progress
+    dataset: condition
+    schema_version: 1
+    model: fct_crop_condition
+    columns: "*"
+    order_by: crop, week_ending
+    coverage: week_ending
+    release_column: release_key
+    site_preview: true
+    description: >-
+      Weekly crop condition per crop (national): the five ratings, good-to-excellent share,
+      condition index (1·VP + 2·P + 3·F + 4·G + 5·E)/100, NASS's published previous-year values
+      and an own 5-year comparison (the 5 previous seasons at the week within ±3 days by day of
+      year; NASS publishes no 5-year average for condition).
+  - report_id: grain_stocks
+    dataset: quarterly
+    schema_version: 1
+    model: fct_grain_stocks_quarterly
+    columns: "*"
+    order_by: commodity_id, as_of_date
+    coverage: as_of_date
+    release_column: latest_release_key
+    site_preview: true
+    description: >-
+      U.S. corn, soybean and all-wheat stocks on December 1, March 1, June 1 and September 1 by
+      position (on farms, off farms, all positions) from NASS Grain Stocks since the 2010-06-30
+      release: latest revised value, first print and the release that first printed each date
+      (thousand bushels; metric tons via dim_unit).
+  - report_id: cross
+    dataset: stocks_vs_wasde
+    schema_version: 1
+    model: fct_stocks_vs_wasde
+    columns: "*"
+    order_by: commodity_id, as_of_date
+    coverage: as_of_date
+    release_column: release_key
+    site_preview: true
+    licence: "US Government work, public domain; cite USDA NASS (Grain Stocks) and USDA OCE/WAOB (WASDE)"
+    description: >-
+      Grain Stocks vs. USDA, point in time: NASS total stocks on the dates that are a WASDE
+      ending stock (corn/soybeans September 1, wheat June 1), as first printed, against the
+      old-crop ending stocks in the WASDE public at the release (million bushels and %).
+  - report_id: cross
+    dataset: stocks_disappearance
+    schema_version: 1
+    model: fct_stocks_disappearance
+    columns: "*"
+    order_by: commodity_id, as_of_date
+    coverage: as_of_date
+    release_column: release_key
+    site_preview: true
+    licence: "US Government work, public domain; cite USDA NASS (Grain Stocks) and USDA OCE/WAOB (WASDE)"
+    description: >-
+      Implied disappearance per quarter, point in time: previous stocks (as printed in the same
+      release) + WASDE production as of the release in the harvest quarter only − new stocks
+      (first print). Imports omitted; NASS may revise production on the same day.

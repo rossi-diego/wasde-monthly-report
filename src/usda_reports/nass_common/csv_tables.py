@@ -13,7 +13,9 @@ f     footnote line
 
 Values use NASS symbols: ``(D)`` withheld to avoid disclosing individual operations,
 ``(NA)`` not available, ``(X)`` not applicable, ``(Z)`` less than half the unit, ``(S)``
-insufficient reports, ``-`` represents zero. Numbers may carry thousands separators.
+insufficient reports, ``-`` represents zero. Numbers may carry thousands separators. Crop
+Progress also prints a bare ``NA`` (not available) and marks revised previous-week values with
+a leading asterisk (``"* 61"``, footnote "*  Revised.").
 
 Files are Windows-1252 (en dashes in titles); UTF-8 is tried first.
 """
@@ -35,6 +37,7 @@ SYMBOLS = {
     "(S)": "S",
     "(H)": "H",
     "(L)": "L",
+    "NA": "NA",
 }
 _NUM_RE = re.compile(r"^-?[0-9][0-9,]*(\.[0-9]+)?$")
 
@@ -52,12 +55,14 @@ def decode(data: bytes) -> str:
 
 def parse_value(cell: str) -> tuple[float | None, str | None]:
     """(value, flag): ``"6,148,544"`` → (6148544.0, None); ``"(D)"`` → (None, "D");
-    ``"-"`` → (0.0, "zero"); empty → (None, None)."""
+    ``"-"`` → (0.0, "zero"); ``"* 61"`` → (61.0, "revised"); empty → (None, None)."""
     s = cell.strip()
     if not s:
         return None, None
     if s == "-":
         return 0.0, "zero"
+    if s.startswith("*") and _NUM_RE.match(s[1:].strip()):
+        return float(s[1:].strip().replace(",", "")), "revised"
     if s.upper() in SYMBOLS:
         return None, SYMBOLS[s.upper()]
     if _NUM_RE.match(s):
@@ -76,6 +81,17 @@ class NassBlock:
     def header_row(self, first: str) -> list[str] | None:
         """The header line whose first cell equals ``first`` (e.g. 'Item' or 'Region')."""
         return next((h for h in self.header if h and h[0].strip() == first), None)
+
+    def column_labels(self) -> list[str]:
+        """One label per column: the non-blank header cells of that column joined top to
+        bottom with single spaces (NASS splits headers over lines, e.g. ``"Week ending"`` /
+        ``"November 1,"`` / ``"2026"`` → ``"Week ending November 1, 2026"``)."""
+        width = max((len(h) for h in self.header), default=0)
+        out = []
+        for i in range(width):
+            parts = [h[i].strip() for h in self.header if i < len(h) and h[i].strip()]
+            out.append(re.sub(r"\s+", " ", " ".join(parts)))
+        return out
 
 
 @dataclass
@@ -136,11 +152,12 @@ def parse_nass_csv(data: bytes) -> list[NassTable]:
     return tables
 
 
+def normalize_title(s: str) -> str:
+    """Dash- and space-insensitive form of a NASS title (en/em dashes become ``-``)."""
+    return re.sub(r"\s+", " ", s.replace("–", "-").replace("—", "-")).strip()
+
+
 def find_tables(tables: list[NassTable], title_prefix: str) -> list[NassTable]:
     """Tables whose title starts with ``title_prefix`` (dash/space-insensitive)."""
-
-    def norm(s: str) -> str:
-        return re.sub(r"\s+", " ", s.replace("–", "-").replace("—", "-")).strip()
-
-    want = norm(title_prefix)
-    return [t for t in tables if norm(t.title).startswith(want)]
+    want = normalize_title(title_prefix)
+    return [t for t in tables if normalize_title(t.title).startswith(want)]

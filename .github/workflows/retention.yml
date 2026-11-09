@@ -1,0 +1,83 @@
+name: Release retention
+
+# Prunes superseded weekly-* prereleases (plan §7 "Retention"). Selection logic and its unit
+# test: src/usda_reports/publish/retention.py, tests/unit/test_retention.py.
+#
+#   * NEVER touched: data-* releases (kept forever), the Latest release (Soy Outlook reads
+#     releases/latest), bronze-store (append-only shards every data-* manifest points at), any
+#     tag that is not weekly-YYYY-MM-DD[.N], drafts, and the release the live site is built from.
+#   * Always kept: the newest 8 weekly releases. Pruned: older weekly prereleases created more
+#     than 90 days ago.
+#   * DRY RUN by default: every run prints the plan. Deletion happens only on a manual run with
+#     `apply: true`, or when the repository variable RETENTION_APPLY is "true".
+
+on:
+  schedule:
+    - cron: "17 6 * * 0" # Sundays 06:17 UTC, away from release days
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Delete the planned releases (otherwise a dry run that only prints them)"
+        type: boolean
+        default: false
+
+concurrency:
+  # Never runs while a data release is being published.
+  group: data-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+env:
+  SITE_URL: ${{ vars.SITE_URL || 'https://usda-reports.vercel.app' }}
+
+jobs:
+  retention:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          activate-environment: true
+      - run: uv pip install -e .
+
+      - name: Plan (dry run)
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release list --limit 500 --json tagName,createdAt,isPrerelease,isLatest,isDraft > /tmp/releases.json
+          # The live site's catalogue links to the assets of the tag it was built from.
+          live=$(curl -fsS -m 20 "$SITE_URL/build.json" | python -c "import json,sys;print(json.load(sys.stdin).get('tag',''))" || true)
+          usda-reports retention-plan --releases /tmp/releases.json --protect "$live" > /tmp/prune.txt
+          {
+            echo "### Release retention plan"
+            echo "Protected (live site): ${live:-unknown}"
+            if [ -s /tmp/prune.txt ]; then sed 's/^/- /' /tmp/prune.txt; else echo "Nothing to prune."; fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Apply
+        if: (github.event_name == 'workflow_dispatch' && inputs.apply) || vars.RETENTION_APPLY == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          while read -r tag; do
+            [ -n "$tag" ] || continue
+            case "$tag" in
+              weekly-*) ;;
+              *) echo "::error::refusing to delete non-weekly tag '$tag'"; exit 1 ;;
+            esac
+            # Re-check right before deleting: still a prerelease, never the Latest release.
+            state=$(gh release view "$tag" --json isPrerelease,isDraft -q '"\(.isPrerelease) \(.isDraft)"')
+            latest=$(gh release view --json tagName -q .tagName 2>/dev/null || true)
+            if [ "$state" != "true false" ] || [ "$tag" = "$latest" ]; then
+              echo "::warning::skipping $tag (state: $state, latest: $latest)"
+              continue
+            fi
+            gh release delete "$tag" --yes --cleanup-tag
+            echo "- deleted $tag" >> "$GITHUB_STEP_SUMMARY"
+          done < /tmp/prune.txt

@@ -104,7 +104,14 @@ export type CardView = {
   href: string;
 };
 
-const COLOR = { wasde: "var(--r-wasde)", export_sales: "var(--r-esr)", oilseed_crush: "var(--r-crush)", cross: "var(--r-esr)" } as const;
+const COLOR = {
+  wasde: "var(--r-wasde)",
+  export_sales: "var(--r-esr)",
+  oilseed_crush: "var(--r-crush)",
+  crop_progress: "var(--r-progress)",
+  grain_stocks: "var(--r-stocks)",
+  cross: "var(--r-esr)",
+} as const;
 
 /** "Crush (NASS) · September 2026": the data month of a crush insight. */
 function crushEyebrow(i: Insight, lang: Lang) {

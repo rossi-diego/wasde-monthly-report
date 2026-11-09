@@ -1,0 +1,279 @@
+version: 2
+models:
+- name: fct_crop_progress_weekly
+  description: NASS Crop Progress, national rows ("<N> States" aggregate) for corn, soybeans, winter
+    wheat and spring wheat, one row per crop × kind × category × week since the 2010-06-07 release.
+    kind = progress (cumulative % of acreage per stage, with NASS's published previous-week,
+    previous-year and 5-year-average columns used as published) or condition (% of acreage per
+    rating, with NASS's previous-week and previous-year rows). Published as crop_progress__weekly__v1.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: crop
+    data_type: varchar
+    description: Crop as NASS reports it (corn, soybeans, winter_wheat, spring_wheat).
+    data_tests:
+    - not_null
+    - accepted_values:
+        arguments:
+          values: [corn, soybeans, winter_wheat, spring_wheat]
+  - name: commodity_id
+    data_type: varchar
+    description: Canonical commodity id (winter and spring wheat are both wheat).
+    data_tests:
+    - not_null
+  - name: season
+    data_type: integer
+    description: Calendar year of the week (NASS's crop-progress season runs April-November; fall
+      winter-wheat ratings refer to the crop harvested the following year).
+  - name: week_ending
+    data_type: date
+    description: Sunday that ends the reporting week (ISO date).
+    data_tests:
+    - not_null
+  - name: kind
+    data_type: varchar
+    description: progress (stage reached) or condition (crop rating).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [progress, condition]
+  - name: category
+    data_type: varchar
+    description: Stage (planted, emerged, silking, dough, dented, mature, blooming, setting_pods,
+      dropping_leaves, headed, harvested) or rating (very_poor, poor, fair, good, excellent).
+    data_tests:
+    - not_null
+  - name: value_pct
+    data_type: double
+    description: Percent of acreage this week (null when NASS prints NA).
+  - name: value_flag
+    data_type: varchar
+    description: NASS symbol of the printed value (NA = not available, zero = "-", revised = "*").
+  - name: nass_prev_week_pct
+    data_type: double
+    description: NASS's published value for the previous week.
+  - name: nass_prev_year_pct
+    data_type: double
+    description: NASS's published value for the same week one year earlier.
+  - name: nass_5yr_avg_pct
+    data_type: double
+    description: NASS's published 5-year average for the week (progress only; years in avg_years).
+  - name: vs_5yr_avg_pp
+    data_type: double
+    description: value_pct − nass_5yr_avg_pct, percentage points (C2 stage pace).
+  - name: vs_prev_year_pp
+    data_type: double
+    description: value_pct − nass_prev_year_pct, percentage points.
+  - name: vs_prev_week_pp
+    data_type: double
+    description: value_pct − nass_prev_week_pct, percentage points.
+  - name: prev_year_week_ending
+    data_type: date
+    description: Week ending NASS compared with one year earlier (progress tables).
+  - name: avg_years
+    data_type: varchar
+    description: Years behind NASS's 5-year average, e.g. 2021-2025.
+  - name: state_id
+    data_type: varchar
+    description: us_total = the NASS "<N> States" aggregate row (national level).
+  - name: n_states
+    data_type: integer
+    description: Number of states in the NASS aggregate (18 for corn, soybeans and winter wheat, 6
+      for spring wheat).
+  - name: unit_id
+    data_type: varchar
+    description: pct (percent of acreage).
+  - name: release_key
+    data_type: varchar
+    description: Crop Progress release (ESMIS release date, YYYY-MM-DD) whose values are shown.
+    data_tests:
+    - not_null
+  - name: release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (16:00 ET, stored in UTC).
+    data_tests:
+    - not_null
+  - name: first_release_key
+    data_type: varchar
+    description: First release that printed the week (point-in-time availability).
+  - name: first_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of the first release (UTC).
+  - name: n_vintages
+    data_type: integer
+    description: Releases that printed the week (2 only for the 2018-09-11 re-issue).
+  - name: source_url
+    data_type: varchar
+    description: ESMIS zip of the release whose values are shown (from ESMIS files[]).
+  - name: is_latest_week
+    data_type: boolean
+    description: True on the newest week published.
+
+- name: fct_crop_condition
+  description: Crop condition per crop × week (national), wide, with the good-to-excellent share
+    (C1, good% + excellent%) and the condition index (C3, (1·VP + 2·P + 3·F + 4·G + 5·E)/100, range
+    1-5), NASS's published previous-year values and an own 5-year comparison (NASS publishes none for
+    condition) from the 5 previous seasons at the week within ±3 days by day of year. Published as
+    crop_progress__condition__v1.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: crop
+    data_type: varchar
+    description: Crop (corn, soybeans, winter_wheat, spring_wheat).
+    data_tests:
+    - not_null
+  - name: commodity_id
+    data_type: varchar
+    description: Canonical commodity id.
+  - name: season
+    data_type: integer
+    description: Calendar year of the week.
+  - name: week_ending
+    data_type: date
+    description: Sunday that ends the reporting week (ISO date).
+    data_tests:
+    - not_null
+  - name: release_key
+    data_type: varchar
+    description: Release whose values are shown (YYYY-MM-DD).
+  - name: first_release_key
+    data_type: varchar
+    description: First release that printed the week.
+  - name: release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of the first release (16:00 ET in UTC).
+    data_tests:
+    - not_null
+  - name: n_states
+    data_type: integer
+    description: States in the NASS aggregate.
+  - name: very_poor_pct
+    data_type: double
+    description: Percent of acreage rated very poor.
+  - name: poor_pct
+    data_type: double
+    description: Percent rated poor.
+  - name: fair_pct
+    data_type: double
+    description: Percent rated fair.
+  - name: good_pct
+    data_type: double
+    description: Percent rated good.
+  - name: excellent_pct
+    data_type: double
+    description: Percent rated excellent.
+  - name: sum_pct
+    data_type: double
+    description: Sum of the five ratings (100 ± 1 of rounding; tested).
+  - name: ge_pct
+    data_type: double
+    description: Good + excellent, percent of acreage (C1).
+  - name: ci
+    data_type: double
+    description: Condition index (1·VP + 2·P + 3·F + 4·G + 5·E) / 100, 1 = all very poor, 5 = all
+      excellent (C3).
+  - name: nass_prev_week_ge_pct
+    data_type: double
+    description: Good + excellent of NASS's "Previous week" row.
+  - name: nass_prev_year_ge_pct
+    data_type: double
+    description: Good + excellent of NASS's "Previous year" row (as published).
+  - name: nass_prev_year_ci
+    data_type: double
+    description: Condition index of NASS's "Previous year" row.
+  - name: ge_vs_prev_year_pp
+    data_type: double
+    description: ge_pct − nass_prev_year_ge_pct, percentage points.
+  - name: n_5yr
+    data_type: integer
+    description: Previous seasons (of the last 5) with a rated week within ±3 days by day of year
+      (small sample, n <= 5).
+  - name: ge_5yr_mean
+    data_type: double
+    description: Mean good + excellent of those weeks.
+  - name: ge_5yr_min
+    data_type: double
+    description: Minimum of the same.
+  - name: ge_5yr_max
+    data_type: double
+    description: Maximum of the same.
+  - name: ci_5yr_mean
+    data_type: double
+    description: Mean condition index of those weeks.
+  - name: ci_5yr_min
+    data_type: double
+    description: Minimum of the same.
+  - name: ci_5yr_max
+    data_type: double
+    description: Maximum of the same.
+  - name: hist_first_season
+    data_type: integer
+    description: Oldest season in the 5-year comparison.
+  - name: hist_max_release_ts_utc
+    data_type: timestamp with time zone
+    description: Newest release instant among the comparison weeks (always before release_ts_utc).
+  - name: source_url
+    data_type: varchar
+    description: ESMIS zip of the release whose values are shown.
+  - name: is_latest_week
+    data_type: boolean
+    description: True on the crop's newest rated week.
+  data_tests:
+  # The own 5-year comparison only uses weeks released before this week.
+  - assert_no_lookahead:
+      arguments:
+        left_ts: release_ts_utc
+        right_ts: hist_max_release_ts_utc
+
+unit_tests:
+  # Own 5-year condition comparison (plan §6 C1/C3): the 5 previous seasons at the week within
+  # ±3 days by day of year. For 2026-07-05 (day 186): 2025-07-06 (187) and 2024-07-07 (189, leap
+  # year) are kept, 2023-07-09 (190) is 4 days off and dropped, 2022 has no rated week, so n
+  # drops to 3; 2020 is six seasons back, outside the window.
+  - name: crop_condition_5yr_same_week_by_day_of_year
+    model: fct_crop_condition
+    given:
+      - input: ref('fct_crop_progress_weekly')
+        rows:
+          - {crop: corn, season: 2026, week_ending: 2026-07-05, kind: condition, category: good,
+             value_pct: 50, first_release_ts_utc: "2026-07-06 20:00:00+00"}
+          - {crop: corn, season: 2026, week_ending: 2026-07-05, kind: condition, category: excellent,
+             value_pct: 10, first_release_ts_utc: "2026-07-06 20:00:00+00"}
+          - {crop: corn, season: 2025, week_ending: 2025-07-06, kind: condition, category: good,
+             value_pct: 55, first_release_ts_utc: "2025-07-07 20:00:00+00"}
+          - {crop: corn, season: 2025, week_ending: 2025-07-06, kind: condition, category: excellent,
+             value_pct: 15, first_release_ts_utc: "2025-07-07 20:00:00+00"}
+          - {crop: corn, season: 2024, week_ending: 2024-07-07, kind: condition, category: good,
+             value_pct: 50, first_release_ts_utc: "2024-07-08 20:00:00+00"}
+          - {crop: corn, season: 2024, week_ending: 2024-07-07, kind: condition, category: excellent,
+             value_pct: 14, first_release_ts_utc: "2024-07-08 20:00:00+00"}
+          - {crop: corn, season: 2023, week_ending: 2023-07-09, kind: condition, category: good,
+             value_pct: 40, first_release_ts_utc: "2023-07-10 20:00:00+00"}
+          - {crop: corn, season: 2023, week_ending: 2023-07-09, kind: condition, category: excellent,
+             value_pct: 10, first_release_ts_utc: "2023-07-10 20:00:00+00"}
+          - {crop: corn, season: 2021, week_ending: 2021-07-04, kind: condition, category: good,
+             value_pct: 52, first_release_ts_utc: "2021-07-06 20:00:00+00"}
+          - {crop: corn, season: 2021, week_ending: 2021-07-04, kind: condition, category: excellent,
+             value_pct: 12, first_release_ts_utc: "2021-07-06 20:00:00+00"}
+          - {crop: corn, season: 2020, week_ending: 2020-07-05, kind: condition, category: good,
+             value_pct: 20, first_release_ts_utc: "2020-07-06 20:00:00+00"}
+          - {crop: corn, season: 2020, week_ending: 2020-07-05, kind: condition, category: excellent,
+             value_pct: 0, first_release_ts_utc: "2020-07-06 20:00:00+00"}
+    expect:
+      rows:
+        - {week_ending: 2026-07-05, ge_pct: 60, n_5yr: 3, ge_5yr_min: 64, ge_5yr_max: 70,
+           hist_first_season: 2021}
+        - {week_ending: 2025-07-06, ge_pct: 70, n_5yr: 4, ge_5yr_min: 20, ge_5yr_max: 64,
+           hist_first_season: 2020}
+        - {week_ending: 2024-07-07, ge_pct: 64, n_5yr: 2, ge_5yr_min: 20, ge_5yr_max: 50,
+           hist_first_season: 2020}
+        - {week_ending: 2023-07-09, ge_pct: 50, n_5yr: 1, ge_5yr_min: 20, ge_5yr_max: 20,
+           hist_first_season: 2020}
+        - {week_ending: 2021-07-04, ge_pct: 64, n_5yr: 1, ge_5yr_min: 20, ge_5yr_max: 20,
+           hist_first_season: 2020}
+        - {week_ending: 2020-07-05, ge_pct: 20, n_5yr: 0, ge_5yr_min: null, ge_5yr_max: null,
+           hist_first_season: null}

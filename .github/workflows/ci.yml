@@ -35,6 +35,42 @@ jobs:
       - name: dbt parse (models compile)
         run: dbt parse --project-dir dbt --profiles-dir dbt
 
+  catalog-diff:
+    # Schema guard of the download catalogue (plan §7). The python job's pytest already proves
+    # that docs/schemas/catalog.schema.json matches the dbt models (built from fixtures); this
+    # job compares that snapshot with (1) the base branch's committed snapshot and (2) the
+    # datapackage.json the live site serves, and fails on a column removed, renamed or retyped,
+    # or a dataset removed, unless config/datasets.yaml bumps that dataset's schema_version.
+    name: Catalogue · breaking schema changes
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      SITE_URL: ${{ vars.SITE_URL || 'https://usda-reports.vercel.app' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          activate-environment: true
+      - run: uv pip install -e .
+      - name: Against the base branch's snapshot
+        run: |
+          if git show "origin/${{ github.base_ref }}:docs/schemas/catalog.schema.json" > /tmp/base.json 2>/dev/null; then
+            usda-reports catalog-diff /tmp/base.json docs/schemas/catalog.schema.json
+          else
+            echo "The base branch has no catalogue snapshot yet: nothing to compare." >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: Against the live catalogue (datapackage.json served by the site)
+        run: |
+          if curl -fsS -m 30 "$SITE_URL/data/datapackage.json" -o /tmp/live.json; then
+            usda-reports catalog-diff /tmp/live.json docs/schemas/catalog.schema.json
+          else
+            echo "::warning::live datapackage.json unreachable: compared with the base branch only"
+          fi
+
   web:
     name: Web · lint, types, build, e2e
     runs-on: ubuntu-latest

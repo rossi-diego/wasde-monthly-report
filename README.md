@@ -42,6 +42,8 @@ error-prone. This project does it end to end:
 | Are export sales on pace for USDA? | **Commitments as % of the WASDE projection public at each ESR release**, vs the same week of the 5 prior years (each against *its* as-of WASDE) |
 | Who is buying? | China and **unknown destinations** shares of commitments, vs 5 years |
 | Is the crush on pace for USDA? | **NASS crush to date as % of the WASDE crush projection public when NASS printed the month**, what is still needed per month, and the oil yield per bushel vs 5 years and vs the WASDE-implied yield |
+| Is the crop ahead or behind, and in what shape? | **Crop Progress**: stage vs NASS's own published 5-yr average (C2), good-to-excellent vs NASS's previous year and an own 5-season comparison (C1), condition index 1–5 (C3); "season closed" off-season |
+| Did stocks surprise USDA? | **Grain Stocks** vs the WASDE ending stocks public at the release (G1, ranked since 2010), implied disappearance (G2) and on-farm share (G3) |
 | Can I get it in Excel / Parquet? | Latest report workbook, per-commodity history, versioned catalogue with `datapackage.json` |
 
 ### Reports
@@ -51,7 +53,8 @@ error-prone. This project does it end to end:
 | WASDE | USDA OCE/WAOB | monthly, 12:00 | OCE CSV (2021+) + ESMIS XML | 2010-07 → | [/reports/wasde](https://usda-reports.vercel.app/reports/wasde/) · [commodity pages](https://usda-reports.vercel.app/commodity/soybeans/) | live |
 | Export Sales (ESR) | USDA FAS | weekly, Thu 08:30 | FAS ESR API (`api.fas.usda.gov`, api.data.gov key) | MY 2010/11 → | [/reports/export-sales](https://usda-reports.vercel.app/reports/export-sales/) | live |
 | Fats & Oils: soybean crush | USDA NASS | monthly, ~1st business day 15:00 | ESMIS `FatsOils` → release zip → `cafo_all_tables.csv` (no key) | 2015-10 → (ESMIS limit) | [/reports/oilseed-crush](https://usda-reports.vercel.app/reports/oilseed-crush/) | live |
-| Crop Progress · Grain Stocks | USDA NASS | weekly · quarterly | ESMIS zip CSV | — | placeholder cards | planned |
+| Crop Progress (corn, soybeans, winter/spring wheat; national) | USDA NASS | weekly, Mon 16:00 (Apr–Nov; holiday → Tue) | ESMIS `CropProg` → release zip → `prog_all_tables.csv` (no key) | 2010-06 → | data: `reports/crop_progress/*.json`, `crop_progress__weekly__v1`, `crop_progress__condition__v1` | data live (cut C) |
+| Grain Stocks (corn, soybeans, wheat; by position) | USDA NASS | quarterly, 12:00 | ESMIS `GraiStoc` → release zip → `grst_all_tables.csv` (no key) | 2010-06 → | data: `reports/grain_stocks/*.json`, `grain_stocks__quarterly__v1`, `cross__stocks_vs_wasde__v1` | data live (cut C) |
 
 Release dates, next releases and freshness of every report: [/reports](https://usda-reports.vercel.app/reports/)
 (a stale banner appears when a report is older than its cadence plus grace).

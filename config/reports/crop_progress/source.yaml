@@ -1,0 +1,69 @@
+# NASS Crop Progress (weekly, Mondays 16:00 ET, April-November).
+#
+# Spike 2026-11-09 (ESMIS findByIdentifier/CropProg, pages 0..44, no key needed):
+#   1,116 releases, 1995-04-03 -> 2026-11-02; a zip in files[] from 2001-05-14. The zips hold
+#   prog_all_tables.csv (the NASS t/h/u/d/c/f grammar) from 2010-05-24; earlier zips carry
+#   one CSV per table in an older layout (prog_all.csv / prog_NNN.csv). The 2010-05-24 file
+#   is itself a one-off layout ("Corn:  Percent Planted," titles, state abbreviations, "Avg."
+#   headers), so the history starts with the next release, 2010-06-07 (the 2010 season is
+#   therefore partial: June onwards). Zip names are not reliable (CropProg-MM-DD-YYYY.zip until
+#   2018, then progWWYY.zip, plus _0 / _1 re-posts such as prog3826_0.zip and prog4625_1.zip),
+#   so URLs come from files[] and release keys from release_datetime.
+#   No releases from 2025-10-06 to 2025-11-10 (funding lapse; 2025-11-17 resumed), nor on
+#   2013-10-07 / 2013-10-15.
+#
+#   Table titles (every release 2010-06-07 .. 2026-11-02 checked; en/em dashes vary):
+#     "<Crop> <Stage> - Selected States"                      progress, cumulative % of acreage
+#     "<Crop> Condition - Selected States: Week Ending <Month D, YYYY>"
+#   Progress header columns (order differs by year, so roles come from the dates):
+#     "Week ending <date one year earlier>", "Week ending <previous week>",
+#     "Week ending <this week>", "<YYYY-YYYY> Average" (NASS's published 5-year average)
+#   Condition header: "State", "Very poor", "Poor", "Fair", "Good", "Excellent"; the national
+#   rows are "<N> States" (then "Previous week", "Previous year"); NASS publishes no 5-year
+#   average for condition (plan §6 C1 computes it). Unit row: "(percent)" in every column.
+#   The national row is NASS's "<N> States" aggregate (18 States for corn / soybeans / winter
+#   wheat, 6 States for spring wheat; "18 Sts" in 2010), stored with n_states.
+#
+# Validation against the published text (prog4426.txt, released 2026-11-02, week ending
+# November 1, 2026): the corn harvested table prints "18 States ......:  (NA)  60  74  77"
+# (last year, last week, this week, 2021-2025 average; last year is NA because no report was
+# released on 2025-11-03, funding lapse) and the winter wheat condition table
+# "18 States ......:  5  13  38  38  6" (very poor … excellent), exactly the national rows of
+# prog_all_tables.csv parsed here.
+esmis_url: https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/CropProg
+zip_member: "*_all_tables.csv"
+history_start: "2010-06-07"
+recheck_last: 2
+# Days from the week ending (Sunday) to the release: 1 on a Monday, 2 on a holiday Tuesday,
+# 3 on Wednesday (2012-10-31 Sandy, 2017-07-05).
+release_lag_days: {min: 1, max: 4}
+# Crops kept (national level only). title_names are matched at the start of the table title.
+crops:
+  corn: {commodity_id: corn, title_names: ["Corn"]}
+  soybeans: {commodity_id: soybeans, title_names: ["Soybeans", "Soybean"]}
+  winter_wheat: {commodity_id: wheat, title_names: ["Winter Wheat"]}
+  spring_wheat: {commodity_id: wheat, title_names: ["Spring Wheat"]}
+# Progress stage as printed in the title -> category, in crop-calendar order (the order is
+# used to pick the stage "in progress" for C2). A title of a kept crop whose stage is not
+# listed here fails the report (a format change must be looked at, not silently skipped).
+stages:
+  corn: {Planted: planted, Emerged: emerged, Silking: silking, Dough: dough, Dented: dented,
+         Mature: mature, Harvested: harvested}
+  soybeans: {Planted: planted, Emerged: emerged, Blooming: blooming, "Setting Pods": setting_pods,
+             "Dropping Leaves": dropping_leaves, Harvested: harvested}
+  winter_wheat: {Planted: planted, Emerged: emerged, Headed: headed, Harvested: harvested}
+  spring_wheat: {Planted: planted, Emerged: emerged, Headed: headed, Harvested: harvested}
+condition_word: Condition
+# Condition header label -> category (also the CI weights 1..5 in this order).
+conditions:
+  "Very poor": very_poor
+  "Poor": poor
+  "Fair": fair
+  "Good": good
+  "Excellent": excellent
+# Rows under the national row of a condition table.
+condition_rows:
+  "Previous week": prev_week
+  "Previous year": prev_year
+total_row_pattern: '^(\d+) (?:States|Sts)$'
+unit_labels: ["(percent)", "percent"]

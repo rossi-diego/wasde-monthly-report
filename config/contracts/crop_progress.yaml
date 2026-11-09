@@ -1,0 +1,27 @@
+# Silver contract for NASS Crop Progress (checked by usda_reports.core.contracts on every build
+# and on every downloaded zip before it reaches bronze).
+# One row per (release, crop, kind, category): national ("<N> States") rows only.
+report_id: crop_progress
+release_column: release_key
+release_label: Crop Progress releases
+key:
+  - release_key
+  - crop
+  - kind
+  - category
+not_null:
+  - release_key
+  - commodity_id
+  - crop
+  - kind
+  - category
+  - week_ending
+  - season
+  - n_states
+  - unit_id
+# Late-October weeks print only a few stages (2010-10-18: corn and soybeans harvested, winter
+# wheat planted and emerged = 4 rows) and the December extension one (2019-12-09: corn
+# harvested), so the floor is one row; every row must still parse and every table must agree
+# on the week.
+min_rows_per_release: 1
+envelope: true

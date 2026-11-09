@@ -8,6 +8,9 @@ bu,wheat,"Bushel (wheat, 60 lb)",36.7437,0.0272155498766,1,36.7437 bu/t
 m_bu,corn,Million bushels (corn),3.93679e-05,25401.4057138,1e+06,39.3679 bu/t
 m_bu,soybeans,Million bushels (soybeans),3.67437e-05,27215.5498766,1e+06,36.7437 bu/t
 m_bu,wheat,Million bushels (wheat),3.67437e-05,27215.5498766,1e+06,36.7437 bu/t
+k_bu,corn,Thousand bushels (corn; NASS Grain Stocks),0.0393679,25.4014057138,1000,39.3679 bu/t
+k_bu,soybeans,Thousand bushels (soybeans; NASS Grain Stocks),0.0367437,27.2155498766,1000,36.7437 bu/t
+k_bu,wheat,Thousand bushels (wheat; NASS Grain Stocks),0.0367437,27.2155498766,1000,36.7437 bu/t
 short_ton,,"Short ton (2,000 lb)",1.102310995,0.907185,,0.907185 t
 short_ton,soybeans,Short ton of soybeans (NASS crush),1.102310995,0.907185,33.3333,st -> bu x 33.3333 (60 lb/bu)
 k_short_tons,,Thousand short tons (WASDE soybean meal),0.001102310995,907.185,,907.185 t
