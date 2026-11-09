@@ -35,7 +35,7 @@ export default function Upcoming({ headingLevel = 2 }: { headingLevel?: 2 | 3 })
               <span className="text-xs font-bold uppercase tracking-[0.04em]" style={{ color: u.color }}>
                 {t(u.name)}
               </span>
-              <span className="text-[11px] text-muted">{u.cadenceDetail}</span>
+              <span className="text-[11px] text-muted">{t(u.cadenceDetail)}</span>
             </div>
             {u.insight && <div className="font-semibold">{t(u.insight)}</div>}
             <svg aria-hidden="true" viewBox="0 0 220 60" preserveAspectRatio="none" className="h-[60px] w-full">

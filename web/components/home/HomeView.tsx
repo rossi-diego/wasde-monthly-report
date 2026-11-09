@@ -8,12 +8,13 @@ import { ChartTable } from "@/components/charts/common";
 import MultiLine from "@/components/charts/MultiLine";
 import Sparkline from "@/components/charts/Sparkline";
 import Waterfall from "@/components/charts/Waterfall";
-import { T, useT } from "@/components/chrome/I18n";
+import { T, useLang, useT } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills, type ReleaseInfo } from "@/components/chrome/TopBar";
 import DataStrip from "@/components/home/DataStrip";
 import Upcoming from "@/components/home/Upcoming";
 import type { CommodityPanel, HomeData } from "@/lib/dashboard";
 import { num } from "@/lib/format";
+import type { Lang } from "@/lib/i18n";
 
 function CardHead({ eyebrow, title, id, right }: { eyebrow: React.ReactNode; title: React.ReactNode; id: string; right?: React.ReactNode }) {
   return (
@@ -37,7 +38,14 @@ function TightOrLoose({ p }: { p: CommodityPanel }) {
   const t = useT();
   const s = p.stu;
   const rank = s.now !== null && s.n >= 5 ? t("tight.rank", { k: s.k, n: s.n }) : null;
-  const aria = `${p.what} stocks-to-use by marketing year, ${s.from} to ${s.to}; ${s.nowMy} projection ${num(s.now, 1)}%${rank ? `; ${rank}` : ""}.`;
+  const aria = t("stu.aria", {
+    what: p.what,
+    from: s.from,
+    to: s.to,
+    my: s.nowMy ?? "",
+    now: `${num(s.now, 1)}%`,
+    rank: rank ? `; ${rank}` : "",
+  });
   return (
     <article aria-labelledby="h-tight" className="card flex min-w-0 flex-col gap-2 p-5">
       <CardHead
@@ -82,7 +90,11 @@ function TightOrLoose({ p }: { p: CommodityPanel }) {
         </span>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <ChartTable caption={aria} head={["Marketing year", "Stocks-to-use", "Ending stocks", "Status"]} rows={s.rows} />
+        <ChartTable
+          caption={aria}
+          head={[t("stu.head.my"), t("stu.head.stu"), t("stu.head.es"), t("stu.head.status")]}
+          rows={s.rows}
+        />
         <Link href={`/commodity/${p.id}/`} className="inline-flex min-h-11 items-center text-[13px] font-semibold text-link">
           <T k="tight.open" v={{ label: p.label }} />
         </Link>
@@ -92,9 +104,18 @@ function TightOrLoose({ p }: { p: CommodityPanel }) {
 }
 
 function RevisionPath({ p }: { p: CommodityPanel }) {
+  const t = useT();
   const r = p.rev;
   if (!r) return null;
-  const aria = `Revision paths of ${p.what} ending stocks for ${r.firstMy} to ${r.lastMy}. The ${r.lastMy} estimate has moved between ${num(r.curMin, r.digits)} and ${num(r.curMax, r.digits)} ${p.unitLabel.toLowerCase()} since ${r.since}.`;
+  const aria = t("rev.aria", {
+    what: p.what,
+    first: r.firstMy,
+    last: r.lastMy,
+    min: num(r.curMin, r.digits),
+    max: num(r.curMax, r.digits),
+    unit: p.unitLabel.toLowerCase(),
+    since: r.since,
+  });
   return (
     <article aria-labelledby="h-rev" className="card flex min-w-0 flex-col gap-2 p-5">
       <CardHead id="h-rev" eyebrow={<T k="rev.eyebrow" />} title={<T k="rev.title" v={{ what: p.what }} />} />
@@ -107,8 +128,19 @@ function RevisionPath({ p }: { p: CommodityPanel }) {
   );
 }
 
-export default function HomeView({ data, release, pills }: { data: HomeData; release: ReleaseInfo; pills: { id: string; label: string }[] }) {
+export default function HomeView({
+  data: all,
+  release,
+  pills,
+}: {
+  /** Every derived string in each language (computed at build time). */
+  data: Record<Lang, HomeData>;
+  release: ReleaseInfo;
+  pills: { id: string; label: string }[];
+}) {
   const t = useT();
+  const { lang } = useLang();
+  const data = all[lang] ?? all.en;
   const [sel, setSel] = useState(data.defaultCommodity);
   const panel = data.panels.find((p) => p.id === sel) ?? data.panels[0];
   const wf = data.waterfall;
@@ -125,6 +157,7 @@ export default function HomeView({ data, release, pills }: { data: HomeData; rel
           <article
             key={k.id}
             data-testid="kpi"
+            data-dir={k.dir}
             className="box-border flex min-h-[150px] flex-col gap-1.5 rounded-2xl p-[18px] text-white"
             style={{ background: k.color }}
           >
@@ -136,11 +169,13 @@ export default function HomeView({ data, release, pills }: { data: HomeData; rel
               <span className="mono text-[30px] font-semibold tracking-[-0.02em]">{k.value}</span>
               <span className="text-[13px]">{k.unit}</span>
             </div>
-            <div className="text-[13px] font-semibold">
-              {k.dir === "flat"
-                ? t("kpi.unch", { month: data.prevMonth })
-                : t(k.dir === "up" ? "kpi.up" : "kpi.down", { v: k.deltaAbs, month: data.prevMonth })}
-              {k.dir !== "flat" && k.deltaPct ? ` (${k.deltaPct})` : ""}
+            <div className="text-[13px] font-semibold" data-testid="kpi-delta">
+              {k.dir === "new"
+                ? t("kpi.new")
+                : k.dir === "flat"
+                  ? t("kpi.unch", { month: data.prevMonth })
+                  : t(k.dir === "up" ? "kpi.up" : "kpi.down", { v: k.deltaAbs, month: data.prevMonth })}
+              {(k.dir === "up" || k.dir === "down") && k.deltaPct ? ` (${k.deltaPct})` : ""}
             </div>
             <div className="mt-auto flex items-end justify-between gap-2">
               <span className="text-xs">{k.contextKind === "stu" ? t("kpi.stu", { v: k.context }) : k.context}</span>
@@ -163,13 +198,19 @@ export default function HomeView({ data, release, pills }: { data: HomeData; rel
             <CardHead
               id="h-wf"
               eyebrow={<T k="wf.eyebrow" />}
-              title={`${wf.what} ${wf.marketYear} ending stocks: ${num(wf.from, wf.digits)} → ${num(wf.to, wf.digits)} ${wf.unit}`}
+              title={t("wf.title", {
+                what: wf.what,
+                my: wf.marketYear,
+                from: num(wf.from, wf.digits),
+                to: num(wf.to, wf.digits),
+                unit: wf.unit,
+              })}
             />
             <Waterfall steps={wf.steps} ariaLabel={wf.aria} format={(v) => num(v, wf.digits)} />
             <div className="text-xs text-muted">
               <T k="wf.note" v={{ now: wf.stuNow, prev: wf.stuPrev, month: data.prevMonth, k: wf.k, n: wf.n }} />
             </div>
-            <ChartTable caption={wf.aria} head={["Step", `Effect on ending stocks (${wf.unit})`]} rows={wf.rows} />
+            <ChartTable caption={wf.aria} head={[t("wf.head.step"), t("wf.head.effect", { unit: wf.unit })]} rows={wf.rows} />
           </article>
         )}
 
@@ -199,7 +240,7 @@ export default function HomeView({ data, release, pills }: { data: HomeData; rel
                   {c.delta}
                 </div>
                 <div className="text-xs text-muted">
-                  {c.dir === "up" ? "Raised" : c.dir === "down" ? "Cut" : "Unchanged"} to {c.to}
+                  {t(c.dir === "up" ? "chg.raised" : c.dir === "down" ? "chg.cut" : "chg.unch", { v: c.to })}
                   {c.extra.map((e) => ` · ${e}`).join("")}
                 </div>
                 <div aria-hidden="true" className="h-1.5 w-[120px] overflow-hidden rounded-[3px] bg-grid">

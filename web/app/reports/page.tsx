@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { T } from "@/components/chrome/I18n";
+import { CommodityName, DateText, MonthYear, T } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
 import Upcoming from "@/components/home/Upcoming";
 import { commodityPills, releaseInfo } from "@/lib/dashboard";
 import { getIndex, getMeta } from "@/lib/data";
-import { monthLabel, num, shortDate } from "@/lib/format";
+import { num } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Reports · USDA Reports Dashboard" };
 
@@ -34,7 +34,8 @@ export default function ReportsPage() {
             <div className="eyebrow">
               <T k="cadence.monthly" />
             </div>
-            <h2 id="h-wasde" className="m-0 text-[17px] font-bold">
+            {/* The report's official (English) name. */}
+            <h2 id="h-wasde" lang="en" className="m-0 text-[17px] font-bold">
               World Agricultural Supply and Demand Estimates (WASDE)
             </h2>
           </div>
@@ -44,13 +45,24 @@ export default function ReportsPage() {
         </div>
         <dl className="m-0 grid max-w-xl">
           <Row label={<T k="reports.latest" />}>
-            {meta.latest.label}
+            <MonthYear m={meta.latest.report_month} />
             {meta.latest.wasde_number !== null ? ` · #${meta.latest.wasde_number}` : ""}
-            {meta.latest.release_date ? ` · ${shortDate(meta.latest.release_date)}` : ""}
+            {meta.latest.release_date ? (
+              <>
+                {" · "}
+                <DateText iso={meta.latest.release_date} />
+              </>
+            ) : null}
           </Row>
-          <Row label={<T k="reports.next" />}>{shortDate(meta.next_release) ?? "—"}</Row>
+          <Row label={<T k="reports.next" />}>
+            <DateText iso={meta.next_release} />
+          </Row>
           <Row label={<T k="reports.history" />}>
-            {num(meta.history.reports)} reports since {monthLabel(meta.history.first_report)} · {num(meta.history.rows)} rows
+            <T
+              k="reports.historyRow"
+              v={{ reports: num(meta.history.reports), rows: num(meta.history.rows) }}
+              months={{ first: meta.history.first_report }}
+            />
           </Row>
         </dl>
         <div className="flex flex-wrap gap-x-5">
@@ -59,7 +71,7 @@ export default function ReportsPage() {
           </Link>
           {index.map((c) => (
             <Link key={c.id} href={`/commodity/${c.id}/`} className="inline-flex min-h-11 items-center text-link">
-              {c.label}
+              <CommodityName id={c.id} fallback={c.label} />
             </Link>
           ))}
         </div>

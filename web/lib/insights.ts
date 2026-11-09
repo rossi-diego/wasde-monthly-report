@@ -1,11 +1,14 @@
 // Pure, client-safe derivations from the published JSON. Every number on the dashboard
 // comes from here or straight from the JSON; nothing is typed in by hand.
+// Every function takes the display language (default EN); the numbers do not depend on it.
 
 import type { BarItem } from "@/components/charts/Bar";
 import type { Line } from "@/components/charts/MultiLine";
 import type { Step } from "@/components/charts/Waterfall";
 
-import { decimals, monthName, num, qty, unitShort } from "./format";
+import { decimals, monthName, monthOf, monthYear, num, ordinal, qty, unitShort } from "./format";
+import { translate, type Key, type Lang, type Vars } from "./i18n";
+import { attrName, commodityName, regionName } from "./labels";
 import type { Overview, Series } from "./types";
 
 const NOUN: Record<string, string> = {
@@ -14,8 +17,18 @@ const NOUN: Record<string, string> = {
   soybean_oil: "soybean oil",
 };
 
-/** "U.S. soybean", "World corn" … */
-export function seriesNoun(commodity: string, regionLabel: string, commodityLabel?: string): string {
+/** "U.S. soybean", "World corn" … ("Soja (EUA)", "Milho (Mundo)" in PT, which needs the region id). */
+export function seriesNoun(
+  commodity: string,
+  regionLabel: string,
+  commodityLabel?: string,
+  lang: Lang = "en",
+  regionId?: string,
+): string {
+  if (lang === "pt") {
+    const c = commodityName(commodity, "pt", commodityLabel ?? commodity.replace(/_/g, " "));
+    return `${c} (${regionId ? regionName(regionId, "pt", regionLabel) : regionLabel})`;
+  }
   const noun = NOUN[commodity] ?? (commodityLabel ?? commodity.replace(/_/g, " ")).toLowerCase();
   return `${regionLabel} ${noun}`;
 }
@@ -36,7 +49,8 @@ export type StuView = {
 
 /** Rank of the current projection among the final values of completed seasons:
  *  k = number of final seasons with a strictly lower stocks-to-use ("tighter"). */
-export function stuView(s: Series): StuView {
+export function stuView(s: Series, lang: Lang = "en"): StuView {
+  const t = (k: Key) => translate(lang, k);
   const hist = s.stocks_to_use_history.filter((h) => h.stocks_to_use_pct !== null);
   const finals = hist.filter((h) => h.status === "final");
   const currents = hist.filter((h) => h.status === "current");
@@ -44,18 +58,21 @@ export function stuView(s: Series): StuView {
   const now = proj?.stocks_to_use_pct ?? null;
   const k = now === null ? 0 : finals.filter((h) => (h.stocks_to_use_pct as number) < now).length;
   const d = decimals(s.unit, proj?.ending_stocks ?? 0);
+  const status = (h: (typeof hist)[number]) =>
+    h.status === "final"
+      ? t("status.final")
+      : h.flag === "proj"
+        ? t("status.proj")
+        : h.flag === "est"
+          ? t("status.est")
+          : (h.flag ?? t("status.current"));
   return {
     bars: hist.map((h) => ({
       label: h.market_year,
       value: h.stocks_to_use_pct as number,
       kind: h.status === "final" ? "past" : h === proj ? "current" : "est",
     })),
-    rows: hist.map((h) => [
-      h.market_year,
-      `${num(h.stocks_to_use_pct, 1)}%`,
-      num(h.ending_stocks, d),
-      h.status === "final" ? "final" : (h.flag ?? "current"),
-    ]),
+    rows: hist.map((h) => [h.market_year, `${num(h.stocks_to_use_pct, 1)}%`, num(h.ending_stocks, d), status(h)]),
     now,
     nowMy: proj?.market_year ?? null,
     estMy: currents.length > 1 ? currents[currents.length - 2].market_year : null,
@@ -68,7 +85,8 @@ export function stuView(s: Series): StuView {
 
 // ---------------------------------------------------------------- revision paths
 
-const CYCLE_SHORT = ["May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar", "Apr"];
+/** Cycle month 0 = May of the marketing-year start. */
+const cycleShort = (x: number, lang: Lang) => monthOf(5 + (x % 12), "short", lang);
 
 export type RevView = {
   lines: Line[];
@@ -87,7 +105,7 @@ export type RevView = {
 };
 
 /** Current marketing year highlighted, the `previous` before it in grey, by month of the cycle. */
-export function revView(s: Series, attr = "ending_stocks", previous = 5, xMax = 17): RevView | null {
+export function revView(s: Series, attr = "ending_stocks", previous = 5, xMax = 17, lang: Lang = "en"): RevView | null {
   const all = s.revisions[attr] ?? [];
   const sel = all.slice(-(previous + 1));
   if (!sel.length) return null;
@@ -111,11 +129,11 @@ export function revView(s: Series, attr = "ending_stocks", previous = 5, xMax = 
     };
   });
   const xTicks = [];
-  for (let x = 0; x <= xMax; x += 3) xTicks.push({ x, label: CYCLE_SHORT[x % 12] });
+  for (let x = 0; x <= xMax; x += 3) xTicks.push({ x, label: cycleShort(x, lang) });
   const months = Array.from({ length: xMax + 1 }, (_, i) => i);
   const rows = months
     .map((mIdx) => [
-      `${CYCLE_SHORT[mIdx % 12]}${mIdx >= 12 ? " (yr 2)" : ""}`,
+      `${cycleShort(mIdx, lang)}${mIdx >= 12 ? ` ${translate(lang, "rev.yr2")}` : ""}`,
       ...clean.map((l) => {
         const p = l.pts.find((q) => q[0] === mIdx);
         return p ? num(p[1], digits) : "—";
@@ -128,29 +146,54 @@ export function revView(s: Series, attr = "ending_stocks", previous = 5, xMax = 
     xMax,
     xTicks,
     rows,
-    head: ["Month of cycle", ...clean.map((l) => l.my)],
+    head: [translate(lang, "rev.head"), ...clean.map((l) => l.my)],
     firstMy: clean[0].my,
     lastMy: cur.my,
     greyFrom: clean[0].my,
     greyTo: clean.length > 1 ? clean[clean.length - 2].my : clean[0].my,
     curMin: curVals.length ? Math.min(...curVals) : null,
     curMax: curVals.length ? Math.max(...curVals) : null,
-    since: cur.pts[0] ? monthName(cur.pts[0][2]) : "",
+    since: cur.pts[0] ? monthName(cur.pts[0][2], "long", lang) : "",
     digits,
   };
 }
 
 // ---------------------------------------------------------------- drivers waterfall
 
-const DRIVER_LABEL: Record<string, [string, string?]> = {
-  beginning_stocks: ["Beginning", "stocks"],
-  production: ["Production"],
-  production_area: ["Area"],
-  production_yield: ["Yield"],
-  imports: ["Imports"],
-  domestic_total: ["Domestic", "use"],
-  exports: ["Exports"],
-  other: ["Other"],
+/** Two-line axis labels by driver id. */
+const DRIVER_LABEL: Record<Lang, Record<string, [string, string?]>> = {
+  en: {
+    beginning_stocks: ["Beginning", "stocks"],
+    production: ["Production"],
+    production_area: ["Area"],
+    production_yield: ["Yield"],
+    imports: ["Imports"],
+    domestic_total: ["Domestic", "use"],
+    exports: ["Exports"],
+    other: ["Other"],
+  },
+  pt: {
+    beginning_stocks: ["Estoques", "iniciais"],
+    production: ["Produção"],
+    production_area: ["Área"],
+    production_yield: ["Produtiv."],
+    imports: ["Importações"],
+    domestic_total: ["Uso", "doméstico"],
+    exports: ["Exportações"],
+    other: ["Outros"],
+  },
+};
+
+/** Full row labels in PT (the JSON carries the EN label). */
+const DRIVER_ROW_PT: Record<string, string> = {
+  beginning_stocks: "Estoques iniciais",
+  production: "Produção",
+  production_area: "Produção · área",
+  production_yield: "Produção · produtividade",
+  imports: "Importações",
+  domestic_total: "Uso doméstico",
+  exports: "Exportações",
+  other: "Outros / arredondamento",
 };
 
 export type WaterfallView = {
@@ -163,28 +206,35 @@ export type WaterfallView = {
   rows: (string | number)[][];
 };
 
-export function waterfallView(s: Series, marketYear: string | undefined, prevMonth: string | null): WaterfallView | null {
+export function waterfallView(
+  s: Series,
+  marketYear: string | undefined,
+  prevMonth: string | null,
+  lang: Lang = "en",
+): WaterfallView | null {
   const drv = marketYear ? s.drivers.find((d) => d.market_year === marketYear) : s.drivers[s.drivers.length - 1];
   if (!drv || drv.from === null || drv.to === null) return null;
   const digits = decimals(s.unit, drv.to);
   const comps = drv.components.filter((c) => c.value !== null && Math.abs(c.value) > 1e-9);
   if (!comps.length && drv.from === drv.to) return null;
-  const prevShort = prevMonth ? monthName(prevMonth, "short") : "Previous";
-  const curShort = monthName(s.report_month, "short");
+  const tr = (k: Key, v?: Vars) => translate(lang, k, v);
+  const rowLabel = (c: { id: string; label: string }) => (lang === "pt" ? (DRIVER_ROW_PT[c.id] ?? c.label) : c.label);
+  const prevShort = prevMonth ? monthName(prevMonth, "short", lang) : tr("wf.previous");
+  const curShort = monthName(s.report_month, "short", lang);
   const steps: Step[] = [
-    { label: prevShort, label2: "estimate", value: drv.from, kind: "total" },
+    { label: prevShort, label2: tr("wf.estimate"), value: drv.from, kind: "total" },
     ...comps.map((c) => {
-      const [a, b] = DRIVER_LABEL[c.id] ?? [c.label];
+      const [a, b] = DRIVER_LABEL[lang][c.id] ?? [rowLabel(c)];
       return { label: a, label2: b, value: c.value as number, kind: "delta" as const };
     }),
-    { label: curShort, label2: "estimate", value: drv.to, kind: "total" },
+    { label: curShort, label2: tr("wf.estimate"), value: drv.to, kind: "total" },
   ];
   const f = (v: number) => num(v, digits);
   const sgn = (v: number) => `${v >= 0 ? "+" : "−"}${f(Math.abs(v))}`;
   const parts = comps.map((c) => {
     const v = c.value as number;
-    const note = (c.id === "domestic_total" || c.id === "exports") && v < 0 ? " (more use, fewer stocks)" : "";
-    return `${c.label.toLowerCase()} ${sgn(v)}${note}`;
+    const note = (c.id === "domestic_total" || c.id === "exports") && v < 0 ? ` ${tr("wf.moreUse")}` : "";
+    return `${rowLabel(c).toLowerCase()} ${sgn(v)}${note}`;
   });
   return {
     steps,
@@ -192,11 +242,19 @@ export function waterfallView(s: Series, marketYear: string | undefined, prevMon
     to: drv.to,
     marketYear: drv.market_year,
     digits,
-    aria: `Waterfall of ${drv.market_year} ending stocks: ${prevShort} estimate ${f(drv.from)}; ${parts.join("; ")}; ${curShort} estimate ${f(drv.to)} ${unitShort(s.unit)}.`,
+    aria: tr("wf.aria", {
+      my: drv.market_year,
+      prev: prevShort,
+      from: f(drv.from),
+      parts: parts.join("; "),
+      cur: curShort,
+      to: f(drv.to),
+      unit: unitShort(s.unit, lang),
+    }),
     rows: [
-      [`${prevShort} estimate`, f(drv.from)],
-      ...comps.map((c) => [c.label, sgn(c.value as number)]),
-      [`${curShort} estimate`, f(drv.to)],
+      [tr("wf.rowEstimate", { m: prevShort }), f(drv.from)],
+      ...comps.map((c) => [rowLabel(c), sgn(c.value as number)]),
+      [tr("wf.rowEstimate", { m: curShort }), f(drv.to)],
     ],
   };
 }
@@ -227,24 +285,30 @@ export type ChangeRow = {
   frac: number;
 };
 
-export function changeRows(ov: Overview): ChangeRow[] {
+export function changeRows(ov: Overview, lang: Lang = "en"): ChangeRow[] {
   const top = Math.max(...ov.highlights.map((h) => h.score), 0) || 1;
   return ov.highlights.map((h) => {
     const d = decimals(h.unit, h.delta);
     const extra: string[] = [];
     if (h.pct_delta !== null) extra.push(`${h.pct_delta > 0 ? "+" : "−"}${num(Math.abs(h.pct_delta * 100), 1)}%`);
-    if (h.streak >= 2) extra.push(`${h.streak}${["st", "nd", "rd"][h.streak - 1] ?? "th"} consecutive ${h.delta > 0 ? "raise" : "cut"}`);
-    else if (h.related[0]) {
+    if (h.streak >= 2) {
+      extra.push(translate(lang, h.delta > 0 ? "chg.streakUp" : "chg.streakDown", { n: h.streak, nth: ordinal(h.streak) }));
+    } else if (h.related[0]) {
       const r = h.related[0];
-      extra.push(`${r.label.toLowerCase()} ${r.delta > 0 ? "+" : "−"}${num(Math.abs(r.delta), decimals(r.unit, r.delta))} ${unitShort(r.unit)}`.trim());
+      const sign = r.delta > 0 ? "+" : "−";
+      extra.push(`${attrName(r.attribute, lang, r.label)} ${sign}${num(Math.abs(r.delta), decimals(r.unit, r.delta))} ${unitShort(r.unit, lang)}`.trim());
     }
     return {
       key: `${h.commodity}-${h.region_id}-${h.market_year}-${h.attribute}`,
       commodity: h.commodity,
-      what: `${seriesNoun(h.commodity, h.region, h.commodity_label)} ${h.attribute_label.toLowerCase()}, ${h.market_year}`,
-      delta: `${h.delta > 0 ? "+" : h.delta < 0 ? "−" : ""}${num(Math.abs(h.delta), d)} ${unitShort(h.unit)}`.trim(),
+      what: translate(lang, "chg.what", {
+        what: seriesNoun(h.commodity, h.region, h.commodity_label, lang, h.region_id),
+        attr: attrName(h.attribute, lang, h.attribute_label),
+        my: h.market_year,
+      }),
+      delta: `${h.delta > 0 ? "+" : h.delta < 0 ? "−" : ""}${num(Math.abs(h.delta), d)} ${unitShort(h.unit, lang)}`.trim(),
       dir: h.delta > 0 ? "up" : h.delta < 0 ? "down" : "flat",
-      to: qty(h.value, h.unit),
+      to: qty(h.value, h.unit, lang),
       extra,
       frac: Math.max(0.04, h.score / top),
     };
@@ -259,7 +323,8 @@ export type Kpi = {
   tag: string;
   value: string;
   unit: string;
-  dir: "up" | "down" | "flat";
+  /** "new": no previous value to compare with (every May, the new marketing year's first projection). */
+  dir: "up" | "down" | "flat" | "new";
   deltaAbs: string;
   deltaPct: string | null;
   context: string;
@@ -275,13 +340,17 @@ export function kpiFromSeries(
   attr: string,
   marketYear: string,
   opts: { id: string; title: string; color: string; context: "stu" | "previous_seasons" },
+  lang: Lang = "en",
 ): Kpi | null {
   const col = s.balance_sheet.columns.findIndex((c) => c.market_year === marketYear);
   const row = s.balance_sheet.rows.find((r) => r.id === attr);
   const cell = col >= 0 ? row?.values[col] : undefined;
   if (!row || !cell || cell.value === null) return null;
   const d = decimals(s.unit, cell.value);
-  const delta = cell.delta ?? 0;
+  // A missing delta or previous value means a first projection: never report it as "unchanged".
+  const isNew = cell.delta === null || cell.delta === undefined || cell.prev === null || cell.prev === undefined;
+  const delta = isNew ? 0 : (cell.delta as number);
+  const dd = decimals(s.unit, delta); // the change at its published precision (e.g. +0.26 MMT)
   let context = "";
   if (opts.context === "stu") {
     const su = s.balance_sheet.rows.find((r) => r.id === "stocks_to_use_pct")?.values[col]?.value;
@@ -300,16 +369,17 @@ export function kpiFromSeries(
     title: opts.title,
     tag: marketYear,
     value: num(cell.value, d),
-    unit: unitShort(s.unit),
-    dir: delta > 0 ? "up" : delta < 0 ? "down" : "flat",
-    deltaAbs: num(Math.abs(delta), d),
-    deltaPct: cell.prev ? `${delta >= 0 ? "+" : "−"}${num(Math.abs((delta / cell.prev) * 100), 1)}%` : null,
+    unit: unitShort(s.unit, lang),
+    dir: isNew ? "new" : delta > 0 ? "up" : delta < 0 ? "down" : "flat",
+    deltaAbs: isNew ? "" : num(Math.abs(delta), dd),
+    deltaPct:
+      !isNew && cell.prev ? `${delta >= 0 ? "+" : "−"}${num(Math.abs((delta / (cell.prev as number)) * 100), 1)}%` : null,
     context,
     contextKind: opts.context === "stu" ? "stu" : "text",
     spark,
     sparkLabel: {
       what: opts.title,
-      since: first ? `${monthName(first[2])} ${first[2].slice(0, 4)}` : "",
+      since: first ? monthYear(first[2], lang) : "",
       from: spark.length ? num(spark[0], d) : "",
       to: spark.length ? num(spark[spark.length - 1], d) : "",
     },

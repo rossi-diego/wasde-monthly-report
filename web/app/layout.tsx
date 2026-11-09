@@ -62,8 +62,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <T k="footer.source" />
                 </span>
                 <span className="inline-flex items-center">
-                  Data {meta.data_release_tag ?? "local build"} · generated{" "}
-                  {new Date(meta.generated_at).toISOString().slice(0, 16).replace("T", " ")} UTC
+                  <T
+                    k="footer.data"
+                    v={{
+                      tag: meta.data_release_tag ?? "local build",
+                      at: new Date(meta.generated_at).toISOString().slice(0, 16).replace("T", " "),
+                    }}
+                  />
                 </span>
               </footer>
             </main>

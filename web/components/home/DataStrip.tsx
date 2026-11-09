@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 
-import { T } from "@/components/chrome/I18n";
+import { T, useT } from "@/components/chrome/I18n";
 
 const ghostBtn =
-  "flex min-h-11 items-center rounded-full border border-white/70 px-4 font-semibold text-white hover:bg-white/10 hover:no-underline";
+  "flex min-h-11 items-center rounded-full border border-white/70 px-4 font-semibold text-white hover:bg-white/10 hover:no-underline focus-visible:outline-white";
 
 export default function DataStrip({
   links,
@@ -14,6 +14,7 @@ export default function DataStrip({
   links: { excel: string | null; csv: string | null; parquet: string | null };
   history: { first: string; reports: string; rows: string; tag: string | null };
 }) {
+  const t = useT();
   return (
     <section
       aria-labelledby="h-data"
@@ -28,7 +29,7 @@ export default function DataStrip({
           <T k="data.title" v={{ first: history.first }} />
         </h2>
         <div className="text-[13px]">
-          <T k="data.sub" v={{ reports: history.reports, rows: history.rows, tag: history.tag ?? "local build" }} />
+          <T k="data.sub" v={{ reports: history.reports, rows: history.rows, tag: history.tag ?? t("footer.local") }} />
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -36,7 +37,7 @@ export default function DataStrip({
           <a
             href={links.excel}
             download
-            className="flex min-h-11 items-center rounded-full bg-white px-4 font-bold hover:no-underline"
+            className="flex min-h-11 items-center rounded-full bg-white px-4 font-bold hover:no-underline focus-visible:outline-white"
             style={{ color: "var(--data-ink)" }}
           >
             <T k="data.excel" />

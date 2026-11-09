@@ -1,3 +1,5 @@
+import type { Lang } from "./i18n";
+
 const SHORT: Record<string, string> = {
   mmt: "MMT",
   m_bales: "mil. bales",
@@ -14,7 +16,18 @@ const SHORT: Record<string, string> = {
   pct: "%",
 };
 
-export const unitShort = (u?: string | null) => (u ? SHORT[u] ?? u : "");
+// PT abbreviations ("mil." would read as "thousand" in Portuguese).
+const SHORT_PT: Record<string, string> = {
+  m_bales: "mi fardos",
+  m_bu: "mi bu",
+  m_acres: "mi acres",
+  usd_per_short_ton: "$/t curta",
+  m_lbs: "mi lb",
+  k_short_tons: "mil t curtas",
+};
+
+export const unitShort = (u?: string | null, lang: Lang = "en") =>
+  u ? ((lang === "pt" ? SHORT_PT[u] : undefined) ?? SHORT[u] ?? u) : "";
 
 export function decimals(unit?: string | null, v = 0): number {
   if (unit === "mmt" || unit === "m_bales") return Math.abs(v) < 10 ? 2 : 1;
@@ -28,9 +41,9 @@ export function num(v: number | null | undefined, d = 0): string {
   return v.toLocaleString("en-US", { minimumFractionDigits: d, maximumFractionDigits: d });
 }
 
-export function qty(v: number | null | undefined, unit?: string | null): string {
+export function qty(v: number | null | undefined, unit?: string | null, lang: Lang = "en"): string {
   if (v === null || v === undefined) return "—";
-  return `${num(v, decimals(unit, v))} ${unitShort(unit)}`.trim();
+  return `${num(v, decimals(unit, v))} ${unitShort(unit, lang)}`.trim();
 }
 
 export function signed(v: number | null | undefined, d = 0): string {
@@ -54,24 +67,44 @@ export function monthLabel(m: string, style: "long" | "short" = "long"): string 
   });
 }
 
-/** "2026-10-09T00:00:00" -> "Oct 9, 2026" (no time-zone drift: the date part only). */
-export function shortDate(iso: string | null | undefined, withYear = true): string | null {
+// Month names come from fixed tables (not Intl) so the server and every browser print the same text.
+const MONTHS: Record<Lang, { long: string[]; short: string[] }> = {
+  en: {
+    long: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+    short: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  },
+  pt: {
+    long: ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"],
+    short: ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"],
+  },
+};
+
+/** Month number 1-12 -> "September" / "setembro" (or the short form). */
+export function monthOf(mo: number, style: "long" | "short" = "long", lang: Lang = "en"): string {
+  return MONTHS[lang][style][(((mo - 1) % 12) + 12) % 12] ?? "";
+}
+
+/** "2026-10-09T00:00:00" -> "Oct 9, 2026" / "9 out 2026" (no time-zone drift: the date part only). */
+export function shortDate(iso: string | null | undefined, withYear = true, lang: Lang = "en"): string | null {
   if (!iso) return null;
   const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
   if (!y || !m || !d) return null;
-  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    ...(withYear ? { year: "numeric" } : {}),
-    timeZone: "UTC",
-  });
+  const mon = monthOf(m, "short", lang);
+  if (lang === "pt") return withYear ? `${d} ${mon} ${y}` : `${d} ${mon}`;
+  return withYear ? `${mon} ${d}, ${y}` : `${mon} ${d}`;
 }
 
-/** "2026-09" -> "September" (or "Sep" with style "short"). */
-export function monthName(m: string | null | undefined, style: "long" | "short" = "long"): string {
+/** "2026-09" -> "September" / "setembro" (or "Sep" / "set" with style "short"). */
+export function monthName(m: string | null | undefined, style: "long" | "short" = "long", lang: Lang = "en"): string {
   if (!m) return "";
-  const [y, mo] = m.split("-").map(Number);
-  return new Date(Date.UTC(y, mo - 1, 1)).toLocaleDateString("en-US", { month: style, timeZone: "UTC" });
+  return monthOf(Number(m.split("-")[1]), style, lang);
+}
+
+/** "2026-10" -> "October 2026" / "outubro de 2026". */
+export function monthYear(m: string | null | undefined, lang: Lang = "en"): string {
+  if (!m) return "";
+  const y = m.slice(0, 4);
+  return lang === "pt" ? `${monthName(m, "long", "pt")} de ${y}` : `${monthName(m, "long", "en")} ${y}`;
 }
 
 export function ordinal(n: number): string {

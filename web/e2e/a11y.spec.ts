@@ -20,6 +20,18 @@ for (const scheme of ["light", "dark"] as const) {
   }
 }
 
+test("focus rings on the dark data strip are white (3:1 against the strip)", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto("/");
+  const links = page.locator('[aria-labelledby="h-data"] a');
+  await expect(links.first()).toBeVisible();
+  for (let i = 0; i < (await links.count()); i++) {
+    await links.nth(i).focus();
+    const color = await links.nth(i).evaluate((el) => getComputedStyle(el).outlineColor);
+    expect(color, `link ${i}`).toBe("rgb(255, 255, 255)");
+  }
+});
+
 test("keyboard focus is visible on the first controls", async ({ page }) => {
   await page.goto("/");
   await page.keyboard.press("Tab"); // skip link

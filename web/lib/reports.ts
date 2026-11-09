@@ -6,7 +6,7 @@ export type ReportDef = {
   id: "wasde" | "export_sales" | "crush" | "crop_progress" | "grain_stocks";
   name: Key;
   cadence: Key;
-  cadenceDetail: string;
+  cadenceDetail: Key;
   color: string; // CSS variable
   live: boolean;
   insight?: Key;
@@ -14,12 +14,12 @@ export type ReportDef = {
 };
 
 export const REPORTS: ReportDef[] = [
-  { id: "wasde", name: "report.wasde", cadence: "cadence.monthly", cadenceDetail: "monthly", color: "var(--r-wasde)", live: true },
+  { id: "wasde", name: "report.wasde", cadence: "cadence.monthly", cadenceDetail: "cadence.monthly", color: "var(--r-wasde)", live: true },
   {
     id: "export_sales",
     name: "report.export_sales",
     cadence: "cadence.weekly",
-    cadenceDetail: "weekly · Thu",
+    cadenceDetail: "cadence.d.weeklyThu",
     color: "var(--r-esr)",
     live: false,
     insight: "up.esr",
@@ -29,7 +29,7 @@ export const REPORTS: ReportDef[] = [
     id: "crush",
     name: "report.crush",
     cadence: "cadence.monthly",
-    cadenceDetail: "monthly",
+    cadenceDetail: "cadence.monthly",
     color: "var(--r-crush)",
     live: false,
     insight: "up.crush",
@@ -39,7 +39,7 @@ export const REPORTS: ReportDef[] = [
     id: "crop_progress",
     name: "report.crop_progress",
     cadence: "cadence.weekly",
-    cadenceDetail: "weekly · Mon, Apr–Nov",
+    cadenceDetail: "cadence.d.weeklyMon",
     color: "var(--r-progress)",
     live: false,
     insight: "up.progress",
@@ -49,7 +49,7 @@ export const REPORTS: ReportDef[] = [
     id: "grain_stocks",
     name: "report.grain_stocks",
     cadence: "cadence.quarterly",
-    cadenceDetail: "quarterly",
+    cadenceDetail: "cadence.quarterly",
     color: "var(--r-stocks)",
     live: false,
     insight: "up.stocks",

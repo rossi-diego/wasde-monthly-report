@@ -105,6 +105,42 @@ test("theme and language toggles work and persist", async ({ page }) => {
   await expect(page.getByRole("heading", { level: 1 })).toContainText("What USDA said");
 });
 
+test("Portuguese mode has no English months or chrome on the home page", async ({ page }) => {
+  const meta = await (await page.request.get("/data/meta.json")).json();
+  const EN_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const latestEn = EN_MONTHS[Number(meta.latest.report_month.slice(5, 7)) - 1];
+  const prevEn = meta.previous_report_month ? EN_MONTHS[Number(meta.previous_report_month.slice(5, 7)) - 1] : latestEn;
+  await page.goto("/");
+  await page.getByRole("button", { name: "Português" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(`de ${meta.latest.report_month.slice(0, 4)}`);
+  const main = page.locator("main");
+  for (const word of [latestEn, prevEn, "Raised", "Cut to", "Unchanged", "Step", "Marketing year", "ending stocks"]) {
+    await expect(main, word).not.toContainText(word);
+  }
+  await expect(page.getByRole("heading", { name: /Maiores revisões vs/ })).toBeVisible();
+  await page.getByRole("button", { name: "English" }).click();
+});
+
+test("commodity pages keep the WASDE nav item current", async ({ page }) => {
+  await page.goto("/commodity/corn/");
+  const nav = page.getByRole("navigation", { name: "Main" });
+  await expect(nav.getByRole("link", { name: /WASDE/ })).toHaveAttribute("aria-current", "true");
+});
+
+test("on a 360px phone the title is on the first screen and every commodity pill is visible", async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.goto("/");
+  const h1 = await page.getByRole("heading", { level: 1 }).boundingBox();
+  expect(h1, "h1 box").not.toBeNull();
+  expect(h1!.y + h1!.height).toBeLessThanOrEqual(780);
+  const pills = page.getByRole("group", { name: "Commodity" }).getByRole("button");
+  for (let i = 0; i < (await pills.count()); i++) {
+    const b = (await pills.nth(i).boundingBox())!;
+    expect(b.x, `pill ${i}`).toBeGreaterThanOrEqual(0);
+    expect(b.x + b.width, `pill ${i}`).toBeLessThanOrEqual(360);
+  }
+});
+
 test("pages never scroll horizontally at 360px", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 });
   for (const url of ROUTES) {

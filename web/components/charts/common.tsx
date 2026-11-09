@@ -41,6 +41,27 @@ export function niceTicks(lo: number, hi: number, count = 4): number[] {
   return out;
 }
 
+/** Disclosure marker for a <summary> styled as flex (which drops the native triangle).
+ *  Rotates when the parent `group` <details> is open. */
+export function Chevron({ size = 14 }: { size?: number }) {
+  return (
+    <svg
+      aria-hidden="true"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="shrink-0 transition-transform group-open:rotate-90"
+    >
+      <path d="M9 6l6 6-6 6" />
+    </svg>
+  );
+}
+
 /** Accessible fallback for every chart: the plotted numbers as a table. */
 export function ChartTable({
   caption,
@@ -52,8 +73,9 @@ export function ChartTable({
   rows: (string | number)[][];
 }) {
   return (
-    <details className="text-xs text-muted">
-      <summary className="inline-flex min-h-11 items-center">
+    <details className="group text-xs text-muted">
+      <summary className="inline-flex min-h-11 items-center gap-1.5 font-semibold text-link hover:underline">
+        <Chevron />
         <T k="table.show" />
       </summary>
       <div tabIndex={0} role="region" aria-label={caption} className="max-h-72 overflow-auto">

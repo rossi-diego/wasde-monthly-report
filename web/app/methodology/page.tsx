@@ -24,6 +24,8 @@ export default function Methodology() {
       <TopBar title={<T k="nav.methodology" />} release={releaseInfo(meta)}>
         <CommodityPills pills={commodityPills()} />
       </TopBar>
+      {/* Long-form copy is English only for now: marked so screen readers keep EN pronunciation in PT mode. */}
+      <div lang="en" className="flex flex-col gap-5">
       <p className="m-0 max-w-3xl text-muted">
         How the numbers on this site are collected, harmonized and turned into insight. Everything is open source and
         rebuilt from the raw USDA files on every run.
@@ -110,6 +112,7 @@ export default function Methodology() {
           fails.
         </p>
       </Block>
+      </div>
     </>
   );
 }

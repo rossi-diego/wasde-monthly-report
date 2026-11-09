@@ -14,6 +14,8 @@ export default function DataCatalogue() {
       <TopBar title={<T k="data.page" />} release={releaseInfo(meta)}>
         <CommodityPills pills={commodityPills()} />
       </TopBar>
+      {/* The catalogue copy and explorer are English only for now (lang marks it for screen readers). */}
+      <div lang="en" className="flex flex-col gap-5">
 
       <p className="m-0 max-w-3xl text-muted">
         Every value of every WASDE report from {monthLabel(meta.history.first_report)} to {meta.latest.label}:{" "}
@@ -59,6 +61,7 @@ export default function DataCatalogue() {
         </div>
         <Explorer catalog={catalog} defaultTable="us_feed_grains_corn" />
       </section>
+      </div>
     </>
   );
 }

@@ -10,10 +10,13 @@ import { REPORTS } from "@/lib/reports";
 const itemBase = "flex min-h-11 items-center gap-2.5 rounded-[10px] px-3 text-ink";
 
 function NavLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+  const path = usePathname() ?? "/";
+  // "page" for the exact page; "true" when the item is the section the page belongs to.
+  const current = active ? (path === href || path === href.replace(/\/$/, "") ? "page" : "true") : undefined;
   return (
     <Link
       href={href}
-      aria-current={active ? "page" : undefined}
+      aria-current={current}
       className={`${itemBase} ${active ? "bg-nav-active font-semibold" : "hover:bg-nav-active"} hover:no-underline`}
     >
       {children}
@@ -78,12 +81,14 @@ export default function Sidebar({ reports, rows }: { reports: number; rows: numb
             </>
           );
           return r.live ? (
-            <NavLink key={r.id} href="/reports/" active={is("/reports")}>
+            // Commodity pages are WASDE views, so they keep the WASDE row active too.
+            <NavLink key={r.id} href="/reports/" active={is("/reports") || is("/commodity")}>
               {inner}
             </NavLink>
           ) : (
-            // Not a link: the report page does not exist yet (no dead links).
-            <span key={r.id} className={itemBase} aria-disabled="true">
+            // Not a link: the report page does not exist yet (no dead links). Hidden on phones,
+            // where the "Other USDA reports" cards already announce them, to keep the nav short.
+            <span key={r.id} className={`${itemBase} max-[780px]:hidden`} aria-disabled="true">
               {inner}
             </span>
           );
@@ -108,7 +113,8 @@ export default function Sidebar({ reports, rows }: { reports: number; rows: numb
         </NavLink>
       </div>
 
-      <div className="mt-auto rounded-xl border border-line bg-card px-3 py-3.5 text-xs text-muted">
+      {/* Hidden when the sidebar stacks on a phone: the data strip and footer repeat it. */}
+      <div className="mt-auto rounded-xl border border-line bg-card px-3 py-3.5 text-xs text-muted max-[780px]:hidden">
         <div className="font-semibold text-ink">
           <T k="pipeline.title" />
         </div>
