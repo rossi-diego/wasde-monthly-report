@@ -39,6 +39,7 @@ reports:
     licence: "US Government work, public domain; cite USDA FAS (Export Sales Reporting Program)"
     min_rows: 20
     history_start: "2010/11"
+    release_key_format: date
     spec: usda_reports.reports.export_sales.spec:ExportSalesSpec
 
   # NASS Fats & Oils (ESMIS findByIdentifier/FatsOils → zip from files[] → cafo_all_tables.csv),
