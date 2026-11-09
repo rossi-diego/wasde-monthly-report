@@ -6,7 +6,7 @@ import { expect, test, type Page } from "@playwright/test";
 import type { CommodityLens, CropProgressCrop, CropProgressIndex, GrainStocksCommodity, GrainStocksIndex, Insight, InsightsDoc, LensIndex } from "../lib/data-contract";
 import { num, share, withNumberLang } from "../lib/format";
 import { cardView, formatParam } from "../lib/insight-text";
-import { alsoReleased, lensBlocks } from "../lib/lens";
+import { alsoReleased, homeTiles, lensBlocks } from "../lib/lens";
 import { cropProgressText, finalRatings, grainStocksText } from "../lib/report-views";
 
 // Cut C (Crop Progress, Grain Stocks, commodity lenses, full pt-BR): copy-vs-JSON contract for
@@ -161,7 +161,7 @@ test("home: Crop Progress (green) and Grain Stocks (violet) cards print their pa
   const shown = [...doc!.home_cards.map((id) => doc!.insights.find((i) => i.id === id)!), ...alsoReleased(doc!)].filter(
     (i) => i && i.suppressed_reason === null && (i.report_id === "crop_progress" || i.report_id === "grain_stocks"),
   );
-  await expect(page.getByTestId("also-card")).toHaveCount(alsoReleased(doc!).filter((i) => cardView(i, "en")).length);
+  await expect(page.locator('[data-testid="insight-card"][data-origin="also"]')).toHaveCount(homeTiles(doc!).filter((x) => x.origin === "also").length);
   for (const i of shown) {
     const card = page.locator(`[data-insight-id="${i.id}"]`);
     await expect(card).toBeVisible();
@@ -170,8 +170,9 @@ test("home: Crop Progress (green) and Grain Stocks (violet) cards print their pa
     await expect(card.getByTestId("n")).toHaveText(`n = ${i.n}`);
     await expect(card.getByTestId("small-sample")).toHaveCount(i.caveats.includes("small_sample") ? 1 : 0);
     await expect(card.getByTestId("card-source")).toContainText(i.report_id === "crop_progress" ? "Crop Progress" : "Grain Stocks");
-    const border = await card.evaluate((el) => getComputedStyle(el).borderTopColor);
-    expect(border, i.id).toBe(i.report_id === "crop_progress" ? "rgb(21, 128, 61)" : "rgb(109, 40, 217)");
+    // Solid report tiles: the report colour is the background (deep in both themes).
+    const bg = await card.evaluate((el) => getComputedStyle(el).backgroundColor);
+    expect(bg, i.id).toBe(i.report_id === "crop_progress" ? "rgb(21, 128, 61)" : "rgb(109, 40, 217)");
   }
   // No placeholder cards left for v1 reports.
   await expect(page.getByText("Layout preview")).toHaveCount(0);
@@ -292,7 +293,7 @@ test("Portuguese mode leaves no English UI copy on the new pages, the methodolog
     "/commodities/soybeans/": ["Open the chapter", "Ending stocks", "Released", "Marketing year", "Week ending"],
     "/methodology/": ["How the numbers", "Sources", "Harmonization", "Season closed", "This page is available in English only"],
     "/data/": ["Download Excel", "Reports from", "Versioned copy", "Ready-made files", "values match"],
-    "/": ["Also released", "One commodity, every report", "Open the chart"],
+    "/": ["Also released", "One commodity, every report", "Open the chart", "Open report", "Explore by commodity", "All revisions", "What changed"],
     "/reports/oilseed-crush/": ["NOPA members represent", "proprietary and not redistributed", "About NOPA"],
   };
   for (const [url, list] of Object.entries(words)) {

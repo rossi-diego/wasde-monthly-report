@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 // Runs against the static export locally, and against the live URL after each deploy
 // (E2E_BASE_URL), where it also proves the site shows the latest ingested report.
@@ -20,39 +20,52 @@ const ROUTES = [
   "/methodology/",
 ];
 
-type Hist = { market_year: string; stocks_to_use_pct: number | null; status: "final" | "current" };
-
-/** The rank sentence, recomputed from the published JSON (copy-vs-data contract). */
-async function expectedRank(page: Page, commodity: string) {
-  const s = await (await page.request.get(`/data/commodities/${commodity}/united_states.json`)).json();
-  const hist = (s.stocks_to_use_history as Hist[]).filter((h) => h.stocks_to_use_pct !== null);
-  const finalRows = hist.filter((h) => h.status === "final");
-  const finals = finalRows.map((h) => h.stocks_to_use_pct as number);
-  const now = hist.filter((h) => h.status === "current").at(-1)!.stocks_to_use_pct as number;
-  const span = `${finalRows[0].market_year}–${finalRows.at(-1)!.market_year}`;
-  return `${finals.filter((v) => v < now).length} of ${finals.length} final seasons (${span}) were tighter`;
-}
-
-test("home shows the latest report, KPI tiles and the data-derived rank", async ({ page }) => {
+test("home is a front door: hero, one tile per report, top revisions and the commodity pages", async ({ page }) => {
   const meta = await (await page.request.get("/data/meta.json")).json();
+  const ov = await (await page.request.get("/data/overview.json")).json();
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(meta.latest.label);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("USDA reports at a glance");
   if (meta.latest.wasde_number) await expect(page.getByText(`WASDE #${meta.latest.wasde_number}`)).toBeVisible();
-  await expect(page.getByTestId("kpi")).toHaveCount(4);
-  await expect(page.getByRole("heading", { name: /Biggest revisions vs/ })).toBeVisible();
-  await expect(page.getByTestId("stu-rank")).toHaveText(await expectedRank(page, "soybeans"));
-
-  await page.getByRole("group", { name: "Commodity" }).getByRole("button", { name: "Corn", exact: true }).click();
-  await expect(page.getByTestId("stu-rank")).toHaveText(await expectedRank(page, "corn"));
-  await expect(page.getByRole("heading", { name: /U\.S\. corn stocks-to-use/ })).toBeVisible();
+  // The sections that repeat the detail pages are gone from the overview.
+  for (const id of ["lens-teaser", "kpi", "stu-rank"]) await expect(page.getByTestId(id), id).toHaveCount(0);
+  await expect(page.getByRole("group", { name: "Commodity" })).toHaveCount(0);
+  // What changed: the top 3 overview.json highlights, then the full list on /reports/wasde/.
+  await expect(page.getByRole("heading", { name: /What changed in WASDE vs/ })).toBeVisible();
+  await expect(page.locator('[aria-labelledby="h-chg-top"] li')).toHaveCount(Math.min(3, ov.highlights.length));
+  await expect(page.getByRole("link", { name: "All revisions →" })).toHaveAttribute("href", "/reports/wasde/#h-chg");
+  // Explore by commodity: one link per commodity page.
+  const explore = page.getByTestId("explore-link");
+  await expect(explore).toHaveCount(2);
+  for (let i = 0; i < 2; i++) await expect(explore.nth(i)).toHaveAttribute("href", /^\/commodities\/[a-z_]+\/$/);
   if (process.env.EXPECTED_REPORT_LABEL) expect(meta.latest.label).toBe(process.env.EXPECTED_REPORT_LABEL);
 });
 
-test("biggest revisions list matches overview.json", async ({ page }) => {
+test("biggest revisions list on /reports/wasde/ matches overview.json", async ({ page }) => {
+  const meta = await (await page.request.get("/data/meta.json")).json();
   const ov = await (await page.request.get("/data/overview.json")).json();
+  await page.goto("/reports/wasde/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(meta.latest.label);
+  await expect(page.locator('[aria-labelledby="h-chg"] ol > li')).toHaveCount(ov.highlights.length);
+  await expect(page.getByRole("heading", { name: /Biggest revisions vs/ })).toBeVisible();
+  if (meta.downloads.some((d: { file: string }) => /\.xlsx$/.test(d.file)))
+    await expect(page.locator('[aria-labelledby="h-chg"]').getByRole("link", { name: /All changes \(Excel\)/ })).toBeVisible();
+});
+
+test("home layout budget: about one screen at 1440px, one chart, no sideways scroll at 360px", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
-  const items = page.locator('[aria-labelledby="h-chg"] ol > li');
-  await expect(items).toHaveCount(ov.highlights.length);
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(1700);
+  // The only chart on the overview is the hero evidence card's range strip.
+  await expect(page.locator('main svg[role="img"]')).toHaveCount(await page.locator('[data-origin="hero"]').count());
+  // Tiles in one row have the same height.
+  const boxes = await page.locator('[data-testid="report-tiles"] > *').evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
+  if (boxes.length) expect(Math.max(...boxes) - Math.min(...boxes)).toBeLessThanOrEqual(1);
+  await page.setViewportSize({ width: 360, height: 780 });
+  await page.goto("/");
+  await page.waitForTimeout(300);
+  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(4000); // 3,000 once the mobile drawer ships
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
 });
 
 test("commodity page renders charts and switches region", async ({ page }) => {
@@ -115,12 +128,12 @@ test("theme and language toggles work and persist", async ({ page }) => {
   await page.getByRole("button", { name: "Dark mode" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.getByRole("button", { name: "Português" }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("O que o USDA disse");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Relatórios do USDA em resumo");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator("html")).toHaveAttribute("lang", "pt-BR");
   await page.getByRole("button", { name: "English" }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("What USDA said");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("USDA reports at a glance");
 });
 
 test("Portuguese mode has no English months or chrome on the home page", async ({ page }) => {
@@ -130,12 +143,12 @@ test("Portuguese mode has no English months or chrome on the home page", async (
   const prevEn = meta.previous_report_month ? EN_MONTHS[Number(meta.previous_report_month.slice(5, 7)) - 1] : latestEn;
   await page.goto("/");
   await page.getByRole("button", { name: "Português" }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(`de ${meta.latest.report_month.slice(0, 4)}`);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Relatórios do USDA em resumo");
   const main = page.locator("main");
   for (const word of [latestEn, prevEn, "Raised", "Cut to", "Unchanged", "Step", "Marketing year", "ending stocks"]) {
     await expect(main, word).not.toContainText(word);
   }
-  await expect(page.getByRole("heading", { name: /Maiores revisões vs/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /O que mudou no WASDE vs/ })).toBeVisible();
   await page.getByRole("button", { name: "English" }).click();
 });
 
@@ -151,6 +164,8 @@ test("on a 360px phone the title is on the first screen and every commodity pill
   const h1 = await page.getByRole("heading", { level: 1 }).boundingBox();
   expect(h1, "h1 box").not.toBeNull();
   expect(h1!.y + h1!.height).toBeLessThanOrEqual(780);
+  // The overview has no commodity pills; the commodity pages do.
+  await page.goto("/commodity/soybeans/");
   const pills = page.getByRole("group", { name: "Commodity" }).getByRole("button");
   for (let i = 0; i < (await pills.count()); i++) {
     const b = (await pills.nth(i).boundingBox())!;

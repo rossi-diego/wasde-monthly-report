@@ -22,11 +22,12 @@ whether stocks surprised USDA. In English and Brazilian Portuguese.**
 
 ## 30-second tour
 
-1. **[Home](https://usda-reports.vercel.app/)** — the hero line ("This week: …") and one card per
-   report: a number, its 5-year or since-2010 context, **n** and the source release on every card.
-   Crop Progress is green, Grain Stocks violet; off-season (December–March) Crop Progress steps
-   aside.
-2. **Open a card** — it lands on the report chapter it comes from, e.g.
+1. **[Home](https://usda-reports.vercel.app/)** — a one-screen front door: the hero line
+   ("This week: …") next to its evidence card (the only chart on the page, with **n** and the
+   5-year range), one solid tile per report (a number, **n**, a *small sample* chip where it
+   applies and the source release), the top 3 WASDE revisions and the commodity pages. Crop
+   Progress is green, Grain Stocks violet; off-season (December–March) Crop Progress steps aside.
+2. **Open a tile** — it lands on the report chapter it comes from, e.g.
    [Crop Progress](https://usda-reports.vercel.app/reports/crop-progress/) (condition vs last year
    and 5 years, stage pace vs NASS's own 5-yr average, season state) or
    [Grain Stocks](https://usda-reports.vercel.app/reports/grain-stocks/) (stocks vs the WASDE
@@ -102,9 +103,9 @@ and three chapters:
 
 A collapsed *Explore* section holds every week and destination; *Take this report* links the
 Parquet/CSV files. The home page adds a **hero line** built from `insights.json` rules
-("This week: soybean sales ahead of USDA's pace", neutral fallback otherwise) and one card per
-report plus the cross-report E1 card, each with n, a *small sample* chip for 5-year windows and
-its source release. Every number on these cards is checked against the JSON by a Playwright
+("This week: soybean sales ahead of USDA's pace", neutral fallback otherwise) beside the
+cross-report E1 evidence card, then one tile per report, each with n, a *small sample* chip for
+5-year windows and its source release. Every number on these cards is checked against the JSON by a Playwright
 contract test (`web/e2e/contract.spec.ts`), in English and Portuguese.
 
 ### Soybean crush on the site
@@ -182,7 +183,7 @@ good/excellent, condition index, next Monday release) and three chapters:
 latest number of every report that covers the commodity — WASDE balance sheet, Export Sales
 commitments and pace, crush, Crop Progress, Grain Stocks — with its release date, a link to the
 exact chapter and the Parquet files, followed by one passing finding per report. The home page
-has the same view in miniature ("One commodity, every report").
+links to them ("Explore by commodity", with the reports that cover each one).
 
 ### Portuguese (pt-BR)
 
@@ -417,7 +418,8 @@ data/manifest.json   audit trail of every ingested release (schema v2; data live
   `assert_no_lookahead` runs on the WASDE crush, WASDE oil and NASS-vintage timestamps.
 - **Web:** ESLint, TypeScript, Playwright (desktop + mobile): smoke, axe in English and
   Portuguese, light and dark, on every route, 360px no-horizontal-scroll, and a copy-vs-JSON
-  contract test for the hero, the home cards, the Export Sales header, the crush, Crop Progress
+  contract test for the hero, its evidence card and the home tiles, a home layout budget (one
+  chart, about one screen at 1440px), the Export Sales header, the crush, Crop Progress
   and Grain Stocks pages and the commodity pages, in EN and PT (plus the exact NOPA note and the
   verbatim G2 caveats); the Crop Progress off-season state is tested on a frozen-clock fixture.
   Re-run against the live site after every deploy. Until the first data release that carries

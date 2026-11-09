@@ -52,6 +52,16 @@ test("focus rings on the dark data strip are white (3:1 against the strip)", asy
   }
 });
 
+test("white text on every solid report tile passes colour contrast in dark mode", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+  const tiles = page.locator('[data-testid="report-tiles"]');
+  test.skip((await tiles.count()) === 0, "no report tiles in this build");
+  await page.waitForTimeout(400);
+  const { violations } = await new AxeBuilder({ page }).include('[data-testid="report-tiles"]').withRules(["color-contrast"]).analyze();
+  expect(violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(" | ")}`)).toEqual([]);
+});
+
 test("keyboard focus is visible on the first controls", async ({ page }) => {
   await page.goto("/");
   await page.keyboard.press("Tab"); // skip link

@@ -10,6 +10,7 @@ const ghostBtn =
 export default function DataStrip({
   links,
   history,
+  compact = false,
 }: {
   links: { excel: string | null; csv: string | null; parquet: string | null };
   history: {
@@ -22,6 +23,8 @@ export default function DataStrip({
     cpReleases?: string | null;
     gsReleases?: string | null;
   };
+  /** Home: one sub line (the per-report release counts stay in the sidebar and on /data/). */
+  compact?: boolean;
 }) {
   const t = useT();
   const titleKey = history.cpReleases || history.gsReleases
@@ -48,25 +51,25 @@ export default function DataStrip({
         </h2>
         <div className="text-[13px]">
           <T k="data.sub" v={{ reports: history.reports, rows: history.rows, tag: history.tag ?? t("footer.local") }} />
-          {history.esrReleases && (
+          {!compact && history.esrReleases && (
             <>
               {" · "}
               <T k="data.subEsr" v={{ releases: history.esrReleases }} />
             </>
           )}
-          {history.crushReleases && (
+          {!compact && history.crushReleases && (
             <>
               {" · "}
               <T k="data.subCrush" v={{ releases: history.crushReleases }} />
             </>
           )}
-          {history.cpReleases && (
+          {!compact && history.cpReleases && (
             <>
               {" · "}
               <T k="data.subCp" v={{ releases: history.cpReleases }} />
             </>
           )}
-          {history.gsReleases && (
+          {!compact && history.gsReleases && (
             <>
               {" · "}
               <T k="data.subGs" v={{ releases: history.gsReleases }} />

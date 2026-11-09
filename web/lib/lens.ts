@@ -5,7 +5,7 @@
 import type { CommodityLens, Insight, InsightsDoc, LensMetric } from "./data-contract";
 import { bushels, ciText, mbu, monthYear, pctInt, share, shortDate, signedMbu, tonnes, withNumberLang } from "./format";
 import { translate, type Key, type Lang } from "./i18n";
-import { finding, stageName } from "./insight-text";
+import { cardView, finding, stageName } from "./insight-text";
 
 export type LensRow = {
   metric: string;
@@ -197,4 +197,41 @@ export function alsoReleased(doc: InsightsDoc): Insight[] {
     if (pick) out.push(pick);
   }
   return out;
+}
+
+// ------------------------------------------------------------------ home: front door
+
+/** The hero's evidence card: the insight behind the hero's first clause, else the cross card
+ *  of `home_cards`, else none. Only passing insights that render as a card. */
+export function heroEvidence(doc: InsightsDoc | null): Insight | null {
+  if (!doc) return null;
+  const renders = (i: Insight | undefined): i is Insight => Boolean(i) && cardView(i!, "en") !== null;
+  const first = finding(doc, doc.hero?.clauses?.[0]?.insight_ids?.[0] ?? "");
+  if (renders(first)) return first;
+  const cross = doc.home_cards.map((id) => finding(doc, id)).find((i) => i?.report_id === "cross");
+  return renders(cross) ? cross : null;
+}
+
+export type HomeTile = { insight: Insight; origin: "home" | "also" };
+
+/** One tile per report on the home page, in report order: `home_cards` minus the hero evidence
+ *  and the cross card, then the "also released" picks; the first finding of a report wins. */
+export function homeTiles(doc: InsightsDoc | null): HomeTile[] {
+  if (!doc) return [];
+  const evidence = heroEvidence(doc);
+  const candidates: HomeTile[] = [
+    ...doc.home_cards
+      .map((id) => finding(doc, id))
+      .filter((i): i is Insight => Boolean(i) && i!.id !== evidence?.id && i!.report_id !== "cross")
+      .map((insight) => ({ insight, origin: "home" as const })),
+    ...alsoReleased(doc).map((insight) => ({ insight, origin: "also" as const })),
+  ];
+  const seen = new Set<string>();
+  const out: HomeTile[] = [];
+  for (const t of candidates) {
+    if (seen.has(t.insight.report_id) || cardView(t.insight, "en") === null) continue;
+    seen.add(t.insight.report_id);
+    out.push(t);
+  }
+  return out.sort((a, b) => REPORT_ORDER.indexOf(a.insight.report_id) - REPORT_ORDER.indexOf(b.insight.report_id));
 }
