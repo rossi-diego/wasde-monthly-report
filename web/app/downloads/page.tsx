@@ -4,7 +4,7 @@ import Explorer from "@/components/Explorer";
 import { getCatalog, getMeta } from "@/lib/data";
 import { bytes, monthLabel, num } from "@/lib/format";
 
-export const metadata: Metadata = { title: "Data & downloads · WASDE Tracker" };
+export const metadata: Metadata = { title: "Data & downloads · USDA Reports Dashboard" };
 
 export default function DownloadsPage() {
   const meta = getMeta();

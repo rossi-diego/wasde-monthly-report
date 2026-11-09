@@ -66,7 +66,7 @@ def publish_all(
     settings: Settings,
     manifest: Manifest,
     tag: str | None,
-    repo: str = "rossi-diego/wasde-monthly-report",
+    repo: str = "rossi-diego/usda-reports-dashboard",
 ) -> None:
     focus = Focus.load(settings.config_dir / "focus.yaml")
     # Same configuration as dbt's handle (read-write) so both can coexist in one process.

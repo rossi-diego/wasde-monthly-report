@@ -8,7 +8,7 @@ import { monthLabel } from "@/lib/format";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "WASDE Tracker",
+  title: "USDA Reports Dashboard",
   description:
     "Every USDA WASDE report since 2010, harmonized and updated automatically on release day — revisions, drivers and stocks-to-use for corn, soybeans, wheat and cotton.",
 };
@@ -36,7 +36,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <span aria-hidden className="grid h-7 w-7 place-items-center rounded-md bg-brand text-sm text-page">
                 W
               </span>
-              WASDE Tracker
+              USDA Reports Dashboard
             </Link>
             <nav
               className="-mx-4 order-last flex w-[calc(100%+2rem)] items-center gap-1 overflow-x-auto whitespace-nowrap px-4 text-sm lg:order-none lg:mx-0 lg:w-auto lg:overflow-visible lg:px-0"
@@ -93,7 +93,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               {new Date(meta.generated_at).toISOString().slice(0, 16).replace("T", " ")} UTC · updated automatically
               on every release
             </span>
-            <a className="underline hover:text-ink" href="https://github.com/rossi-diego/wasde-monthly-report">
+            <a className="underline hover:text-ink" href="https://github.com/rossi-diego/usda-reports-dashboard">
               Source code
             </a>
           </div>

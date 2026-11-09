@@ -1,8 +1,8 @@
-# WASDE Tracker
+# USDA Reports Dashboard
 
-[![CI](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/ci.yml/badge.svg)](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/ci.yml)
-[![WASDE release](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/release.yml/badge.svg)](https://github.com/rossi-diego/wasde-monthly-report/actions/workflows/release.yml)
-[![Latest data](https://img.shields.io/github/v/release/rossi-diego/wasde-monthly-report?label=latest%20WASDE&color=14532d)](https://github.com/rossi-diego/wasde-monthly-report/releases/latest)
+[![CI](https://github.com/rossi-diego/usda-reports-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/rossi-diego/usda-reports-dashboard/actions/workflows/ci.yml)
+[![WASDE release](https://github.com/rossi-diego/usda-reports-dashboard/actions/workflows/release.yml/badge.svg)](https://github.com/rossi-diego/usda-reports-dashboard/actions/workflows/release.yml)
+[![Latest data](https://img.shields.io/github/v/release/rossi-diego/usda-reports-dashboard?label=latest%20WASDE&color=14532d)](https://github.com/rossi-diego/usda-reports-dashboard/releases/latest)
 ![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)
 ![dbt-duckdb](https://img.shields.io/badge/dbt-duckdb-orange)
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-black)
@@ -12,7 +12,7 @@
 on release day, and turned into the view a trading desk actually needs: what changed, why,
 and where fundamentals sit versus history.**
 
-🔗 **Live site:** https://wasde-tracker.vercel.app · 📦 **Data:** [latest release](https://github.com/rossi-diego/wasde-monthly-report/releases/latest)
+🔗 **Live site:** https://usda-reports.vercel.app · 📦 **Data:** [latest release](https://github.com/rossi-diego/usda-reports-dashboard/releases/latest)
 
 ![This report](docs/screenshots/home-light.png)
 
@@ -103,8 +103,8 @@ U.S. and countries = ending stocks ÷ (domestic use + exports).
 **Option A — the site with the latest published data (~2 min)**
 
 ```bash
-git clone https://github.com/rossi-diego/wasde-monthly-report.git
-cd wasde-monthly-report/web && npm ci && cd ..
+git clone https://github.com/rossi-diego/usda-reports-dashboard.git
+cd usda-reports-dashboard/web && npm ci && cd ..
 make demo            # downloads the latest data release, starts http://localhost:3000
 ```
 

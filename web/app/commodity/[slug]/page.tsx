@@ -13,7 +13,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const c = getIndex().find((x) => x.id === slug);
-  return { title: c ? `${c.label} · WASDE Tracker` : "WASDE Tracker" };
+  return { title: c ? `${c.label} · USDA Reports Dashboard` : "USDA Reports Dashboard" };
 }
 
 export default async function CommodityPage({ params }: { params: Promise<{ slug: string }> }) {

@@ -7,7 +7,7 @@ install:            ## Python package + dev tools, and web dependencies
 	cd web && npm ci
 
 demo:               ## Fastest start: latest published data + local site (no pipeline run)
-	gh release download --repo rossi-diego/wasde-monthly-report --pattern web-data.tar.gz --dir /tmp --clobber
+	gh release download --repo rossi-diego/usda-reports-dashboard --pattern web-data.tar.gz --dir /tmp --clobber
 	mkdir -p web/public && tar -xzf /tmp/web-data.tar.gz -C web/public
 	cd web && npm run dev
 

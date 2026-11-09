@@ -15,7 +15,7 @@ from xlsxwriter.worksheet import Worksheet
 from wasde.publish.focus import Focus
 from wasde.publish.web_json import month_label, one
 
-SOURCE = "USDA World Agricultural Supply and Demand Estimates (WASDE) · github.com/rossi-diego/wasde-monthly-report"
+SOURCE = "USDA World Agricultural Supply and Demand Estimates (WASDE) · github.com/rossi-diego/usda-reports-dashboard"
 
 
 class Styles:

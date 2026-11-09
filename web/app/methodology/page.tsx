@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { getMeta } from "@/lib/data";
 import { monthLabel, num } from "@/lib/format";
 
-export const metadata: Metadata = { title: "Methodology · WASDE Tracker" };
+export const metadata: Metadata = { title: "Methodology · USDA Reports Dashboard" };
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
