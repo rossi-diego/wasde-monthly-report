@@ -18,10 +18,12 @@ from usda_reports.core.manifest import Manifest, ReleaseEntry, release_ts_utc
 log = get_logger(__name__)
 
 # Bronze sub-folders per source format (WASDE keeps its historical top-level folders).
-SOURCE_DIRS = {
+SOURCE_DIRS: dict[str, tuple[str | None, str]] = {
     "usda_csv": ("usda_csv", "csv"),
     "esmis_xml": ("esmis_xml", "xml"),
     "fas_esr_api": ("export_sales", "json.gz"),
+    # NASS release zips from ESMIS files[]: data/bronze/<report_id>/<release_key>.zip
+    "esmis_zip": (None, "zip"),
 }
 CSV_DIR = "usda_csv"
 XML_DIR = "esmis_xml"
@@ -67,6 +69,7 @@ class BronzeStore:
         edition: int = 1,
     ) -> ReleaseEntry:
         sub, ext = SOURCE_DIRS.get(source, (f"{self.report_id}/{source}", "bin"))
+        sub = sub or self.report_id
         rel = f"{sub}/{release_key}.{ext}"
         target = self.root / rel
         target.parent.mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,69 @@
+{
+ "filters": [],
+ "pager": {
+  "current_page": 0,
+  "items_per_page": 25,
+  "total_pages": 1,
+  "total_results": 3
+ },
+ "results": [
+  {
+   "id": "796132",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/796132/cafo1126.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796132/cafo1126.txt",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796132/cafo1126.zip"
+   ],
+   "title": "Fats and Oils: Oilseed Crushings, Production, Consumption and Stocks",
+   "release_datetime": "2026-11-02T12:00:00+0000",
+   "identifier": [
+    "FatsOils"
+   ],
+   "agency_acronym": "NASS",
+   "bibliographic_citation": "",
+   "description": "",
+   "equipment_software": "",
+   "temporal_coverage": ""
+  },
+  {
+   "id": "796091",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/796091/cafo1026.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796091/cafo1026.txt",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796091/cafo1026.zip"
+   ],
+   "title": "Fats and Oils: Oilseed Crushings, Production, Consumption and Stocks",
+   "release_datetime": "2026-10-01T12:00:00+0000",
+   "identifier": [
+    "FatsOils"
+   ],
+   "agency_acronym": "NASS",
+   "bibliographic_citation": "",
+   "description": "",
+   "equipment_software": "",
+   "temporal_coverage": ""
+  },
+  {
+   "id": "796044",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/796044/cafo0926.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796044/cafo0926.txt",
+    "https://esmis.nal.usda.gov/sites/default/release-files/796044/cafo0926.zip"
+   ],
+   "title": "Fats and Oils: Oilseed Crushings, Production, Consumption and Stocks",
+   "release_datetime": "2026-09-01T12:00:00+0000",
+   "identifier": [
+    "FatsOils"
+   ],
+   "agency_acronym": "NASS",
+   "bibliographic_citation": "",
+   "description": "",
+   "equipment_software": "",
+   "temporal_coverage": ""
+  }
+ ],
+ "sorters": [],
+ "system": {
+  "page_key": "page"
+ }
+}

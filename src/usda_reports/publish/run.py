@@ -27,6 +27,7 @@ from usda_reports.publish.catalogue import (
 from usda_reports.publish.datapackage import build_datapackage, write_datapackage
 from usda_reports.publish.excel import history_workbook, latest_report_workbook
 from usda_reports.publish.focus import Focus
+from usda_reports.publish.web_crush import build_crush
 from usda_reports.publish.web_export_sales import build_export_sales
 from usda_reports.publish.web_json import (
     _dump,
@@ -180,6 +181,7 @@ def publish_all(
 
     nxt = next_releases(settings, registry, now)
     build_export_sales(con, web, nxt.get("export_sales"))
+    build_crush(con, web, nxt.get("oilseed_crush"))
 
     wasde_next = nxt.get(REPORT_ID)
     meta = build_meta(

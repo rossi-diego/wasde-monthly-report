@@ -6,14 +6,14 @@ import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
 import { EsrLatestText, FreshnessChip, StaleBanner } from "@/components/Freshness";
 import Upcoming from "@/components/home/Upcoming";
 import { commodityPills, releaseInfo } from "@/lib/dashboard";
-import { getEsrIndex, getInsights, getMeta, getMetaReports, getReleaseCatalog } from "@/lib/data";
+import { getCrushIndex, getEsrIndex, getInsights, getMeta, getMetaReports, getReleaseCatalog } from "@/lib/data";
 import { num } from "@/lib/format";
 import type { Key } from "@/lib/i18n";
 
 export const metadata: Metadata = { title: "Reports · USDA Reports Dashboard" };
 
 // Cadence + grace when insights.json (gates.stale_after_days) is not in the build.
-const DEFAULT_STALE: Record<string, number> = { wasde: 76, export_sales: 17 };
+const DEFAULT_STALE: Record<string, number> = { wasde: 76, export_sales: 17, oilseed_crush: 76 };
 
 function Row({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
@@ -40,6 +40,9 @@ export default function ReportsPage() {
   const wasdeTs = reports.wasde?.release_ts_utc ?? meta.latest.release_date;
   const esrMeta = reports.export_sales;
   const esrTs = esrMeta?.release_ts_utc ?? esr?.latest.release_ts_utc ?? null;
+  const crush = getCrushIndex();
+  const crushMeta = reports.oilseed_crush;
+  const crushTs = crushMeta?.release_ts_utc ?? crush?.latest.release_ts_utc ?? null;
   // Rows of the published ESR datasets (one entry per dataset; the Parquet file's count).
   const esrDatasetRows = (getReleaseCatalog()?.files ?? []).filter(
     (f) => f.report_id === "export_sales" && f.format === "parquet" && !f.legacy_alias_of,
@@ -53,6 +56,9 @@ export default function ReportsPage() {
       <StaleBanner reportId="wasde" name="report.wasde" cadence="cadence.monthly" releaseTs={wasdeTs} maxDays={stale.wasde} />
       {esr && (
         <StaleBanner reportId="export_sales" name="report.export_sales" cadence="cadence.weekly" releaseTs={esrTs} maxDays={stale.export_sales} />
+      )}
+      {crush && (
+        <StaleBanner reportId="oilseed_crush" name="report.crush" cadence="cadence.monthly" releaseTs={crushTs} maxDays={stale.oilseed_crush} />
       )}
 
       <div className="grid-fit-380">
@@ -152,6 +158,51 @@ export default function ReportsPage() {
                 <T k="reports.openEsr" />
               </Link>
               <Link href="/data/#report-export_sales" className="inline-flex min-h-11 items-center text-link">
+                <T k="reports.data" />
+              </Link>
+            </div>
+          </article>
+        )}
+
+        {crush && (
+          <article id="oilseed_crush" aria-labelledby="h-crush" className="card flex flex-col gap-3 p-5" style={{ borderColor: "var(--r-crush)" }}>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <div className="eyebrow" style={{ color: "var(--r-crush)" }}>
+                  <T k="cadence.d.monthlyCrush" />
+                </div>
+                <h2 id="h-crush" lang="en" className="m-0 text-[17px] font-bold">
+                  Fats &amp; Oils: Oilseed Crushings · USDA NASS
+                </h2>
+              </div>
+              <LiveChip color="var(--pill-crush)" />
+            </div>
+            <dl className="m-0 grid">
+              <Row label={<T k="reports.latest" />}>
+                <MonthYear m={crush.latest.month.slice(0, 7)} />
+                {" · "}
+                <DateText iso={crush.latest.release_key} />
+              </Row>
+              <Row label={<T k="reports.next" />}>
+                <DateText iso={crushMeta?.next_release ?? crush.next_release} />
+              </Row>
+              <Row label={<T k="reports.freshness" />}>
+                <FreshnessChip releaseTs={crushTs} maxDays={stale.oilseed_crush} />
+              </Row>
+              {crushMeta && (
+                <Row label={<T k="reports.history" />}>
+                  <T k="reports.releasesRows" v={{ releases: num(crushMeta.releases), rows: num(crushMeta.rows) }} />
+                  <div className="text-xs font-normal text-muted">
+                    <T k="card.window" v={{ from: crush.history_start }} />
+                  </div>
+                </Row>
+              )}
+            </dl>
+            <div className="mt-auto flex flex-wrap gap-x-5">
+              <Link href="/reports/oilseed-crush/" className="inline-flex min-h-11 items-center font-semibold text-link">
+                <T k="reports.openCrush" />
+              </Link>
+              <Link href="/data/#report-oilseed_crush" className="inline-flex min-h-11 items-center text-link">
                 <T k="reports.data" />
               </Link>
             </div>

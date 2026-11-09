@@ -142,6 +142,28 @@ export function tonnesAxis(mt: number, lang: Lang = "en"): string {
   return `${num(mt, 0)} t`;
 }
 
+/** Bushels, scaled like USDA writes them: "198.8 mil. bu", "2.78 bil. bu" (PT "mi bu", "bi bu"). */
+export function bushels(bu: number | null | undefined, lang: Lang = "en"): string {
+  if (bu === null || bu === undefined || Number.isNaN(bu)) return "—";
+  const a = Math.abs(bu);
+  if (a >= 1e9) return `${num(bu / 1e9, 2)} ${lang === "pt" ? "bi bu" : "bil. bu"}`;
+  if (a >= 1e6) return `${num(bu / 1e6, 1)} ${lang === "pt" ? "mi bu" : "mil. bu"}`;
+  return `${num(bu, 0)} bu`;
+}
+
+/** Axis tick in the same units as {@link bushels}: "200 mil. bu", "0". */
+export function bushelsAxis(bu: number, lang: Lang = "en"): string {
+  if (bu === 0) return "0";
+  return `${num(bu / 1e6, 0)} ${lang === "pt" ? "mi bu" : "mil. bu"}`;
+}
+
+/** Pounds per bushel: "11.62 lb/bu". */
+export const lbPerBu = (v: number | null | undefined, d = 2) =>
+  v === null || v === undefined || Number.isNaN(v) ? "—" : `${num(v, d)} lb/bu`;
+
+/** NASS short tons (2,000 lb) as metric tonnes, for the secondary metric line. */
+export const shortTonsToMt = (st: number | null | undefined) => (st === null || st === undefined ? null : st * 0.907185);
+
 /** Signed native-unit change: "+282", "−5". */
 export function signedQty(v: number | null | undefined, unit?: string | null, lang: Lang = "en"): string {
   if (v === null || v === undefined) return "—";

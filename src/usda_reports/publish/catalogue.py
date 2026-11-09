@@ -65,6 +65,7 @@ class Dataset:
     release_column: str | None = None
     site_preview: bool = False
     aliases: dict[str, str] = field(default_factory=dict)
+    licence: str | None = None  # cross datasets name every agency they combine
 
     @property
     def stem(self) -> str:
@@ -91,6 +92,7 @@ def load_datasets(path: Path = DATASETS_YAML) -> list[Dataset]:
                 release_column=d.get("release_column"),
                 site_preview=bool(d.get("site_preview", False)),
                 aliases=dict(d.get("aliases") or {}),
+                licence=d.get("licence"),
             )
         )
     return out

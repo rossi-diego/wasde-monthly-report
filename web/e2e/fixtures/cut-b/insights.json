@@ -1,12 +1,13 @@
 {
  "schema_version": 1,
- "generated_at": "2026-11-09T11:41:37+00:00",
- "data_tag": "data-2026-10",
+ "generated_at": "2026-11-09T13:46:43+00:00",
+ "data_tag": "weekly-2026-11-09",
  "gates": {
   "min_n": 5,
   "percentile_min_n": 10,
   "small_sample_below": 10,
   "e2_min_weeks_remaining": 6,
+  "f2_min_months_remaining": 2,
   "stale_after_days": {
    "wasde": 76,
    "export_sales": 17,
@@ -22,7 +23,10 @@
   "W4": 1,
   "E1": 5,
   "E2": 5,
-  "E3": 1
+  "E3": 1,
+  "F1": 1,
+  "F2": 1,
+  "F3": 1
  },
  "insights": [
   {
@@ -940,11 +944,11 @@
     "accumulated_exports_mt": 12020552.0,
     "outstanding_sales_mt": 18213270.0,
     "pct": 0.6554,
-    "hist_mean": 0.5157,
-    "hist_min": 0.375,
+    "hist_mean": 0.5179,
+    "hist_min": 0.3865,
     "hist_max": 0.5791,
     "position": "above",
-    "outside_distance": 0.3741,
+    "outside_distance": 0.3963,
     "history": [
      {
       "market_year": "2021/22",
@@ -968,8 +972,8 @@
      },
      {
       "market_year": "2025/26",
-      "pct": 0.375,
-      "wasde_release_key": "2025-09"
+      "pct": 0.3865,
+      "wasde_release_key": "2025-11"
      }
     ]
    },
@@ -1017,9 +1021,9 @@
     "accumulated_exports_mt": 11126290.0,
     "outstanding_sales_mt": 13664909.0,
     "pct": 0.2958,
-    "hist_mean": 0.4213,
+    "hist_mean": 0.4181,
     "hist_min": 0.2649,
-    "hist_max": 0.4944,
+    "hist_max": 0.4883,
     "position": "inside",
     "outside_distance": 0.0,
     "history": [
@@ -1045,8 +1049,8 @@
      },
      {
       "market_year": "2025/26",
-      "pct": 0.4944,
-      "wasde_release_key": "2025-09"
+      "pct": 0.4783,
+      "wasde_release_key": "2025-11"
      }
     ]
    },
@@ -1123,7 +1127,7 @@
      {
       "market_year": "2025/26",
       "pct": 0.6861,
-      "wasde_release_key": "2025-09"
+      "wasde_release_key": "2025-11"
      }
     ]
    },
@@ -1200,7 +1204,7 @@
      {
       "market_year": "2025/26",
       "pct": 0.3763,
-      "wasde_release_key": "2025-09"
+      "wasde_release_key": "2025-11"
      }
     ]
    },
@@ -1248,7 +1252,7 @@
     "accumulated_exports_mt": 8513.0,
     "outstanding_sales_mt": 29453.0,
     "pct": 0.2093,
-    "hist_mean": 0.3702,
+    "hist_mean": 0.3469,
     "hist_min": 0.0547,
     "hist_max": 0.8585,
     "position": "inside",
@@ -1276,8 +1280,8 @@
      },
      {
       "market_year": "2025/26",
-      "pct": 0.524,
-      "wasde_release_key": "2025-09"
+      "pct": 0.4076,
+      "wasde_release_key": "2025-11"
      }
     ]
    },
@@ -1594,11 +1598,205 @@
    ],
    "as_of": "2026-11-05T13:30:00Z",
    "suppressed_reason": null
+  },
+  {
+   "id": "F1:soybeans",
+   "rule": "F1",
+   "report_id": "oilseed_crush",
+   "commodity_id": "soybeans",
+   "kind": "crush_pace",
+   "params": {
+    "market_year": "2026/27",
+    "month": "2026-09-01",
+    "month_of_my": 1,
+    "release_key": "2026-11-02",
+    "first_printed_as": "current",
+    "history_start": "2015-10",
+    "unit_id": "bu",
+    "cum_bu": 198828501.1713,
+    "cum_st": 5964861.0,
+    "month_crushed_bu": 198828501.1713,
+    "month_crushed_st": 5964861.0,
+    "wasde_release_key": "2026-10",
+    "target_bu": 2780000000.0,
+    "target_native": 2780.0,
+    "target_unit_id": "m_bu",
+    "target_flag": "proj",
+    "pct": 0.0715,
+    "hist_mean": 0.0766,
+    "hist_min": 0.075,
+    "hist_max": 0.0802,
+    "position": "below",
+    "outside_distance": 0.6529,
+    "history": [
+     {
+      "market_year": "2021/22",
+      "pct": 0.075,
+      "wasde_release_key": "2021-10"
+     },
+     {
+      "market_year": "2022/23",
+      "pct": 0.075,
+      "wasde_release_key": "2022-10"
+     },
+     {
+      "market_year": "2023/24",
+      "pct": 0.076,
+      "wasde_release_key": "2023-10"
+     },
+     {
+      "market_year": "2024/25",
+      "pct": 0.0769,
+      "wasde_release_key": "2024-10"
+     },
+     {
+      "market_year": "2025/26",
+      "pct": 0.0802,
+      "wasde_release_key": "2025-12"
+     }
+    ]
+   },
+   "n": 5,
+   "window": "prior_5_my_same_month",
+   "robustness": "robust",
+   "caveats": [
+    "history_point_in_time",
+    "crush_history_from_2015",
+    "nass_revises_previous_month",
+    "small_sample"
+   ],
+   "inputs": [
+    {
+     "report_id": "oilseed_crush",
+     "release_key": "2026-11-02"
+    },
+    {
+     "report_id": "wasde",
+     "release_key": "2026-10"
+    }
+   ],
+   "as_of": "2026-11-02T20:00:00Z",
+   "suppressed_reason": null
+  },
+  {
+   "id": "F2:soybeans",
+   "rule": "F2",
+   "report_id": "oilseed_crush",
+   "commodity_id": "soybeans",
+   "kind": "required_monthly_crush",
+   "params": {
+    "market_year": "2026/27",
+    "month": "2026-09-01",
+    "month_of_my": 1,
+    "release_key": "2026-11-02",
+    "first_printed_as": "current",
+    "history_start": "2015-10",
+    "unit_id": "bu",
+    "cum_bu": 198828501.1713,
+    "wasde_release_key": "2026-10",
+    "target_bu": 2780000000.0,
+    "target_native": 2780.0,
+    "target_unit_id": "m_bu",
+    "remaining_to_target_bu": 2581171498.8287,
+    "months_remaining": 11,
+    "required_monthly_bu": 234651954.0,
+    "last_my_remaining_mean_bu": 221882781.0,
+    "last_my_remaining_n": 11,
+    "ratio_required_to_last_my": 1.0575
+   },
+   "n": 11,
+   "window": "last_my_same_remaining_months",
+   "robustness": "robust",
+   "caveats": [
+    "nass_revises_previous_month"
+   ],
+   "inputs": [
+    {
+     "report_id": "oilseed_crush",
+     "release_key": "2026-11-02"
+    },
+    {
+     "report_id": "wasde",
+     "release_key": "2026-10"
+    }
+   ],
+   "as_of": "2026-11-02T20:00:00Z",
+   "suppressed_reason": null
+  },
+  {
+   "id": "F3:soybeans",
+   "rule": "F3",
+   "report_id": "oilseed_crush",
+   "commodity_id": "soybeans",
+   "kind": "oil_yield",
+   "params": {
+    "market_year": "2026/27",
+    "month": "2026-09-01",
+    "month_of_my": 1,
+    "release_key": "2026-11-02",
+    "first_printed_as": "current",
+    "history_start": "2015-10",
+    "unit_id": "lb_per_bu",
+    "oil_yield_lb_bu": 11.6171,
+    "month_oil_klb": 2309806.0,
+    "month_crushed_bu": 198828501.1713,
+    "hist_mean": 11.8466,
+    "hist_min": 11.7396,
+    "hist_max": 11.9105,
+    "position": "below",
+    "outside_distance": 0.7165,
+    "wasde_oil_release_key": "2026-10",
+    "wasde_implied_yield_lb_bu": 11.8507,
+    "diff_vs_wasde_lb_bu": -0.2336,
+    "history": [
+     {
+      "market_year": "2021/22",
+      "oil_yield_lb_bu": 11.8074
+     },
+     {
+      "market_year": "2022/23",
+      "oil_yield_lb_bu": 11.8905
+     },
+     {
+      "market_year": "2023/24",
+      "oil_yield_lb_bu": 11.885
+     },
+     {
+      "market_year": "2024/25",
+      "oil_yield_lb_bu": 11.9105
+     },
+     {
+      "market_year": "2025/26",
+      "oil_yield_lb_bu": 11.7396
+     }
+    ]
+   },
+   "n": 5,
+   "window": "prior_5_my_same_month",
+   "robustness": "robust",
+   "caveats": [
+    "crush_history_from_2015",
+    "wasde_oil_year_oct_sep",
+    "small_sample"
+   ],
+   "inputs": [
+    {
+     "report_id": "oilseed_crush",
+     "release_key": "2026-11-02"
+    },
+    {
+     "report_id": "wasde",
+     "release_key": "2026-10"
+    }
+   ],
+   "as_of": "2026-11-02T20:00:00Z",
+   "suppressed_reason": null
   }
  ],
  "home_cards": [
   "W3:corn",
   "E3:soybeans",
+  "F3:soybeans",
   "E1:soybeans"
  ],
  "hero": {

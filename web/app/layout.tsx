@@ -45,7 +45,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <T k="skip" />
           </a>
           <div className="flex min-h-screen flex-wrap">
-            <Sidebar reports={meta.history.reports} rows={meta.history.rows} esrReleases={getMetaReports().export_sales?.releases ?? null} />
+            <Sidebar reports={meta.history.reports} rows={meta.history.rows} esrReleases={getMetaReports().export_sales?.releases ?? null}
+              crushReleases={getMetaReports().oilseed_crush?.releases ?? null}
+            />
             <main
               id="main"
               className="box-border flex min-w-0 flex-[999_1_560px] flex-col gap-5 px-4 pb-10 pt-6 sm:px-7"

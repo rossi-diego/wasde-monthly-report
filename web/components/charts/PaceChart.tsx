@@ -19,8 +19,9 @@ function runs(points: [number, number | null][]): [number, number][][] {
   return out;
 }
 
-/** Share of a target by week: prior years thin, a min–max band with its mean, the current year
- *  thick in the report colour, and a 100% reference line. */
+/** Share of a target by week (or month): prior years thin, a min–max band with its mean, the
+ *  current year thick in the report colour, and a reference line (100% by default).
+ *  ``domain="data"`` scales the y axis to the values (e.g. oil yields of 11.4–12 lb/bu). */
 export default function PaceChart({
   lines,
   band,
@@ -30,6 +31,9 @@ export default function PaceChart({
   targetLabel,
   height = 260,
   format,
+  xTicks: xTickLabels,
+  reference = 1,
+  domain = "zero",
 }: {
   lines: PaceLine[];
   band: BandPoint[];
@@ -39,20 +43,25 @@ export default function PaceChart({
   targetLabel: string;
   height?: number;
   format: (v: number) => string;
+  /** Custom x labels (default: week numbers 1, 10, 20 …). */
+  xTicks?: { x: number; label: string }[];
+  /** Horizontal reference value (null: none). */
+  reference?: number | null;
+  domain?: "zero" | "data";
 }) {
   const [ref, width] = useWidth<HTMLDivElement>();
   const ys = [
     ...lines.flatMap((l) => l.points.map((p) => p[1]).filter((v): v is number => v !== null)),
     ...band.flatMap((b) => [b.min, b.max].filter((v): v is number => v !== null)),
-    1,
+    ...(reference !== null ? [reference] : []),
   ];
-  const ticks = niceTicks(0, Math.max(...ys), 4);
+  const ticks = domain === "data" ? niceTicks(Math.min(...ys), Math.max(...ys), 4) : niceTicks(0, Math.max(...ys), 4);
   const lo = ticks[0];
   const hi = ticks[ticks.length - 1];
   const m = { l: 44, r: 12, t: 12, b: 26 };
   const x = (v: number) => m.l + ((v - 1) / Math.max(xMax - 1, 1)) * (width - m.l - m.r);
   const y = (v: number) => height - m.b - ((v - lo) / (hi - lo || 1)) * (height - m.b - m.t);
-  const xTicks = [1, 10, 20, 30, 40, 50].filter((w) => w <= xMax);
+  const xTicks = xTickLabels ?? [1, 10, 20, 30, 40, 50].filter((w) => w <= xMax).map((w) => ({ x: w, label: String(w) }));
   const bandPts = band.filter((b) => b.min !== null && b.max !== null) as { x: number; min: number; max: number; mean: number | null }[];
   const area =
     bandPts.length > 1
@@ -77,10 +86,14 @@ export default function PaceChart({
           </g>
         ))}
         {area && <polygon points={area} style={{ fill: color, opacity: 0.14 }} />}
-        <line x1={m.l} x2={width - m.r} y1={y(1)} y2={y(1)} style={{ stroke: "var(--muted)" }} strokeWidth={1} strokeDasharray="2 3" />
-        <text x={width - m.r} y={y(1) - 5} textAnchor="end" fontSize={11} style={{ fill: "var(--muted)" }}>
-          {targetLabel}
-        </text>
+        {reference !== null && (
+          <>
+            <line x1={m.l} x2={width - m.r} y1={y(reference)} y2={y(reference)} style={{ stroke: "var(--muted)" }} strokeWidth={1} strokeDasharray="2 3" />
+            <text x={width - m.r} y={y(reference) - 5} textAnchor="end" fontSize={11} style={{ fill: "var(--muted)" }}>
+              {targetLabel}
+            </text>
+          </>
+        )}
         {ordered.map((l) =>
           runs(l.points).map((pts, i) => (
             <polyline
@@ -104,8 +117,8 @@ export default function PaceChart({
             return last ? <circle key={`${l.id}-dot`} cx={x(last[0])} cy={y(last[1] as number)} r={4.5} style={{ fill: color }} /> : null;
           })}
         {xTicks.map((w) => (
-          <text key={w} x={x(w)} y={height - 8} textAnchor="middle" fontSize={11} style={{ fill: "var(--muted)" }}>
-            {w}
+          <text key={w.x} x={x(w.x)} y={height - 8} textAnchor="middle" fontSize={11} style={{ fill: "var(--muted)" }}>
+            {w.label}
           </text>
         ))}
       </svg>

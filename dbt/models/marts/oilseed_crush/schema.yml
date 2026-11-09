@@ -1,0 +1,95 @@
+version: 2
+models:
+- name: fct_soy_crush_monthly
+  description: U.S. soybean crush, crude soybean oil and soybean meal production per month (NASS Fats
+    & Oils, ESMIS files since the 2015-10-01 release), latest revised value of each metric, with the
+    release that first printed the month. Marketing year September–August. Published as
+    oilseed_crush__monthly__v1.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: market_year
+    data_type: varchar
+    description: Soybean marketing year (September–August) in WASDE notation, e.g. 2026/27.
+    data_tests:
+    - not_null
+  - name: my_start
+    data_type: integer
+    description: First calendar year of the marketing year.
+  - name: month_of_my
+    data_type: integer
+    description: Month index within the marketing year (1 = September … 12 = August).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+          quote: false
+  - name: month
+    data_type: date
+    description: First day of the data month (ISO date).
+    data_tests:
+    - not_null
+    - unique
+  - name: crushed_st
+    data_type: double
+    description: Soybeans crushed (NASS "tons" = short tons of 2,000 lb).
+    data_tests:
+    - not_null
+  - name: crushed_bu
+    data_type: double
+    description: Soybeans crushed in bushels (short tons × 33.3333; 60 lb per bushel, dim_unit).
+  - name: oil_klb
+    data_type: double
+    description: Crude soybean oil produced (thousand pounds, NASS "1,000 pounds").
+  - name: meal_st
+    data_type: double
+    description: Soybean cake and meal produced (short tons).
+  - name: oil_stocks_klb
+    data_type: double
+    description: Crude soybean oil on hand at the end of the month (thousand pounds).
+  - name: oil_yield_lb_bu
+    data_type: double
+    description: Crude oil extraction rate, oil_klb × 1000 / crushed_bu (pounds per bushel).
+  - name: meal_yield_lb_bu
+    data_type: double
+    description: Meal yield, meal_st × 2000 / crushed_bu (pounds per bushel).
+  - name: crushed_st_first
+    data_type: double
+    description: Soybeans crushed as first printed (before NASS revised it in later releases).
+  - name: is_revised
+    data_type: boolean
+    description: True when the latest crushed_st differs from the first print.
+  - name: first_release_key
+    data_type: varchar
+    description: Fats & Oils release (ESMIS release date, YYYY-MM-DD) that first printed the month.
+    data_tests:
+    - not_null
+  - name: first_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (15:00 ET, stored in UTC).
+    data_tests:
+    - not_null
+  - name: first_printed_as
+    data_type: varchar
+    description: Column the month was first printed in (current; previous after a shutdown; year_ago or
+      earlier for months before the first ESMIS file).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [current, previous, year_ago, earlier]
+  - name: latest_release_key
+    data_type: varchar
+    description: Release whose (latest revised) values are shown.
+  - name: latest_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (UTC).
+  - name: n_vintages
+    data_type: integer
+    description: How many releases printed the month (current, previous, year-ago columns).
+  - name: source_url
+    data_type: varchar
+    description: ESMIS zip of the release whose values are shown (from ESMIS files[]).
+  - name: is_latest_month
+    data_type: boolean
+    description: True on the newest month published.

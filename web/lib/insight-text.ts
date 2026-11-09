@@ -5,7 +5,7 @@
 // JSON (never computed here); 5-yr windows are labelled small sample.
 
 import type { Caveat, Hero, HeroClause, Insight, InsightsDoc, SuppressedReason } from "./data-contract";
-import { decimals, monthOf, monthYear, num, ordinalIn, share, shortDate, signed, signedQty, tonnes, unitShort } from "./format";
+import { bushels, decimals, lbPerBu, monthOf, monthYear, num, ordinalIn, share, shortDate, signed, signedQty, tonnes, unitShort } from "./format";
 import { translate, type Key, type Lang } from "./i18n";
 import { attrName, commodityName, commodityNounPt, regionName } from "./labels";
 
@@ -46,7 +46,9 @@ export function sourceText(i: Insight, lang: Lang): string {
     .map((r) =>
       r.report_id === "wasde"
         ? translate(lang, "card.src.wasde", { month: monthYear(r.release_key, lang) })
-        : translate(lang, "card.src.export_sales", { date: shortDate(r.release_key, true, lang) ?? r.release_key }),
+        : translate(lang, r.report_id === "oilseed_crush" ? "card.src.oilseed_crush" : "card.src.export_sales", {
+            date: shortDate(r.release_key, true, lang) ?? r.release_key,
+          }),
     )
     .join(" · ");
 }
@@ -82,7 +84,7 @@ export function heroView(h: Hero, lang: Lang): HeroView {
 
 export type CardView = {
   id: string;
-  report: "wasde" | "export_sales" | "cross";
+  report: Insight["report_id"];
   color: string; // CSS variable of the report colour
   eyebrow: string;
   title: string;
@@ -93,6 +95,8 @@ export type CardView = {
   context: string[];
   chip: string | null;
   range: { lo: number; hi: number; mean: number | null; value: number } | null;
+  /** How the range strip labels its ends: shares (0.38 → 38%) or pounds per bushel. */
+  rangeUnit: "share" | "lb_per_bu";
   n: number | null;
   small: boolean;
   caveats: string[];
@@ -100,7 +104,17 @@ export type CardView = {
   href: string;
 };
 
-const COLOR = { wasde: "var(--r-wasde)", export_sales: "var(--r-esr)", cross: "var(--r-esr)" } as const;
+const COLOR = { wasde: "var(--r-wasde)", export_sales: "var(--r-esr)", oilseed_crush: "var(--r-crush)", cross: "var(--r-esr)" } as const;
+
+/** "Crush (NASS) · September 2026": the data month of a crush insight. */
+function crushEyebrow(i: Insight, lang: Lang) {
+  return translate(lang, "card.eb.crush", { month: monthYear(p<string>(i, "month").slice(0, 7), lang) });
+}
+
+/** Range text of a 5-yr window of oil yields (lb/bu). */
+function yieldRangeVars(i: Insight) {
+  return { mean: lbPerBu(p(i, "hist_mean")), min: lbPerBu(p(i, "hist_min")), max: lbPerBu(p(i, "hist_max")) };
+}
 
 const p = <T = number>(i: Insight, k: string) => i.params[k] as T;
 
@@ -128,6 +142,7 @@ export function cardView(i: Insight, lang: Lang): CardView | null {
     valueNote: null as string | null,
     chip: null as string | null,
     range: null as CardView["range"],
+    rangeUnit: "share" as CardView["rangeUnit"],
   };
   const wasdeEyebrow = translate(lang, "card.eb.wasde", { month: monthYear(release, lang) });
   switch (i.rule) {
@@ -232,6 +247,70 @@ export function cardView(i: Insight, lang: Lang): CardView | null {
         href: `/reports/export-sales/?c=${c}`,
       };
     }
+    case "F1": {
+      if (p(i, "pct") === null) return null;
+      const lo = p<number | null>(i, "hist_min");
+      const hi = p<number | null>(i, "hist_max");
+      const month = monthOf(Number(p<string>(i, "month").slice(5, 7)), "long", lang);
+      return {
+        ...base,
+        eyebrow: crushEyebrow(i, lang),
+        title: translate(lang, "card.f1.title", { what: us, my: p<string>(i, "market_year") }),
+        value: share(p(i, "pct")),
+        valueParam: "pct",
+        valueNote: translate(lang, "card.f1.of", {
+          my: p<string>(i, "market_year"),
+          month: monthYear(p<string>(i, "wasde_release_key"), lang),
+        }),
+        context:
+          lo !== null && hi !== null
+            ? [translate(lang, "card.f1.range", { month, ...rangeVars(i) })]
+            : [],
+        chip: p<string | null>(i, "position") ? translate(lang, `pos.${p<string>(i, "position")}` as Key) : null,
+        range: lo !== null && hi !== null ? { lo, hi, mean: p(i, "hist_mean"), value: p(i, "pct") } : null,
+        href: "/reports/oilseed-crush/",
+      };
+    }
+    case "F2": {
+      const mo = translate(lang, "unit.perMonth");
+      return {
+        ...base,
+        eyebrow: crushEyebrow(i, lang),
+        title: translate(lang, "card.f2.title", { what: us }),
+        value: `${bushels(p(i, "required_monthly_bu"), lang)}${mo}`,
+        valueParam: "required_monthly_bu",
+        context: [
+          translate(lang, "card.f2.last", {
+            avg: `${bushels(p(i, "last_my_remaining_mean_bu"), lang)}${mo}`,
+            months: p(i, "months_remaining"),
+          }),
+        ],
+        href: "/reports/oilseed-crush/",
+      };
+    }
+    case "F3": {
+      const lo = p<number | null>(i, "hist_min");
+      const hi = p<number | null>(i, "hist_max");
+      const month = monthOf(Number(p<string>(i, "month").slice(5, 7)), "long", lang);
+      const implied = p<number | null>(i, "wasde_implied_yield_lb_bu");
+      const ctx = lo !== null && hi !== null ? [translate(lang, "card.f3.range", { month, ...yieldRangeVars(i) })] : [];
+      if (implied !== null && implied !== undefined) {
+        ctx.push(translate(lang, "card.f3.wasde", { v: lbPerBu(implied), month: monthYear(p<string>(i, "wasde_oil_release_key"), lang) }));
+      }
+      return {
+        ...base,
+        eyebrow: crushEyebrow(i, lang),
+        title: translate(lang, "card.f3.title", { month: monthYear(p<string>(i, "month").slice(0, 7), lang) }),
+        value: lbPerBu(p(i, "oil_yield_lb_bu")),
+        valueParam: "oil_yield_lb_bu",
+        valueNote: translate(lang, "card.f3.note"),
+        context: ctx,
+        chip: p<string | null>(i, "position") ? translate(lang, `pos.${p<string>(i, "position")}` as Key) : null,
+        range: lo !== null && hi !== null ? { lo, hi, mean: p(i, "hist_mean"), value: p(i, "oil_yield_lb_bu") } : null,
+        rangeUnit: "lb_per_bu",
+        href: "/reports/oilseed-crush/",
+      };
+    }
     default:
       return null;
   }
@@ -243,6 +322,8 @@ export function formatParam(i: Insight, param: string, lang: Lang = "en"): strin
   if (param === "stocks_to_use_pct") return `${num(v, 1)}%`;
   if (param === "delta") return signedNum(v, i.params.unit_id as string);
   if (param.endsWith("_mt")) return `${tonnes(v, lang)}${translate(lang, "unit.perWeek")}`;
+  if (param === "required_monthly_bu") return `${bushels(v, lang)}${translate(lang, "unit.perMonth")}`;
+  if (param === "oil_yield_lb_bu") return lbPerBu(v);
   return share(v);
 }
 

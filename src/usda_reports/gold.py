@@ -59,6 +59,20 @@ def write_countries(settings: Settings) -> Path:
     return out
 
 
+def ensure_isolated_silver(settings: Settings) -> list[str]:
+    """An isolated report that has no silver yet (never ingested, e.g. a fresh clone or a
+    build restricted to one report) gets an empty silver with its full schema, so its staging
+    model compiles and the other reports still build. Returns the report ids written."""
+    written = []
+    for spec in load_registry(settings.config_dir).enabled_specs(settings):
+        if spec.isolated and not spec.silver_path.exists():
+            spec.write_empty_silver()
+            written.append(spec.report_id)
+    if written:
+        log.warning("gold.empty_silver", reports=written)
+    return written
+
+
 def dbt_target_dir(settings: Settings) -> Path:
     return settings.gold_dir / "dbt_target"
 
@@ -80,6 +94,7 @@ def run_dbt(
     os.environ["USDA_DUCKDB_PATH"] = str(settings.duckdb_path)
     write_calendar(settings)
     write_countries(settings)
+    ensure_isolated_silver(settings)
     silver_dir = settings.silver_dir.resolve().as_posix()
     common = [
         "--project-dir",

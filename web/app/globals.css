@@ -29,6 +29,7 @@
   --r-esr: #0f766e;
   --pill-esr: #0f766e;
   --r-crush: #b45309;
+  --pill-crush: #b45309; /* white text 5:1 */
   --r-progress: #15803d;
   --r-stocks: #6d28d9;
   /* KPI tiles: white text >= 5:1 on each */
@@ -64,6 +65,7 @@
     --r-esr: #2dd4bf;
     --pill-esr: #0f766e; /* white text stays >= 4.5:1 */
     --r-crush: #f59e0b;
+    --pill-crush: #b45309; /* white text stays >= 4.5:1 */
     --r-progress: #4ade80;
     --r-stocks: #a78bfa;
     --tile-1: #1d4ed8;
@@ -98,6 +100,7 @@
   --r-esr: #2dd4bf;
   --pill-esr: #0f766e; /* white text stays >= 4.5:1 */
   --r-crush: #f59e0b;
+  --pill-crush: #b45309; /* white text stays >= 4.5:1 */
   --r-progress: #4ade80;
   --r-stocks: #a78bfa;
   --tile-1: #1d4ed8;

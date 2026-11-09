@@ -23,6 +23,11 @@
           "title": "E2 Min Weeks Remaining",
           "type": "integer"
         },
+        "f2_min_months_remaining": {
+          "default": 2,
+          "title": "F2 Min Months Remaining",
+          "type": "integer"
+        },
         "stale_after_days": {
           "additionalProperties": {
             "type": "integer"
@@ -162,7 +167,10 @@
             "W4",
             "E1",
             "E2",
-            "E3"
+            "E3",
+            "F1",
+            "F2",
+            "F3"
           ],
           "title": "Rule",
           "type": "string"
@@ -171,6 +179,7 @@
           "enum": [
             "wasde",
             "export_sales",
+            "oilseed_crush",
             "cross"
           ],
           "title": "Report Id",
@@ -195,7 +204,10 @@
             "brazil_soy_export_share",
             "commitment_pace",
             "required_weekly_sales",
-            "china_share_soy"
+            "china_share_soy",
+            "crush_pace",
+            "required_monthly_crush",
+            "oil_yield"
           ],
           "title": "Kind",
           "type": "string"
@@ -247,7 +259,10 @@
               "local_marketing_years",
               "history_point_in_time",
               "latest_only_history",
-              "partial_denominator"
+              "partial_denominator",
+              "crush_history_from_2015",
+              "nass_revises_previous_month",
+              "wasde_oil_year_oct_sep"
             ],
             "type": "string"
           },
@@ -281,6 +296,7 @@
                 "stale_input",
                 "asof_missing",
                 "weeks_remaining_below_min",
+                "months_remaining_below_min",
                 "no_data",
                 "first_projection",
                 "gap_after_cancelled_report"

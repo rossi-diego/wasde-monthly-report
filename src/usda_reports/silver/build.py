@@ -1,7 +1,8 @@
 """Silver driver: full reparse of every enabled report (no correctness depends on cache).
 
-Reports marked ``isolated`` (Export Sales) cannot stop the others: when their full build
-fails on a known data problem (an ESR/source error, an unseen label, a contract break), their
+Reports marked ``isolated`` (Export Sales, oilseed crush) cannot stop the others: when their
+full build fails on a known data problem (``spec.source_errors()``: a source error, an unseen
+label, a contract break), their
 silver is rebuilt from the last good bronze state, the failure is recorded in
 ``data/silver/build_status.json`` (``build-info`` marks the report ``failed``), and WASDE gold
 and publish carry on.
@@ -15,11 +16,9 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from usda_reports.core.config import Settings
-from usda_reports.core.contracts import ContractError
 from usda_reports.core.logs import get_logger
 from usda_reports.core.manifest import Manifest
 from usda_reports.core.registry import load_registry
-from usda_reports.core.vocab import UnseenLabelError
 
 log = get_logger(__name__)
 
@@ -35,12 +34,6 @@ class SilverResult:
     failed: dict[str, str] = field(default_factory=dict)
 
 
-def _isolated_errors() -> tuple[type[Exception], ...]:
-    from usda_reports.reports.export_sales.source import EsrError
-
-    return (EsrError, UnseenLabelError, ContractError)
-
-
 def build_all(settings: Settings, manifest: Manifest, only: str | None = None) -> SilverResult:
     """Build ``data/silver/<report_id>.parquet`` for every enabled report (or just ``only``)."""
     result = SilverResult()
@@ -52,7 +45,7 @@ def build_all(settings: Settings, manifest: Manifest, only: str | None = None) -
         if spec.isolated:
             try:
                 silver = spec.build_silver(manifest)
-            except _isolated_errors() as exc:
+            except spec.source_errors() as exc:
                 log.error("silver.report_failed", report=spec.report_id, error=str(exc))
                 result.failed[spec.report_id] = str(exc)
                 silver = spec.build_silver_last_good(manifest)

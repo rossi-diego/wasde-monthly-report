@@ -1,0 +1,31 @@
+# Silver contract for NASS Fats & Oils (checked by usda_reports.core.contracts on every build
+# and on every downloaded zip before it reaches bronze).
+# Silver keeps every printed value: one row per (release, data month, metric).
+report_id: oilseed_crush
+release_column: release_key
+release_label: Fats & Oils releases
+key:
+  - release_key
+  - month
+  - metric
+not_null:
+  - release_key
+  - month
+  - market_year
+  - month_of_my
+  - metric
+  - unit_id
+  - column_role
+  - reported_month
+# 4 metrics × 3 printed months (the 2015-10-01 release prints 4 months).
+min_rows_per_release: 12
+# The soybean crush, crude oil and meal of the newest month must be in every release.
+required_per_release:
+  label: current-month soybean rows
+  filter: {column_role: current}
+  columns: [metric]
+  rows:
+    - [crushed_st]
+    - [crude_oil_produced_klb]
+    - [meal_produced_st]
+envelope: true

@@ -1,7 +1,7 @@
 import type { Key } from "./i18n";
 
-// The v1 report set (plan §3). WASDE and Export Sales have data (cut A); the others are
-// announced placeholders that never show numbers until their pipeline stage ships.
+// The v1 report set (plan §3). WASDE and Export Sales have data (cut A), NASS crush since cut
+// B; the others are announced placeholders that never show numbers until their stage ships.
 export type ReportDef = {
   id: "wasde" | "export_sales" | "crush" | "crop_progress" | "grain_stocks";
   name: Key;
@@ -29,11 +29,10 @@ export const REPORTS: ReportDef[] = [
     id: "crush",
     name: "report.crush",
     cadence: "cadence.monthly",
-    cadenceDetail: "cadence.monthly",
+    cadenceDetail: "cadence.d.monthlyCrush",
     color: "var(--r-crush)",
-    live: false,
-    insight: "up.crush",
-    arrives: "up.cutB",
+    live: true,
+    href: "/reports/oilseed-crush/",
   },
   {
     id: "crop_progress",

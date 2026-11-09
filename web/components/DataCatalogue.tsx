@@ -3,7 +3,7 @@ import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
 import Explorer from "@/components/Explorer";
 import ReleaseCatalogue, { type CatCommodity, type CatFile, type Workbook } from "@/components/ReleaseCatalogue";
 import { commodityPills, releaseInfo } from "@/lib/dashboard";
-import { getCatalog, getEsrIndex, getIndex, getMeta, getReleaseCatalog, servedPath } from "@/lib/data";
+import { getCatalog, getCrushIndex, getEsrIndex, getIndex, getMeta, getReleaseCatalog, servedPath } from "@/lib/data";
 import { bytes, monthLabel, num } from "@/lib/format";
 
 /** Shared by /data/ (catalogue) and /downloads/ (kept for existing links). */
@@ -28,8 +28,14 @@ export default function DataCatalogue() {
       commodity: /^wasde_history_(.+)\.xlsx$/.exec(d.file)?.[1] ?? null,
     }));
   const esrIds = new Set(esr?.commodities.map((c) => c.id) ?? []);
+  // NASS crush covers soybeans and its products (crude oil, meal).
+  const crushIds = new Set(getCrushIndex() ? ["soybeans", "soybean_oil", "soybean_meal"] : []);
   const commodities: CatCommodity[] = [
-    ...getIndex().map((c) => ({ id: c.id, label: c.label, reports: ["wasde", ...(esrIds.has(c.id) ? ["export_sales"] : [])] })),
+    ...getIndex().map((c) => ({
+      id: c.id,
+      label: c.label,
+      reports: ["wasde", ...(esrIds.has(c.id) ? ["export_sales"] : []), ...(crushIds.has(c.id) ? ["oilseed_crush"] : [])],
+    })),
     ...(esr?.commodities ?? [])
       .filter((c) => !getIndex().some((x) => x.id === c.id))
       .map((c) => ({ id: c.id, label: c.label, reports: ["export_sales"] })),

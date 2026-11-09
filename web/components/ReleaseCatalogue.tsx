@@ -12,8 +12,13 @@ export type CatFile = ReleaseCatalog["files"][number] & { href: string | null; s
 export type Workbook = { file: string; label: string; href: string; bytes: number; commodity: string | null };
 export type CatCommodity = { id: string; label: string; reports: string[] };
 
-const REPORT_COLOR: Record<string, string> = { wasde: "var(--r-wasde)", export_sales: "var(--r-esr)" };
-const REPORT_NAME: Record<string, Key> = { wasde: "report.wasde", export_sales: "report.export_sales" };
+const REPORT_COLOR: Record<string, string> = { wasde: "var(--r-wasde)", export_sales: "var(--r-esr)", oilseed_crush: "var(--r-crush)" };
+const REPORT_NAME: Record<string, Key> = { wasde: "report.wasde", export_sales: "report.export_sales", oilseed_crush: "report.crush" };
+const VINTAGE: Record<string, Key> = { wasde: "cat.vintage.wasde", export_sales: "cat.vintage.esr", oilseed_crush: "cat.vintage.crush" };
+
+/** Report group of a catalogue file: cross-report datasets sit with the report they pace. */
+export const groupOf = (f: { report_id: string; dataset: string }) =>
+  f.report_id !== "cross" ? f.report_id : f.dataset === "crush_pace" ? "oilseed_crush" : "export_sales";
 
 function fmtKey(key: string | null | undefined, lang: "en" | "pt") {
   if (!key) return "—";
@@ -143,7 +148,7 @@ export default function ReleaseCatalogue({
   const reportIds = Object.keys(catalog.reports);
   const groups = reportIds.map((id) => ({
     id,
-    files: files.filter((f) => f.report_id === id || (id === "export_sales" && f.report_id === "cross")),
+    files: files.filter((f) => groupOf(f) === id),
   }));
   const btn = (on: boolean) =>
     `flex min-h-11 cursor-pointer items-center rounded-full px-4 font-semibold ${on ? "bg-[var(--pill-active)] text-white" : "text-ink hover:bg-nav-active"}`;
@@ -209,7 +214,7 @@ export default function ReleaseCatalogue({
                 <div>
                   <dt className="inline font-semibold text-ink">{t("cat.vintage")}: </dt>
                   <dd className="inline m-0" data-testid={`vintage-${g.id}`}>
-                    {g.id === "export_sales" ? t("cat.vintage.esr") : t("cat.vintage.wasde")}
+                    {t(VINTAGE[g.id] ?? "cat.vintage.wasde")}
                     {g.id === "export_sales" && vintageQuality ? ` ${t("cat.vintage.now", { q: t(`vq.${vintageQuality}` as Key) })}.` : ""}
                   </dd>
                 </div>
@@ -233,6 +238,7 @@ export default function ReleaseCatalogue({
               <ul className="m-0 list-none p-0 text-[13px]">
                 {c.reports.includes("wasde") && <li>· {t("cat.wasdeIn")}</li>}
                 {c.reports.includes("export_sales") && <li>· {t("cat.esrIn")}</li>}
+                {c.reports.includes("oilseed_crush") && <li>· {t("cat.crushIn")}</li>}
               </ul>
               {workbooks
                 .filter((w) => w.commodity === c.id)

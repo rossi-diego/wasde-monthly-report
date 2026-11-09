@@ -38,6 +38,11 @@ class ExportSalesSpec(ReportSpec):
 
         return SourceConfig.load(self.source_path)
 
+    def source_errors(self) -> tuple[type[Exception], ...]:
+        from usda_reports.reports.export_sales.source import EsrError
+
+        return (EsrError, *super().source_errors())
+
     def esr_client(self, client: httpx.Client) -> object:
         from usda_reports.reports.export_sales.source import EsrClient
 
@@ -114,6 +119,11 @@ class ExportSalesSpec(ReportSpec):
             releases=int(silver["release_key"].nunique()) if len(silver) else 0,
         )
         return silver
+
+    def write_empty_silver(self) -> None:
+        from usda_reports.reports.export_sales.parse import SILVER_COLUMNS
+
+        self._write(pd.DataFrame(columns=SILVER_COLUMNS), 0)
 
     def build_silver(self, manifest: Manifest) -> pd.DataFrame:
         from usda_reports.reports.export_sales.parse import load_snapshots

@@ -3,7 +3,7 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 
-import type { EsrCommodity, EsrIndex, InsightsDoc, MetaReports, ReleaseCatalog } from "./data-contract";
+import type { CrushCommodity, CrushIndex, EsrCommodity, EsrIndex, InsightsDoc, MetaReports, ReleaseCatalog } from "./data-contract";
 import type { CatalogEntry, CommodityIndex, Meta, Overview, Series } from "./types";
 
 // Build-time loaders: the static export embeds the latest data in every page.
@@ -54,6 +54,14 @@ export function getEsrCommodities(): EsrCommodity[] {
   return idx.commodities
     .map((c) => readOptional<EsrCommodity>(c.file))
     .filter((c): c is EsrCommodity => c !== null);
+}
+
+export const getCrushIndex = () => readOptional<CrushIndex>("reports/oilseed_crush/index.json");
+
+/** The soybean crush page payload (null for a build without NASS crush data). */
+export function getCrush(): CrushCommodity | null {
+  const f = getCrushIndex()?.commodities[0]?.file;
+  return f ? readOptional<CrushCommodity>(f) : null;
 }
 
 /** Site path ("/data/downloads/x.parquet") of a catalogue file when the build serves it, else null. */

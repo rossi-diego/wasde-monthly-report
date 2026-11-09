@@ -12,6 +12,7 @@ export default function RangeBar({
   ariaLabel,
   format,
   height = 34,
+  fromZero = true,
 }: {
   lo: number;
   hi: number;
@@ -21,10 +22,13 @@ export default function RangeBar({
   ariaLabel: string;
   format: (v: number) => string;
   height?: number;
+  /** false: scale to the band (values far from zero, e.g. an oil yield of 11.6–11.9 lb/bu). */
+  fromZero?: boolean;
 }) {
   const [ref, width] = useWidth<HTMLDivElement>(260);
-  const min = Math.min(lo, value, 0);
-  const max = Math.max(hi, value) * 1.08 || 1;
+  const span = Math.max(hi, value) - Math.min(lo, value) || Math.abs(value) || 1;
+  const min = fromZero ? Math.min(lo, value, 0) : Math.min(lo, value) - span * 0.3;
+  const max = fromZero ? Math.max(hi, value) * 1.08 || 1 : Math.max(hi, value) + span * 0.3;
   const pad = 8;
   const x = (v: number) => pad + ((v - min) / (max - min || 1)) * (width - 2 * pad);
   const mid = 12;
