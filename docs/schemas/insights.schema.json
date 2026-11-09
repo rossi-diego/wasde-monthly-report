@@ -24,7 +24,7 @@
           "type": "integer"
         },
         "f2_min_months_remaining": {
-          "default": 2,
+          "default": 5,
           "title": "F2 Min Months Remaining",
           "type": "integer"
         },

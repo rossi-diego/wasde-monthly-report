@@ -28,7 +28,7 @@ JSON Schema: [`docs/schemas/insights.schema.json`](schemas/insights.schema.json)
 ```
 {schema_version, generated_at, data_tag,
  gates: {min_n: 5, percentile_min_n: 10, small_sample_below: 10, e2_min_weeks_remaining: 6,
-         f2_min_months_remaining: 2,
+         f2_min_months_remaining: 5,
          stale_after_days: {wasde: 76, export_sales: 17, oilseed_crush: 76, …}},   # cadence + grace_days
  n_screened: {W1: 66, W2: 3, …},                                 # methodology note
  insights: [{id, rule, report_id, commodity_id, kind, params{}, n, window, robustness,
@@ -58,7 +58,7 @@ Rules every renderer must follow:
 | `E2:<c>` | required_weekly_sales | `required_weekly_mt, net_sales_4wk_avg_mt, ratio_required_to_avg, weeks_remaining, remaining_to_target_mt` (n = 4 weeks) |
 | `E3:soybeans` | china_share_soy | `china_share, unknown_share, china/unknown/total_commitment_mt, hist_mean/min/max, position, history[]` |
 | `F1:soybeans` (report_id `oilseed_crush`) | crush_pace | `market_year, month, month_of_my, release_key, first_printed_as, history_start=2015-10, unit_id=bu, cum_bu, cum_st, month_crushed_bu/st, wasde_release_key, target_bu, target_native, target_unit_id=m_bu, target_flag, pct, hist_mean/min/max, position, outside_distance, history[]` (window `prior_5_my_same_month`) |
-| `F2:soybeans` | required_monthly_crush | `required_monthly_bu, last_my_remaining_mean_bu, last_my_remaining_n, ratio_required_to_last_my, months_remaining, remaining_to_target_bu, target_bu` (n = months compared; suppressed `months_remaining_below_min` with < 2 months left) |
+| `F2:soybeans` | required_monthly_crush | `required_monthly_bu, last_my_remaining_mean_bu, last_my_remaining_n, ratio_required_to_last_my, months_remaining, remaining_to_target_bu, target_bu` (n = months compared, so F2 is suppressed `months_remaining_below_min` with < 5 months left, the default `min_n`; unlike E2 it has no small-window exception) |
 | `F3:soybeans` | oil_yield | `oil_yield_lb_bu, month_oil_klb, month_crushed_bu, hist_mean/min/max, position, outside_distance, wasde_oil_release_key, wasde_implied_yield_lb_bu, diff_vs_wasde_lb_bu, history[]` |
 
 Hero (deterministic): `wasde_tightness` = a W2 in the tightest (loosest) third **and** that
@@ -86,6 +86,9 @@ Crush caveats: `crush_history_from_2015` (history window 2015-10+, no "since 201
   was added, removed or changed bytes it publishes a new `weekly-*` tag, so the catalogue never
   points at assets whose sha256 differs.
 * `catalog.json.data_tag` / `build.json.tag` name the release the site was built from.
+* Timestamp columns (`*_ts_utc`) are written in UTC in every CSV (`2015-10-01 19:00:00+00`):
+  the catalogue export pins the DuckDB session `TimeZone` to UTC, so CSV bytes and their
+  sha256 do not depend on the build machine's time zone.
 
 ## Export Sales envelope and isolation
 

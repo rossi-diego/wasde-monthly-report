@@ -9,7 +9,9 @@
 #
 #   Table 1 of cafo_all_tables.csv (every release checked) is
 #     "Soybean Crushing, Production, Consumption and Stocks – United States: <Month YYYY> with
-#      Comparisons"   (2015-10-01: "...: May 2015 - August 2015", four consecutive months)
+#      Comparisons"   (2015-10-01 through 2016-06-01, the first 9 releases, print four
+#      consecutive months instead, e.g. "...: May 2015 - August 2015"; the "with Comparisons"
+#      layout starts on 2016-07-01)
 #   Header row: "Item", "", then one column per month: year-ago month, previous month (revised),
 #   current month. Data rows: label, unit label, values.
 #   Units as printed in the CSV: "tons" (NASS short tons, 2,000 lb) and "1,000 pounds".

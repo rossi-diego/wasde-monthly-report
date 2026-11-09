@@ -16,6 +16,9 @@ from usda_reports.insights import stats
 from usda_reports.insights.schema import InputRef, Insight
 
 WINDOW_5Y = "prior_5_my_same_month"
+# Shares (pct, hist_*) are published at 6 decimals and rounded only by the formatter: a 4-dp
+# value such as 0.0715 (true 0.071521) would print as 7.1% instead of 7.2%.
+SHARE_DP = 6
 HISTORY_START = "2015-10"  # first ESMIS Fats & Oils file; MY 2015/16 is the first full year
 COMMODITY = "soybeans"
 
@@ -88,7 +91,7 @@ def _range(value: float | None, vals: list[float], nd: int) -> dict[str, Any]:
     out.update(hist_mean=_r(stats.mean(vals), nd), hist_min=_r(lo, nd), hist_max=_r(hi, nd))
     if value is not None:
         out["position"] = stats.range_position(value, lo, hi)
-        out["outside_distance"] = round(stats.outside_distance(value, lo, hi), 4)
+        out["outside_distance"] = round(stats.outside_distance(value, lo, hi), max(nd, 4))
     return out
 
 
@@ -113,12 +116,12 @@ def f1_crush_pace(pace: pd.DataFrame) -> list[Insight]:
         "target_native": _f(cur.wasde_crush_native),
         "target_unit_id": _s(cur.wasde_crush_unit_id),
         "target_flag": _s(cur.wasde_proj_est_flag),
-        "pct": _r(pct, 4),
-        **_range(pct, vals, 4),
+        "pct": _r(pct, SHARE_DP),
+        **_range(pct, vals, SHARE_DP),
         "history": [
             {
                 "market_year": r.market_year,
-                "pct": round(float(r.pct_of_target), 4),
+                "pct": round(float(r.pct_of_target), SHARE_DP),
                 "wasde_release_key": r.wasde_release_key,
             }
             for r in hist.itertuples()
@@ -147,7 +150,7 @@ def f1_crush_pace(pace: pd.DataFrame) -> list[Insight]:
     ]
 
 
-def f2_required_monthly_crush(pace: pd.DataFrame, min_months: int = 2) -> list[Insight]:
+def f2_required_monthly_crush(pace: pd.DataFrame, min_months: int = 5) -> list[Insight]:
     """F2: (as-of WASDE crush − MY-to-date) / months remaining vs the mean of the same remaining
     months last MY (as known at the time)."""
     if pace.empty:

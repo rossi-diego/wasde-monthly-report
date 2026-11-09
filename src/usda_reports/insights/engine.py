@@ -77,9 +77,9 @@ def build(
     idx = release_index(con)
     out = []
     for i in raw:
-        # E2 compares with a 4-week mean and F2 with the same remaining months of last MY by
-        # definition: their window, not a history sample (small_sample still applies).
-        min_n = 4 if i.rule == "E2" else 1 if i.rule == "F2" else None
+        # E2 compares with a 4-week mean by definition: its window, not a history sample.
+        # F2 has no such exception (plan §6): n = months compared, so the default min_n applies.
+        min_n = 4 if i.rule == "E2" else None
         out.append(gates_mod.apply(i, gates, now, idx, min_n=min_n))
 
     releases = [(r, k, ts.date().isoformat()) for (r, k), ts in sorted(idx.items())]

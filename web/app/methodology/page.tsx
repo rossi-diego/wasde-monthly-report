@@ -161,7 +161,7 @@ export default function Methodology() {
           never a later one. Each of the 5 previous marketing years is measured the same way at the same month, against the
           WASDE public at the time. <strong className="text-ink">Still needed (F2)</strong>: (as-of projection − crush to
           date) ÷ months left, compared with the mean of the same remaining months in the previous marketing year; not shown
-          with fewer than {ins?.gates.f2_min_months_remaining ?? 2} months left.{" "}
+          with fewer than {ins?.gates.f2_min_months_remaining ?? 5} months left.{" "}
           <strong className="text-ink">Oil yield (F3)</strong>: crude oil produced × 1,000 ÷ bushels crushed (lb/bu) for the
           newest month, against the same month of the 5 previous years and against the WASDE-implied yield (WASDE soybean oil
           production ÷ WASDE crush, as of the release; WASDE&apos;s oil year runs October–September).

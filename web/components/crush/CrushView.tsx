@@ -9,7 +9,7 @@ import { T, useLang, useT } from "@/components/chrome/I18n";
 import TopBar, { type ReleaseInfo } from "@/components/chrome/TopBar";
 import { SmallChip } from "@/components/home/InsightCards";
 import type { CrushCommodity, Insight, InsightsDoc } from "@/lib/data-contract";
-import { bushels, bushelsAxis, bytes, lbPerBu, monthOf, monthYear, num, share, shortDate, shortTonsToMt, tonnes } from "@/lib/format";
+import { bushels, bushelsAxis, bytes, lbPerBu, monthOf, monthYear, num, share, shortDate, shortTonsToMt, signed, tonnes } from "@/lib/format";
 import { byId, caveatText, suppressedText } from "@/lib/insight-text";
 import type { Key } from "@/lib/i18n";
 import { NOPA_NOTE, NOPA_URL } from "@/lib/nopa";
@@ -20,6 +20,10 @@ const AMBER = "var(--r-crush)";
 
 /** Marketing-year month 1..12 → calendar month (1 = September). */
 const calMonth = (m: number) => ((m + 7) % 12) + 1;
+
+/** A share difference (0.0042) in percentage points: "+0.4", "−0.6", "0". */
+const pp = (v: number | null | undefined, d = 1) =>
+  v === null || v === undefined || Number.isNaN(v) ? "—" : Math.abs(v) < 1e-12 ? "0" : signed(v * 100, d);
 
 function Chapter({ n, id, eyebrow, title, children }: { n: number; id: string; eyebrow: Key; title: Key; children: React.ReactNode }) {
   return (
@@ -108,8 +112,21 @@ export default function CrushView({
   // ---- chapter 1: pace vs USDA
   const cur = d.pace.series.find((s) => s.current);
   const hasPace = d.pace.series.some((s) => s.points.some((p) => p[1] !== null));
-  const lines = d.pace.series.map((s) => ({ id: s.market_year, current: s.current, points: s.points.map((p) => [p[0], p[1]] as [number, number | null]) }));
-  const band = d.pace.band.map((b) => ({ x: b[0], mean: b[1], min: b[2], max: b[3] }));
+  // Cumulative crush is almost linear, so on a 0–100% axis the band, the mean and every year
+  // overlap as one diagonal. The chart plots each year's share minus the 5-yr mean at that
+  // month (percentage points): the band becomes min−mean … max−mean around a zero line.
+  const meanAt = new Map(d.pace.band.map((b) => [b[0], b[1]] as [number, number | null]));
+  const dev = (m: number, v: number | null) => {
+    const mu = meanAt.get(m);
+    return v === null || mu === null || mu === undefined ? null : v - mu;
+  };
+  const lines = d.pace.series.map((s) => ({ id: s.market_year, current: s.current, points: s.points.map((p) => [p[0], dev(p[0], p[1])] as [number, number | null]) }));
+  const band = d.pace.band.map((b) => ({
+    x: b[0],
+    mean: b[1] === null ? null : 0,
+    min: b[1] === null || b[2] === null ? null : b[2] - b[1],
+    max: b[1] === null || b[3] === null ? null : b[3] - b[1],
+  }));
   const priorYears = d.pace.series.filter((s) => !s.current).map((s) => s.market_year);
   const paceAria = t("crush.c1.aria", {
     my: d.market_year,
@@ -120,7 +137,7 @@ export default function CrushView({
   });
   const paceRows = d.pace.band.map((b) => {
     const p = cur?.points.find((x) => x[0] === b[0]);
-    return [monthOf(calMonth(b[0]), "short", lang), share(p?.[1]), share(b[1]), share(b[2]), share(b[3]), b[4]];
+    return [monthOf(calMonth(b[0]), "short", lang), share(p?.[1]), share(b[1]), share(b[2]), share(b[3]), pp(dev(b[0], p?.[1] ?? null)), b[4]];
   });
 
   // ---- chapter 2: still needed (F2)
@@ -224,8 +241,11 @@ export default function CrushView({
               xTicks={xTicks}
               color={AMBER}
               ariaLabel={paceAria}
-              targetLabel={t("crush.c1.target")}
-              format={(v) => share(v, 0)}
+              targetLabel=""
+              reference={null}
+              domain="data"
+              yUnit={t("crush.c1.yUnit")}
+              format={(v) => pp(v)}
             />
             <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted">
               <span className="flex items-center gap-1.5">
@@ -238,7 +258,7 @@ export default function CrushView({
               </span>
               <span className="flex items-center gap-1.5">
                 <span aria-hidden="true" className="inline-block w-5 border-t-2 border-dashed" style={{ borderColor: "var(--muted)" }} />
-                {t("esr.c1.mean")}
+                {t("crush.c1.mean0")}
               </span>
               <span className="flex items-center gap-1.5">
                 <span aria-hidden="true" className="inline-block h-0.5 w-5" style={{ background: "var(--bar-past)" }} />
@@ -246,11 +266,14 @@ export default function CrushView({
               </span>
               <span>{t("crush.axis.month")}</span>
             </div>
+            <p className="m-0 text-xs text-muted" data-testid="pace-deviation">
+              {t("crush.c1.dev")}
+            </p>
             <p className="m-0 text-xs text-muted" data-testid="pace-legend">
               <strong className="text-ink">{t("caveat.history_point_in_time")}:</strong> {t("crush.c1.note")}
             </p>
             {f1ok && <Meta i={f1ok} />}
-            <ChartTable caption={paceAria} head={[t("crush.h.month"), d.market_year, t("esr.h.mean"), t("esr.h.min"), t("esr.h.max"), "n"]} rows={paceRows} />
+            <ChartTable caption={paceAria} head={[t("crush.h.month"), d.market_year, t("esr.h.mean"), t("esr.h.min"), t("esr.h.max"), t("crush.h.vsMean"), "n"]} rows={paceRows} />
           </>
         ) : (
           <p className="m-0 text-[13px] text-muted">{t("crush.c1.none")}</p>
@@ -321,13 +344,35 @@ export default function CrushView({
             xTicks={xTicks}
             color={AMBER}
             ariaLabel={yieldAria}
-            targetLabel={t("crush.c3.ref", { w: lbPerBu(implied) })}
+            targetLabel=""
             reference={implied}
             domain="data"
             height={220}
             format={(v) => num(v, 1)}
           />
-          <p className="m-0 text-xs text-muted">{t("crush.c3.note")}</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted" data-testid="yield-legend">
+            <span className="flex items-center gap-1.5">
+              <span aria-hidden="true" className="inline-block h-1 w-5 rounded" style={{ background: AMBER }} />
+              {t("esr.c1.cur", { my: d.market_year })}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span aria-hidden="true" className="inline-block h-2.5 w-5 rounded" style={{ background: AMBER, opacity: 0.18 }} />
+              {t("esr.c1.band")}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span aria-hidden="true" className="inline-block w-5 border-t-2 border-dashed" style={{ borderColor: "var(--muted)" }} />
+              {t("esr.c1.mean")}
+            </span>
+            {implied !== null && (
+              <span className="flex items-center gap-1.5">
+                <span aria-hidden="true" className="inline-block w-5 border-t-2 border-dotted" style={{ borderColor: "var(--muted)" }} />
+                {t("crush.c3.ref", { w: lbPerBu(implied) })}
+              </span>
+            )}
+          </div>
+          <p className="m-0 text-xs text-muted">
+            {t("crush.c3.note")} {t("crush.c3.axis")}
+          </p>
           {f3ok && <Meta i={f3ok} />}
           <ChartTable caption={yieldAria} head={[t("crush.h.month"), d.market_year, t("esr.h.mean"), t("esr.h.min"), t("esr.h.max"), "n"]} rows={yieldRows} />
         </Chapter>

@@ -372,6 +372,20 @@ def test_f1_f2_f3_from_recorded_gold(gold):
     )
     aug = pace[pace.month_of_my == 12].tail(1)
     assert crush.f2_required_monthly_crush(aug)[0].suppressed_reason == "months_remaining_below_min"
+    # Plan §6: no card with n < 5. With 4 months left (data month April) F2 is suppressed; with 5
+    # it passes the default gates (no min_n exception for F2).
+    from usda_reports.insights import gates as gates_mod
+    from usda_reports.insights.schema import Gates
+
+    now = datetime(2026, 11, 9, tzinfo=UTC)
+    apr = pace[pace.month_of_my == 8].tail(1)
+    f2_apr = crush.f2_required_monthly_crush(apr, Gates().f2_min_months_remaining)[0]
+    assert f2_apr.params["months_remaining"] == 4
+    assert gates_mod.apply(f2_apr, Gates(), now, {}).suppressed_reason is not None
+    mar = pace[pace.month_of_my == 7].tail(1)
+    f2_mar = crush.f2_required_monthly_crush(mar, Gates().f2_min_months_remaining)[0]
+    assert f2_mar.params["months_remaining"] == 5 and f2_mar.n == 5
+    assert f2_mar.suppressed_reason is None
 
     f3 = crush.f3_oil_yield(pace)[0]
     assert f3.params["oil_yield_lb_bu"] == pytest.approx(
@@ -392,7 +406,7 @@ def test_crush_card_is_the_most_extreme_f1_or_f3(gold):
         crush.f1_crush_pace(pace) + crush.f2_required_monthly_crush(pace) + crush.f3_oil_yield(pace)
     )
     now = datetime(2026, 11, 9, tzinfo=UTC)
-    out = [gates_mod.apply(i, Gates(), now, {}, min_n=1 if i.rule == "F2" else None) for i in raw]
+    out = [gates_mod.apply(i, Gates(), now, {}, min_n=None) for i in raw]
     card = crush_card(out)
     assert card is not None and card.rule in ("F1", "F3")
     best = max(
@@ -418,3 +432,23 @@ def test_crush_page_json(gold, tmp_path):
     assert len(d["pace"]["band"]) == 12 and all(b[4] == 5 for b in d["pace"]["band"])
     assert len(d["remaining"]["last_my_months"]) == 11 and len(d["monthly"]) == 24
     assert "nopa" not in json.dumps(d).lower()
+
+
+def test_crush_shares_keep_full_precision(gold, tmp_path):
+    """0.071521 must print 7.2%: shares are published at 6 dp, never pre-rounded to 4."""
+    from usda_reports.insights.rules import crush
+    from usda_reports.publish.web_crush import build_crush
+
+    pace = crush.pace_frame(gold)
+    cur = crush.current_row(pace)
+    true = float(cur.cum_bu) / float(cur.wasde_crush_bu)
+    f1 = crush.f1_crush_pace(pace)[0]
+    assert f1.params["pct"] == pytest.approx(true, abs=1e-6)
+    # The file the browser reads (the JSON writer rounds floats; it must keep 6 dp here).
+    build_crush(gold, tmp_path, None)
+    d = json.loads((tmp_path / "reports" / "oilseed_crush" / "soybeans.json").read_text())
+    assert d["kpis"]["pct_of_target"] == pytest.approx(true, abs=1e-6)
+    assert d["kpis"]["pct_of_target"] != round(true, 4)
+    # The formatter rounds once: (x*100).toFixed(1). 0.0715 would give 7.1; the 6-dp value 7.2.
+    assert f"{f1.params['pct'] * 100:.1f}" == f"{true * 100:.1f}"
+    assert f"{0.071521 * 100:.1f}" == "7.2" and f"{round(0.071521, 6) * 100:.1f}" == "7.2"

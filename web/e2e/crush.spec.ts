@@ -40,6 +40,16 @@ test("crush page header numbers equal the crush JSON and F1", async ({ page }) =
     await expect(page.getByTestId("crush-lead")).toContainText(`n = ${f1.n}`);
     expect(f1.params.pct).toBeCloseTo(d.kpis.pct_of_target!, 3);
   }
+  if (d.target.crush_bu && d.kpis.cum_bu !== null) {
+    // Independent of the published share: the page must print the true ratio rounded once
+    // (198,828,501 / 2,780,000,000 = 0.071521 → 7.2%, never a pre-rounded 0.0715 → 7.1%).
+    const truth = share(d.kpis.cum_bu / d.target.crush_bu);
+    await expect(page.getByTestId("crush-target")).toContainText(truth);
+    if (f1 && f1.suppressed_reason === null) await expect(page.getByTestId("crush-lead")).toContainText(truth);
+  }
+  if (d.pace.series.some((s) => s.points.some((p) => p[1] !== null))) {
+    await expect(page.getByTestId("pace-deviation")).toContainText("minus the 5-yr mean");
+  }
   const f2 = doc?.insights.find((i) => i.id === "F2:soybeans");
   if (f2 && f2.suppressed_reason === null && (f2.params.required_monthly_bu as number) > 0) {
     await expect(page.getByTestId("crush-needed")).toContainText(bushels(f2.params.required_monthly_bu as number));

@@ -71,7 +71,14 @@ export type HomeData = {
   waterfall: (WaterfallView & { what: string; unit: string; stuNow: string; stuPrev: string; k: number; n: number }) | null;
   changes: ChangeRow[];
   downloads: ReturnType<typeof downloadLinks>;
-  history: { first: string; reports: string; rows: string; tag: string | null; esrReleases: string | null };
+  history: {
+    first: string;
+    reports: string;
+    rows: string;
+    tag: string | null;
+    esrReleases: string | null;
+    crushReleases: string | null;
+  };
 };
 
 /** Every derived string of the home page, in one language. */
@@ -147,6 +154,7 @@ export function homeData(lang: Lang = "en"): HomeData {
   }
 
   const esrReleases = getMetaReports().export_sales?.releases ?? null;
+  const crushReleases = getMetaReports().oilseed_crush?.releases ?? null;
   return {
     month: monthYear(meta.latest.report_month, lang),
     prevMonth,
@@ -162,6 +170,7 @@ export function homeData(lang: Lang = "en"): HomeData {
       rows: num(meta.history.rows),
       tag: meta.data_release_tag,
       esrReleases: esrReleases ? num(esrReleases) : null,
+      crushReleases: crushReleases ? num(crushReleases) : null,
     },
   };
 }

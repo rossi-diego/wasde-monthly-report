@@ -13,6 +13,8 @@ import hashlib
 import json
 import os
 import shutil
+from collections.abc import Iterator
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -175,6 +177,33 @@ def write_catalogue(
     ingested) is skipped, so one report cannot block the others.
     """
     out_dir.mkdir(parents=True, exist_ok=True)
+    with utc_session(con):
+        return _write_catalogue(con, out_dir, datasets)
+
+
+@contextmanager
+def utc_session(con: duckdb.DuckDBPyConnection) -> Iterator[None]:
+    """Render TIMESTAMPTZ in UTC for the duration of the export.
+
+    DuckDB prints ``*_ts_utc`` columns (CSV text, ``::varchar`` spans) in the session time zone,
+    which defaults to the machine's: a Brazilian laptop wrote ``2015-10-01 16:00:00-03`` where
+    CI wrote ``2015-10-01 19:00:00+00``. Pinning UTC makes the CSV bytes, their sha256 and
+    ``datasets.json`` identical on every machine. The previous setting is restored afterwards.
+    """
+    row = con.execute("select current_setting('TimeZone')").fetchone()
+    previous = str(row[0]) if row and row[0] else None
+    con.execute("set TimeZone = 'UTC'")
+    try:
+        yield
+    finally:
+        if previous is not None:
+            safe = previous.replace("'", "")
+            con.execute(f"set TimeZone = '{safe}'")
+
+
+def _write_catalogue(
+    con: duckdb.DuckDBPyConnection, out_dir: Path, datasets: list[Dataset] | None
+) -> list[dict[str, Any]]:
     entries: list[dict[str, Any]] = []
     for ds in datasets if datasets is not None else WASDE_DATASETS:
         if ds.report_id != "wasde" and not _table_rows(con, ds.model):

@@ -26,6 +26,8 @@ SCHEMA_VERSION = 1
 COMMODITY = "soybeans"
 HISTORY_START = "2015-10"
 MONTHS_SHOWN = 24
+# Shares of the USDA projection: full enough precision that only the formatter rounds.
+SHARE_DP = 6
 
 
 def _f(v: Any, nd: int | None = None) -> float | None:
@@ -81,7 +83,7 @@ def crush_payload(
                 "current": y == my,
                 # [month_of_my, pct_of_target (null without an as-of target), wasde_release_key]
                 "points": [
-                    [int(r.month_of_my), _f(r.pct_of_target, 5), _s(r.wasde_release_key)]
+                    [int(r.month_of_my), _f(r.pct_of_target, SHARE_DP), _s(r.wasde_release_key)]
                     for r in g.itertuples()
                 ],
                 # [month_of_my, oil lb/bu as first printed]
@@ -132,11 +134,11 @@ def crush_payload(
             "oil_yield_lb_bu": _f(cur.oil_yield_lb_bu, 4),
             "cum_bu": _f(cur.cum_bu, 0),
             "cum_st": _f(cur.cum_st),
-            "pct_of_target": _f(cur.pct_of_target, 5),
+            "pct_of_target": _f(cur.pct_of_target, SHARE_DP),
             "n_5yr": int(cur.n_5yr),
-            "pct_5yr_mean": _f(cur.pct_5yr_mean, 5),
-            "pct_5yr_min": _f(cur.pct_5yr_min, 5),
-            "pct_5yr_max": _f(cur.pct_5yr_max, 5),
+            "pct_5yr_mean": _f(cur.pct_5yr_mean, SHARE_DP),
+            "pct_5yr_min": _f(cur.pct_5yr_min, SHARE_DP),
+            "pct_5yr_max": _f(cur.pct_5yr_max, SHARE_DP),
             "months_remaining": int(cur.months_remaining),
             "required_monthly_bu": _f(cur.required_monthly_bu, 0),
             "last_my_remaining_mean_bu": _f(cur.last_my_remaining_mean_bu, 0),
@@ -151,7 +153,7 @@ def crush_payload(
             "basis": "pct_of_usda_projection_at_the_time",
             "series": series,
             # [month_of_my, mean, min, max, n] of the 5 prior MYs at each month.
-            "band": _band(pace, "pct_of_target", my, 5),
+            "band": _band(pace, "pct_of_target", my, SHARE_DP),
         },
         "yield": {
             "unit_id": "lb_per_bu",
@@ -201,7 +203,7 @@ def build_crush(
     if payload is None:
         return None
     folder = out_dir / "reports" / "oilseed_crush"
-    _dump(folder / f"{COMMODITY}.json", payload)
+    _dump(folder / f"{COMMODITY}.json", payload, nd=SHARE_DP)
     index = {
         "schema_version": SCHEMA_VERSION,
         "report_id": "oilseed_crush",

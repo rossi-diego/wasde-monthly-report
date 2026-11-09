@@ -90,9 +90,11 @@ short tons and metric tonnes), the marketing-year-to-date crush against USDA's c
 **as of the release**, the oil yield and the next NASS release date. Three chapters:
 
 1. **Pace vs USDA and 5 years (F1)**: crush to date as % of the WASDE crush projection that was
-   public when NASS first printed each month, with the 5 prior marketing years and their band.
+   public when NASS first printed each month, plotted as percentage points vs the 5-yr mean at
+   that month, with the 5 prior marketing years and their band (cumulative shares are nearly
+   linear, so the raw 0–100% view hides the gap).
 2. **What is still needed (F2)**: monthly crush required to reach USDA vs the same remaining
-   months of last year (suppressed with fewer than 2 months left).
+   months of last year (suppressed with fewer than 5 months left: n = months compared, min n = 5).
 3. **Oil yield (F3)**: crude oil lb per bushel vs the same month of the 5 prior years and vs the
    WASDE-implied yield (soybean oil production ÷ crush).
 

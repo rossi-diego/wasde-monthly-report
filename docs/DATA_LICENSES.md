@@ -41,8 +41,8 @@ crush page carries only this note and an outbound link to <https://www.nopa.org/
 
 | Item | Evidence | Access date |
 |---|---|---|
-| Distributor | nopa.org names Refinitiv / LSEG as the distributor of the NOPA monthly crush data | 2026-11-09 (recorded in the project plan's source review of 2026-11-08) |
-| Price | about US$1,200 per year (subscription via the distributor) as of 2026-11 | 2026-11-09 (same source) |
+| Distributor | nopa.org names Refinitiv / LSEG as the distributor of the NOPA monthly crush data | 2026-11-08 (project plan source review) |
+| Price | about US$1,200 per year (subscription via the distributor) as of 2026-11 | 2026-11-08 (same source review) |
 | Page | <https://www.nopa.org/resources/nopa-monthly-crush-report/> answered HTTP 200 on 2026-11-09; its body is rendered client-side, so the distributor and price lines were not re-read by a script on that date | 2026-11-09 |
 
 If the distributor, price or terms change, update this table with the new access date; the

@@ -115,7 +115,7 @@ class Gates(BaseModel):
     percentile_min_n: int = 10
     small_sample_below: int = 10
     e2_min_weeks_remaining: int = 6
-    f2_min_months_remaining: int = 2
+    f2_min_months_remaining: int = 5  # = min_n: F2 compares n = months_remaining months
     # Per-report staleness: cadence days + grace_days from config/reports.yaml.
     stale_after_days: dict[str, int] = Field(default_factory=dict)
 

@@ -1,7 +1,9 @@
 """Fats & Oils silver: every bronze zip (one per release) → one long table of vintages.
 
 Each release prints the soybean table for three months (year-ago, previous month as revised,
-current month; the first ESMIS release, 2015-10-01, prints four consecutive months). Silver
+current month). The early releases, 2015-10-01 through 2016-06-01 (9 releases, until NASS
+switched to the "<Month YYYY> with Comparisons" layout on 2016-07-01), print four consecutive
+months instead ("May 2015 - August 2015"); their older columns get the role ``earlier``. Silver
 keeps **every** printed value with the release that printed it, so the gold layer can rebuild
 what was known at any instant (point in time) and also the latest revised value per month.
 
