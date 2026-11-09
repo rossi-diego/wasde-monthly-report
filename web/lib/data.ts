@@ -15,6 +15,13 @@ function read<T>(rel: string): T {
 export const getMeta = () => read<Meta>("meta.json");
 export const getOverview = () => read<Overview>("overview.json");
 export const getIndex = () => read<CommodityIndex>("commodities/index.json");
-export const getCatalog = () => read<CatalogEntry[]>("catalog.json");
+// WASDE table index for the explorer. Since cut A it is `wasde_tables.json` and
+// `catalog.json` is the release catalogue (see lib/data-contract.ts); data releases built
+// before that still carry the table index as `catalog.json` (an array).
+export const getCatalog = (): CatalogEntry[] => {
+  if (fs.existsSync(path.join(DATA, "wasde_tables.json"))) return read<CatalogEntry[]>("wasde_tables.json");
+  const legacy = read<unknown>("catalog.json");
+  return Array.isArray(legacy) ? (legacy as CatalogEntry[]) : [];
+};
 export const getSeries = (commodity: string, region: string) =>
   read<Series>(`commodities/${commodity}/${region}.json`);

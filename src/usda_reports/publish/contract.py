@@ -9,11 +9,32 @@ parquet must pass Soy Outlook's own acceptance checks (mirrored here).
 from __future__ import annotations
 
 import re
+from datetime import date
 from typing import Any
 
 import pandas as pd
 
 DATA_TAG_RE = re.compile(r"^data-\d{4}-\d{2}$")
+# Weekly builds (Export Sales) are immutable prereleases, never "Latest".
+WEEKLY_TAG_RE = re.compile(r"^weekly-\d{4}-\d{2}-\d{2}(\.\d+)?$")
+
+
+def weekly_tag(day: date, existing: set[str]) -> str:
+    """``weekly-YYYY-MM-DD``; ``.2``, ``.3``… when a release with that tag already exists
+    (weekly releases are immutable, so a second change the same day gets a new tag)."""
+    base = f"weekly-{day.isoformat()}"
+    if base not in existing:
+        return base
+    n = 2
+    while f"{base}.{n}" in existing:
+        n += 1
+    return f"{base}.{n}"
+
+
+def is_release_tag(tag: str) -> bool:
+    return bool(DATA_TAG_RE.match(tag) or WEEKLY_TAG_RE.match(tag))
+
+
 REQUIRED_ASSETS = ("meta.json", "manifest.json", "wasde_full.parquet")
 REQUIRED_META_KEYS = ("data_release_tag", "next_release", "latest", "history", "downloads")
 REQUIRED_LATEST_KEYS = ("report_month", "label", "wasde_number", "release_date")

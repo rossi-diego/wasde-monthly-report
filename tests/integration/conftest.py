@@ -8,13 +8,37 @@ gracefully when a focus commodity has no data.
 
 from __future__ import annotations
 
+import json
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pandas as pd
 import pytest
 
+from usda_reports.bronze.store import BronzeStore
 from usda_reports.core.config import PROJECT_ROOT, Settings
 from usda_reports.core.manifest import Manifest, ReleaseEntry, release_ts_utc
+from usda_reports.core.registry import load_registry
+from usda_reports.reports.export_sales.source import encode_bundle
+
+# "Now" of the mini build: the day after the fixture ESR pull (2025-09-11). The WASDE fixture
+# (2024-05) is then stale for the insight gates, which the tests rely on.
+BUILT_NOW = datetime(2025, 9, 12, 12, 0, tzinfo=UTC)
+
+
+def build_export_sales_silver(settings: Settings, manifest: Manifest, fixtures: Path) -> None:
+    """Store the fixture ESR pull in bronze (as the real ingest would) and parse it."""
+    bundle = json.loads((fixtures / "export_sales" / "bundle_2025-09-11.json").read_text("utf-8"))
+    store = BronzeStore(settings.bronze_dir, manifest, "export_sales", "08:30")
+    store.put(
+        bundle["release_key"],
+        encode_bundle(bundle),
+        source="fas_esr_api",
+        url="https://api.fas.usda.gov",
+        release_date=bundle["release_key"],
+    )
+    spec = load_registry(settings.config_dir).spec("export_sales", settings)
+    spec.build_silver(manifest)
 
 
 @pytest.fixture(scope="session")
@@ -66,8 +90,9 @@ def built(tmp_path_factory, request) -> Settings:
     )
     settings.silver_dir.mkdir(parents=True)
     silver.to_parquet(settings.silver_dir / "wasde.parquet", index=False)
+    build_export_sales_silver(settings, manifest, fixtures)
 
     assert run_dbt(settings, command="run") == 0
-    publish_all(settings, manifest, tag="data-2024-05")
+    publish_all(settings, manifest, tag="data-2024-05", now=BUILT_NOW)
     manifest.save(settings.manifest_path)
     return settings

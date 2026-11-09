@@ -1,0 +1,94 @@
+# Download catalogue (plan §7): dbt model → file name → schema version → formats.
+#
+# File name: <report_id>__<dataset>__v<schema_version>.<ext>. Parquet (zstd) is always
+# written; CSV is plain below 1M rows / 25 MB, else .csv.gz (csv_gzip: true forces gzip).
+# Column descriptions and types in datapackage.json come from the dbt manifest (schema.yml)
+# and the written Parquet, so the dictionary cannot drift from the models.
+#
+#   columns         select list ("*" = every model column, in model order)
+#   order_by        total order (byte-stable files); "all" = every column
+#   coverage        column giving the temporal coverage (min/max) in datapackage.json
+#   release_column  column holding the release key (latest_release_key in datapackage.json)
+#   site_preview    also copy into web/public/data/downloads/ when the Parquet is <= 5 MB
+#   aliases         byte-identical copies under legacy names (never remove: Soy Outlook)
+datasets:
+  - report_id: wasde
+    dataset: values
+    schema_version: 1
+    model: fct_wasde
+    # Never reorder: wasde_full.parquet must stay byte-identical (Soy Outlook).
+    columns: [report_month, wasde_number, release_date, source, table_id, table_label,
+              commodity_id, commodity_label, region_id, region, attribute_id, attribute_label,
+              reliability_stat, market_year, proj_est_flag, period, value, unit_id, unit_label]
+    order_by: >-
+      report_month, table_id, commodity_id, region_id, attribute_id, market_year,
+      reliability_stat, proj_est_flag, period, value, wasde_number, release_date, source,
+      table_label, commodity_label, region, attribute_label, unit_id, unit_label
+    csv_gzip: true
+    coverage: report_month
+    release_column: report_month
+    aliases: {parquet: wasde_full.parquet, csv: wasde_full.csv.gz}
+    description: Every value of every WASDE report since July 2010, harmonized (long format).
+  - report_id: wasde
+    dataset: balance_sheets
+    schema_version: 1
+    model: fct_balance_sheet
+    columns: "*"
+    order_by: all
+    coverage: report_month
+    release_column: report_month
+    description: Wide balance sheet per report, table, commodity, region and marketing year.
+  - report_id: wasde
+    dataset: revisions
+    schema_version: 1
+    model: fct_revisions
+    columns: "*"
+    order_by: all
+    coverage: report_month
+    release_column: report_month
+    description: Revision path of every annual estimate across reports.
+  - report_id: wasde
+    dataset: changes
+    schema_version: 1
+    model: fct_changes
+    columns: "*"
+    order_by: all
+    coverage: report_month
+    release_column: report_month
+    description: Month-over-month revisions with seasonal materiality score and streaks.
+  - report_id: export_sales
+    dataset: weekly
+    schema_version: 1
+    model: fct_export_sales_totals
+    columns: "*"
+    order_by: commodity_id, esr_market_year, week_ending
+    coverage: week_ending
+    release_column: release_key
+    site_preview: true
+    description: >-
+      U.S. export sales to all destinations per commodity, marketing year and week since MY
+      2010/11 (metric tons): weekly exports, accumulated exports, outstanding and net sales,
+      commitments, next-MY sales, China and unknown-destination commitments.
+  - report_id: export_sales
+    dataset: by_country
+    schema_version: 1
+    model: fct_export_sales_weekly
+    columns: "*"
+    order_by: commodity_id, esr_market_year, week_ending, country_id
+    coverage: week_ending
+    release_column: release_key
+    description: >-
+      U.S. export sales per commodity, marketing year, week and destination country since MY
+      2010/11 (metric tons), latest known value of every metric.
+  - report_id: cross
+    dataset: export_pace
+    schema_version: 1
+    model: fct_export_pace
+    columns: "*"
+    order_by: commodity_id, esr_market_year, week_ending
+    coverage: week_ending
+    release_column: release_key
+    site_preview: true
+    description: >-
+      Export commitments as a share of the USDA (WASDE) export projection that was public at
+      each ESR release (point in time), with the same week of the 5 prior marketing years.

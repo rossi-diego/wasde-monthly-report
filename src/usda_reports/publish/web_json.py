@@ -459,7 +459,8 @@ def build_tables(con: duckdb.DuckDBPyConnection, out_dir: Path) -> list[dict[str
                 },
             }
         )
-    _dump(out_dir / "catalog.json", catalog)
+    # WASDE table index for the explorer (catalog.json is the release catalogue).
+    _dump(out_dir / "wasde_tables.json", catalog)
     return catalog
 
 
