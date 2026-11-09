@@ -39,10 +39,19 @@ function useBuildStatus(reportId: string) {
   return failed;
 }
 
-export function FreshnessChip({ releaseTs, maxDays }: { releaseTs: string | null | undefined; maxDays: number }) {
+export function FreshnessChip({ releaseTs, maxDays, offSeason = false }: { releaseTs: string | null | undefined; maxDays: number; offSeason?: boolean }) {
   const t = useT();
   const age = useAge(releaseTs);
   if (age === null) return null;
+  // A seasonal report (Crop Progress) between seasons is not stale: nothing is scheduled.
+  if (offSeason) {
+    const text = age === 0 ? t("reports.age0") : age === 1 ? t("reports.age1") : t("reports.age", { d: age });
+    return (
+      <span data-testid="freshness" data-stale="false" data-off-season="true">
+        {text} · <span className="font-semibold text-muted">{t("reports.offSeason")}</span>
+      </span>
+    );
+  }
   const stale = age > maxDays;
   const text = age === 0 ? t("reports.age0") : age === 1 ? t("reports.age1") : t("reports.age", { d: age });
   return (
@@ -60,17 +69,19 @@ export function StaleBanner({
   cadence,
   releaseTs,
   maxDays,
+  offSeason = false,
 }: {
   reportId: string;
   name: Key;
   cadence: Key;
   releaseTs: string | null | undefined;
   maxDays: number;
+  offSeason?: boolean;
 }) {
   const t = useT();
   const age = useAge(releaseTs);
   const failed = useBuildStatus(reportId);
-  const stale = age !== null && age > maxDays;
+  const stale = !offSeason && age !== null && age > maxDays;
   if (!stale && !failed) return null;
   return (
     <div role="status" data-testid="stale-banner" className="rounded-xl border border-current px-4 py-3 text-[13px] text-down">
@@ -79,6 +90,15 @@ export function StaleBanner({
         : t("reports.stale", { report: t(name), d: age ?? 0, cadence: t(cadence), max: maxDays })}
     </div>
   );
+}
+
+/** A translated string whose variables are ISO dates, formatted in the active language. */
+export function KeyDates({ k, dates, vars }: { k: Key; dates: Record<string, string | null | undefined>; vars?: Record<string, string | number> }) {
+  const t = useT();
+  const { lang } = useLang();
+  const v: Record<string, string | number> = { ...vars };
+  for (const [name, iso] of Object.entries(dates)) v[name] = shortDate(iso, true, lang) ?? "—";
+  return <>{t(k, v)}</>;
 }
 
 /** "Week ending Oct 29, 2026 · released Nov 5, 2026" in the active language. */

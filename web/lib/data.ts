@@ -3,7 +3,22 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 
-import type { CrushCommodity, CrushIndex, EsrCommodity, EsrIndex, InsightsDoc, MetaReports, ReleaseCatalog } from "./data-contract";
+import type {
+  CommodityLens,
+  CropProgressCrop,
+  CropProgressIndex,
+  CrushCommodity,
+  CrushIndex,
+  EsrCommodity,
+  EsrIndex,
+  GrainStocksCommodity,
+  GrainStocksIndex,
+  InsightsDoc,
+  LensIndex,
+  MetaReports,
+  ReleaseCatalog,
+  TakeFile,
+} from "./data-contract";
 import type { CatalogEntry, CommodityIndex, Meta, Overview, Series } from "./types";
 
 // Build-time loaders: the static export embeds the latest data in every page.
@@ -62,6 +77,53 @@ export const getCrushIndex = () => readOptional<CrushIndex>("reports/oilseed_cru
 export function getCrush(): CrushCommodity | null {
   const f = getCrushIndex()?.commodities[0]?.file;
   return f ? readOptional<CrushCommodity>(f) : null;
+}
+
+// ---------------------------------------------------------------------- cut C
+
+export const getCropProgressIndex = () => readOptional<CropProgressIndex>("reports/crop_progress/index.json");
+
+/** Every crop page payload (empty for a build without Crop Progress data). */
+export function getCropProgressCrops(): CropProgressCrop[] {
+  const idx = getCropProgressIndex();
+  if (!idx) return [];
+  return idx.crops.map((c) => readOptional<CropProgressCrop>(c.file)).filter((c): c is CropProgressCrop => c !== null);
+}
+
+export const getGrainStocksIndex = () => readOptional<GrainStocksIndex>("reports/grain_stocks/index.json");
+
+export function getGrainStocks(): GrainStocksCommodity[] {
+  const idx = getGrainStocksIndex();
+  if (!idx) return [];
+  return idx.commodities.map((c) => readOptional<GrainStocksCommodity>(c.file)).filter((c): c is GrainStocksCommodity => c !== null);
+}
+
+export const getLensIndex = () => readOptional<LensIndex>("lens/index.json");
+
+export function getLenses(): CommodityLens[] {
+  const idx = getLensIndex();
+  if (!idx) return [];
+  return idx.commodities.map((c) => readOptional<CommodityLens>(c.file)).filter((c): c is CommodityLens => c !== null);
+}
+
+/** Per-report latest release: meta.json `reports`, completed from catalog.json (a site built
+ *  from an older data release with newer report JSON has the report in the catalogue only). */
+export function getReportsMeta(): MetaReports {
+  const out: MetaReports = { ...(getReleaseCatalog()?.reports ?? {}) } as unknown as MetaReports;
+  for (const [id, r] of Object.entries(out)) if (!r.latest_release_key) delete out[id];
+  return { ...out, ...getMetaReports() };
+}
+
+/** Catalogue files of the given datasets ("report:dataset"), linked to the site copy when
+ *  this build serves it, else to the release asset; files with neither are dropped. */
+export function takeFiles(datasets: Set<string>): TakeFile[] {
+  const cat = getReleaseCatalog();
+  if (!cat) return [];
+  return cat.files
+    .filter((f) => datasets.has(`${f.report_id}:${f.dataset}`) && !f.legacy_alias_of)
+    .map((f) => ({ f, href: servedPath(f.site_url) ?? f.release_url }))
+    .filter((x): x is { f: (typeof cat.files)[number]; href: string } => Boolean(x.href))
+    .map(({ f, href }) => ({ file: f.file, report_id: f.report_id, dataset: f.dataset, format: f.format, href, bytes: f.bytes, rows: f.rows }));
 }
 
 /** Site path ("/data/downloads/x.parquet") of a catalogue file when the build serves it, else null. */

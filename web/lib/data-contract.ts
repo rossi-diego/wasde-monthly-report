@@ -642,6 +642,9 @@ export type LensIndex = {
   commodities: { id: "soybeans" | "corn"; label: string; n_reports: number; file: string }[];
 };
 
+/** A catalogue file as a report page links it (site copy or release asset). */
+export type TakeFile = { file: string; report_id: string; dataset: string; format: string; href: string; bytes: number; rows: number };
+
 // ------------------------------------------------------------- meta.json / build.json
 
 export type ReportMeta = {

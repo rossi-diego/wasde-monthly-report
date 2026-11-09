@@ -4,6 +4,14 @@ What the Python publisher writes and the site (and any reuser) may rely on. Type
 [`web/lib/data-contract.ts`](../web/lib/data-contract.ts). Every number comes from gold; the
 site only formats and renders words.
 
+How the site reads it (cut C): `web/lib/insight-text.ts` turns each insight's params into card
+copy, `web/lib/report-views.ts` the Crop Progress and Grain Stocks page text,
+`web/lib/lens.ts` the commodity pages and the home "also released" cards (the Crop Progress or
+Grain Stocks finding when the ≤ 5 `home_cards` row has none, respecting
+`seasons.crop_progress.shown_on_home`). All of them take a language and format numbers in
+that locale (EN `1,234.5`, pt-BR `1.234,5`); the Playwright contract tests call the same
+functions on the served JSON and on the frozen-clock fixture `web/e2e/fixtures/offseason/`.
+
 ## Files under `web/public/data/` (also attached to each release)
 
 | File | Producer | Content |

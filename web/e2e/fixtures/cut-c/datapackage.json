@@ -1,9 +1,9 @@
 {
  "profile": "tabular-data-package",
  "name": "usda-reports",
- "title": "USDA Reports Dashboard: harmonized WASDE, Export Sales and NASS crush data",
- "version": "weekly-2026-11-09",
- "created": "2026-11-09T14:35:34+00:00",
+ "title": "USDA Reports Dashboard: harmonized WASDE, Export Sales, NASS crush, Crop Progress and Grain Stocks data",
+ "version": "unreleased",
+ "created": "2026-11-09T15:56:44+00:00",
  "homepage": "https://github.com/rossi-diego/usda-reports-dashboard",
  "licenses": [
   {
@@ -23,6 +23,14 @@
   {
    "title": "USDA NASS: Fats & Oils (Oilseed Crushings, Production, Consumption and Stocks), via ESMIS",
    "path": "https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/FatsOils"
+  },
+  {
+   "title": "USDA NASS: Crop Progress, via ESMIS",
+   "path": "https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/CropProg"
+  },
+  {
+   "title": "USDA NASS: Grain Stocks, via ESMIS",
+   "path": "https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/GraiStoc"
   }
  ],
  "resources": [
@@ -53,7 +61,6 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__values__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -183,7 +190,6 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__values__v1.csv.gz",
    "schema": {
     "fields": [
      {
@@ -311,7 +317,6 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__balance_sheets__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -500,7 +505,6 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__balance_sheets__v1.csv",
    "schema": {
     "fields": [
      {
@@ -688,7 +692,6 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__revisions__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -874,8 +877,8 @@
    "mediatype": "text/csv",
    "encoding": "utf-8",
    "compression": "gz",
-   "bytes": 27187441,
-   "hash": "sha256:d075bd788a2baa24e2ca1abd1105e6a01d0316b266fb9918e728787df56f6865",
+   "bytes": 26960512,
+   "hash": "sha256:a24e7047ad8bdd386fdbe470a11be41132db098113faf75f333b0d49e6944326",
    "rows": 794725,
    "report_id": "wasde",
    "dataset": "revisions",
@@ -893,7 +896,6 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__revisions__v1.csv.gz",
    "schema": {
     "fields": [
      {
@@ -1096,7 +1098,6 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__changes__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -1312,8 +1313,8 @@
    "mediatype": "text/csv",
    "encoding": "utf-8",
    "compression": "gz",
-   "bytes": 30845397,
-   "hash": "sha256:604fd65b232a4afcbd0fa50e05bcfe8b0f9dc025a68b2d8fd879f536a50941ce",
+   "bytes": 30432405,
+   "hash": "sha256:a34549afd2c9f07effdc5d39448ba3579b5971e46966543379217f54b24a8778",
    "rows": 767959,
    "report_id": "wasde",
    "dataset": "changes",
@@ -1331,7 +1332,6 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__changes__v1.csv.gz",
    "schema": {
     "fields": [
      {
@@ -1564,7 +1564,6 @@
      "title": "US Government work, public domain; cite USDA FAS (Export Sales Reporting Program)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/export_sales__weekly__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -1718,7 +1717,6 @@
      "title": "US Government work, public domain; cite USDA FAS (Export Sales Reporting Program)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/export_sales__weekly__v1.csv",
    "schema": {
     "fields": [
      {
@@ -1871,7 +1869,6 @@
      "title": "US Government work, public domain; cite USDA FAS (Export Sales Reporting Program)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/export_sales__by_country__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -2007,8 +2004,8 @@
    "mediatype": "text/csv",
    "encoding": "utf-8",
    "compression": "gz",
-   "bytes": 3342988,
-   "hash": "sha256:6f0cf9a385965850df71454dc94c17c5e40b99174310798eb744bfd0190c62b4",
+   "bytes": 3286417,
+   "hash": "sha256:a4b6cb69e57ef02bce2fbf55a18307850f142a1475fd901ba01a220d9e3ba24b",
    "rows": 195767,
    "report_id": "export_sales",
    "dataset": "by_country",
@@ -2026,7 +2023,6 @@
      "title": "US Government work, public domain; cite USDA FAS (Export Sales Reporting Program)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/export_sales__by_country__v1.csv.gz",
    "schema": {
     "fields": [
      {
@@ -2179,7 +2175,6 @@
      "title": "US Government work, public domain; cite USDA NASS (Fats & Oils: Oilseed Crushings, Production, Consumption and Stocks)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/oilseed_crush__monthly__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -2318,7 +2313,6 @@
      "title": "US Government work, public domain; cite USDA NASS (Fats & Oils: Oilseed Crushings, Production, Consumption and Stocks)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/oilseed_crush__monthly__v1.csv",
    "schema": {
     "fields": [
      {
@@ -2437,8 +2431,8 @@
    "description": "Soybean crush pace vs. USDA, point in time: marketing-year-to-date NASS crush as a share of the WASDE crush projection public when NASS first printed each month, what is still needed per month, oil yield vs the WASDE-implied yield, and the same month of the 5 prior marketing years (from MY 2015/16).",
    "format": "parquet",
    "mediatype": "application/vnd.apache.parquet",
-   "bytes": 24418,
-   "hash": "sha256:3e5ca86475f1f69ef19f36138aab8b4d0df0465dff1366e8c622d6cbc4a76a2f",
+   "bytes": 24419,
+   "hash": "sha256:16da4db33ed684f4123c7084c53f8ab2da1452492c6b78a1e0e49fdf736201b0",
    "rows": 133,
    "report_id": "cross",
    "dataset": "crush_pace",
@@ -2456,7 +2450,6 @@
      "title": "US Government work, public domain; cite USDA NASS (Fats & Oils) and USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/cross__crush_pace__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -2671,8 +2664,8 @@
    "format": "csv",
    "mediatype": "text/csv",
    "encoding": "utf-8",
-   "bytes": 62723,
-   "hash": "sha256:d6530c023e1d00afad378cea435963b435466b649f476a004bd2b54271f0616a",
+   "bytes": 62717,
+   "hash": "sha256:6369571e48fa830908e095644c457c924d1640e83ef135fd096c2f29d2c03ad6",
    "rows": 133,
    "report_id": "cross",
    "dataset": "crush_pace",
@@ -2690,7 +2683,6 @@
      "title": "US Government work, public domain; cite USDA NASS (Fats & Oils) and USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/cross__crush_pace__v1.csv",
    "schema": {
     "fields": [
      {
@@ -2904,8 +2896,8 @@
    "description": "Export commitments as a share of the USDA (WASDE) export projection that was public at each ESR release (point in time), with the same week of the 5 prior marketing years.",
    "format": "parquet",
    "mediatype": "application/vnd.apache.parquet",
-   "bytes": 326596,
-   "hash": "sha256:e8ec7070cf4d5e1cf3ef01998530883322db3105f551d0aae9779b008fb57e1e",
+   "bytes": 326598,
+   "hash": "sha256:c3a4905c849835987c31664aa35ac55f736bedbccd880834517dca4a9f6d57ec",
    "rows": 4295,
    "report_id": "cross",
    "dataset": "export_pace",
@@ -2923,7 +2915,6 @@
      "title": "US Government work, public domain; cite USDA FAS and USDA OCE/WAOB"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/cross__export_pace__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -3118,8 +3109,8 @@
    "format": "csv",
    "mediatype": "text/csv",
    "encoding": "utf-8",
-   "bytes": 1617657,
-   "hash": "sha256:1a60f166dcdb58dd43cc94fa2f5eb95042888291da00fa41b04f6053fbf1e578",
+   "bytes": 1617678,
+   "hash": "sha256:f2796768669b5215b9037b99fda86882908b458f6b3a43f9f8a23dc02ffed02a",
    "rows": 4295,
    "report_id": "cross",
    "dataset": "export_pace",
@@ -3137,7 +3128,6 @@
      "title": "US Government work, public domain; cite USDA FAS and USDA OCE/WAOB"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/cross__export_pace__v1.csv",
    "schema": {
     "fields": [
      {
@@ -3319,6 +3309,1491 @@
       "name": "is_latest_week_of_my",
       "type": "boolean",
       "description": "True on the newest week published for this marketing year."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "crop_progress__weekly__v1_parquet",
+   "path": "crop_progress__weekly__v1.parquet",
+   "title": "crop_progress__weekly__v1 (parquet)",
+   "description": "NASS Crop Progress, national (\"<N> States\") rows for corn, soybeans, winter wheat and spring wheat since the 2010-06-07 release: cumulative % of acreage per stage (planted … harvested) with NASS's published previous-week, previous-year and 5-year-average columns, and % of acreage per condition rating (very poor … excellent), one row per week.",
+   "format": "parquet",
+   "mediatype": "application/vnd.apache.parquet",
+   "bytes": 105094,
+   "hash": "sha256:64c3bb9824bc1bf90614592dfd5ee6dd3760c056c9967b59766e68864ffce516",
+   "rows": 9295,
+   "report_id": "crop_progress",
+   "dataset": "weekly",
+   "schema_version": 1,
+   "dbt_model": "fct_crop_progress_weekly",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2010-06-06",
+    "end": "2026-11-01"
+   },
+   "latest_release_key": "2026-11-02",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Crop Progress)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "crop",
+      "type": "string",
+      "description": "Crop as NASS reports it (corn, soybeans, winter_wheat, spring_wheat)."
+     },
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id (winter and spring wheat are both wheat)."
+     },
+     {
+      "name": "season",
+      "type": "integer",
+      "description": "Calendar year of the week (NASS's crop-progress season runs April-November; fall winter-wheat ratings refer to the crop harvested the following year)."
+     },
+     {
+      "name": "week_ending",
+      "type": "date",
+      "description": "Sunday that ends the reporting week (ISO date)."
+     },
+     {
+      "name": "kind",
+      "type": "string",
+      "description": "progress (stage reached) or condition (crop rating)."
+     },
+     {
+      "name": "category",
+      "type": "string",
+      "description": "Stage (planted, emerged, silking, dough, dented, mature, blooming, setting_pods, dropping_leaves, headed, harvested) or rating (very_poor, poor, fair, good, excellent)."
+     },
+     {
+      "name": "value_pct",
+      "type": "number",
+      "description": "Percent of acreage this week (null when NASS prints NA)."
+     },
+     {
+      "name": "value_flag",
+      "type": "string",
+      "description": "NASS symbol of the printed value (NA = not available, zero = \"-\", revised = \"*\")."
+     },
+     {
+      "name": "nass_prev_week_pct",
+      "type": "number",
+      "description": "NASS's published value for the previous week."
+     },
+     {
+      "name": "nass_prev_year_pct",
+      "type": "number",
+      "description": "NASS's published value for the same week one year earlier."
+     },
+     {
+      "name": "nass_5yr_avg_pct",
+      "type": "number",
+      "description": "NASS's published 5-year average for the week (progress only; years in avg_years)."
+     },
+     {
+      "name": "vs_5yr_avg_pp",
+      "type": "number",
+      "description": "value_pct − nass_5yr_avg_pct, percentage points (C2 stage pace)."
+     },
+     {
+      "name": "vs_prev_year_pp",
+      "type": "number",
+      "description": "value_pct − nass_prev_year_pct, percentage points."
+     },
+     {
+      "name": "vs_prev_week_pp",
+      "type": "number",
+      "description": "value_pct − nass_prev_week_pct, percentage points."
+     },
+     {
+      "name": "prev_year_week_ending",
+      "type": "date",
+      "description": "Week ending NASS compared with one year earlier (progress tables)."
+     },
+     {
+      "name": "avg_years",
+      "type": "string",
+      "description": "Years behind NASS's 5-year average, e.g. 2021-2025."
+     },
+     {
+      "name": "state_id",
+      "type": "string",
+      "description": "us_total = the NASS \"<N> States\" aggregate row (national level)."
+     },
+     {
+      "name": "n_states",
+      "type": "integer",
+      "description": "Number of states in the NASS aggregate (18 for corn, soybeans and winter wheat, 6 for spring wheat)."
+     },
+     {
+      "name": "unit_id",
+      "type": "string",
+      "description": "pct (percent of acreage)."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Crop Progress release (ESMIS release date, YYYY-MM-DD) whose values are shown."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (16:00 ET, stored in UTC)."
+     },
+     {
+      "name": "first_release_key",
+      "type": "string",
+      "description": "First release that printed the week (point-in-time availability)."
+     },
+     {
+      "name": "first_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of the first release (UTC)."
+     },
+     {
+      "name": "n_vintages",
+      "type": "integer",
+      "description": "Releases that printed the week (2 only for the 2018-09-11 re-issue)."
+     },
+     {
+      "name": "source_url",
+      "type": "string",
+      "description": "ESMIS zip of the release whose values are shown (from ESMIS files[])."
+     },
+     {
+      "name": "is_latest_week",
+      "type": "boolean",
+      "description": "True on the newest week published."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "crop_progress__weekly__v1_csv",
+   "path": "crop_progress__weekly__v1.csv",
+   "title": "crop_progress__weekly__v1 (csv)",
+   "description": "NASS Crop Progress, national (\"<N> States\") rows for corn, soybeans, winter wheat and spring wheat since the 2010-06-07 release: cumulative % of acreage per stage (planted … harvested) with NASS's published previous-week, previous-year and 5-year-average columns, and % of acreage per condition rating (very poor … excellent), one row per week.",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 2600263,
+   "hash": "sha256:2045a4c6ba7ec5e651b334583bfbf8b0f4e627a9dea560cdb0d7ee5d69eacbd4",
+   "rows": 9295,
+   "report_id": "crop_progress",
+   "dataset": "weekly",
+   "schema_version": 1,
+   "dbt_model": "fct_crop_progress_weekly",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2010-06-06",
+    "end": "2026-11-01"
+   },
+   "latest_release_key": "2026-11-02",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Crop Progress)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "crop",
+      "type": "string",
+      "description": "Crop as NASS reports it (corn, soybeans, winter_wheat, spring_wheat)."
+     },
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id (winter and spring wheat are both wheat)."
+     },
+     {
+      "name": "season",
+      "type": "integer",
+      "description": "Calendar year of the week (NASS's crop-progress season runs April-November; fall winter-wheat ratings refer to the crop harvested the following year)."
+     },
+     {
+      "name": "week_ending",
+      "type": "date",
+      "description": "Sunday that ends the reporting week (ISO date)."
+     },
+     {
+      "name": "kind",
+      "type": "string",
+      "description": "progress (stage reached) or condition (crop rating)."
+     },
+     {
+      "name": "category",
+      "type": "string",
+      "description": "Stage (planted, emerged, silking, dough, dented, mature, blooming, setting_pods, dropping_leaves, headed, harvested) or rating (very_poor, poor, fair, good, excellent)."
+     },
+     {
+      "name": "value_pct",
+      "type": "number",
+      "description": "Percent of acreage this week (null when NASS prints NA)."
+     },
+     {
+      "name": "value_flag",
+      "type": "string",
+      "description": "NASS symbol of the printed value (NA = not available, zero = \"-\", revised = \"*\")."
+     },
+     {
+      "name": "nass_prev_week_pct",
+      "type": "number",
+      "description": "NASS's published value for the previous week."
+     },
+     {
+      "name": "nass_prev_year_pct",
+      "type": "number",
+      "description": "NASS's published value for the same week one year earlier."
+     },
+     {
+      "name": "nass_5yr_avg_pct",
+      "type": "number",
+      "description": "NASS's published 5-year average for the week (progress only; years in avg_years)."
+     },
+     {
+      "name": "vs_5yr_avg_pp",
+      "type": "number",
+      "description": "value_pct − nass_5yr_avg_pct, percentage points (C2 stage pace)."
+     },
+     {
+      "name": "vs_prev_year_pp",
+      "type": "number",
+      "description": "value_pct − nass_prev_year_pct, percentage points."
+     },
+     {
+      "name": "vs_prev_week_pp",
+      "type": "number",
+      "description": "value_pct − nass_prev_week_pct, percentage points."
+     },
+     {
+      "name": "prev_year_week_ending",
+      "type": "date",
+      "description": "Week ending NASS compared with one year earlier (progress tables)."
+     },
+     {
+      "name": "avg_years",
+      "type": "string",
+      "description": "Years behind NASS's 5-year average, e.g. 2021-2025."
+     },
+     {
+      "name": "state_id",
+      "type": "string",
+      "description": "us_total = the NASS \"<N> States\" aggregate row (national level)."
+     },
+     {
+      "name": "n_states",
+      "type": "integer",
+      "description": "Number of states in the NASS aggregate (18 for corn, soybeans and winter wheat, 6 for spring wheat)."
+     },
+     {
+      "name": "unit_id",
+      "type": "string",
+      "description": "pct (percent of acreage)."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Crop Progress release (ESMIS release date, YYYY-MM-DD) whose values are shown."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (16:00 ET, stored in UTC)."
+     },
+     {
+      "name": "first_release_key",
+      "type": "string",
+      "description": "First release that printed the week (point-in-time availability)."
+     },
+     {
+      "name": "first_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of the first release (UTC)."
+     },
+     {
+      "name": "n_vintages",
+      "type": "integer",
+      "description": "Releases that printed the week (2 only for the 2018-09-11 re-issue)."
+     },
+     {
+      "name": "source_url",
+      "type": "string",
+      "description": "ESMIS zip of the release whose values are shown (from ESMIS files[])."
+     },
+     {
+      "name": "is_latest_week",
+      "type": "boolean",
+      "description": "True on the newest week published."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "crop_progress__condition__v1_parquet",
+   "path": "crop_progress__condition__v1.parquet",
+   "title": "crop_progress__condition__v1 (parquet)",
+   "description": "Weekly crop condition per crop (national): the five ratings, good-to-excellent share, condition index (1·VP + 2·P + 3·F + 4·G + 5·E)/100, NASS's published previous-year values and an own 5-year comparison (the 5 previous seasons at the week within ±3 days by day of year; NASS publishes no 5-year average for condition).",
+   "format": "parquet",
+   "mediatype": "application/vnd.apache.parquet",
+   "bytes": 51741,
+   "hash": "sha256:592298e57d82d7b07be5fce946a20360657dd0af45c61e72eb4edcf7a4f4076d",
+   "rows": 1220,
+   "report_id": "crop_progress",
+   "dataset": "condition",
+   "schema_version": 1,
+   "dbt_model": "fct_crop_condition",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2010-06-06",
+    "end": "2026-11-01"
+   },
+   "latest_release_key": "2026-11-02",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Crop Progress)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "crop",
+      "type": "string",
+      "description": "Crop (corn, soybeans, winter_wheat, spring_wheat)."
+     },
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id."
+     },
+     {
+      "name": "season",
+      "type": "integer",
+      "description": "Calendar year of the week."
+     },
+     {
+      "name": "week_ending",
+      "type": "date",
+      "description": "Sunday that ends the reporting week (ISO date)."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Release whose values are shown (YYYY-MM-DD)."
+     },
+     {
+      "name": "first_release_key",
+      "type": "string",
+      "description": "First release that printed the week."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of the first release (16:00 ET in UTC)."
+     },
+     {
+      "name": "n_states",
+      "type": "integer",
+      "description": "States in the NASS aggregate."
+     },
+     {
+      "name": "very_poor_pct",
+      "type": "number",
+      "description": "Percent of acreage rated very poor."
+     },
+     {
+      "name": "poor_pct",
+      "type": "number",
+      "description": "Percent rated poor."
+     },
+     {
+      "name": "fair_pct",
+      "type": "number",
+      "description": "Percent rated fair."
+     },
+     {
+      "name": "good_pct",
+      "type": "number",
+      "description": "Percent rated good."
+     },
+     {
+      "name": "excellent_pct",
+      "type": "number",
+      "description": "Percent rated excellent."
+     },
+     {
+      "name": "sum_pct",
+      "type": "number",
+      "description": "Sum of the five ratings (100 ± 1 of rounding; tested)."
+     },
+     {
+      "name": "ge_pct",
+      "type": "number",
+      "description": "Good + excellent, percent of acreage (C1)."
+     },
+     {
+      "name": "ci",
+      "type": "number",
+      "description": "Condition index (1·VP + 2·P + 3·F + 4·G + 5·E) / 100, 1 = all very poor, 5 = all excellent (C3)."
+     },
+     {
+      "name": "nass_prev_week_ge_pct",
+      "type": "number",
+      "description": "Good + excellent of NASS's \"Previous week\" row."
+     },
+     {
+      "name": "nass_prev_year_ge_pct",
+      "type": "number",
+      "description": "Good + excellent of NASS's \"Previous year\" row (as published)."
+     },
+     {
+      "name": "nass_prev_year_ci",
+      "type": "number",
+      "description": "Condition index of NASS's \"Previous year\" row."
+     },
+     {
+      "name": "ge_vs_prev_year_pp",
+      "type": "number",
+      "description": "ge_pct − nass_prev_year_ge_pct, percentage points."
+     },
+     {
+      "name": "n_5yr",
+      "type": "integer",
+      "description": "Previous seasons (of the last 5) with a rated week within ±3 days by day of year (small sample, n <= 5)."
+     },
+     {
+      "name": "ge_5yr_mean",
+      "type": "number",
+      "description": "Mean good + excellent of those weeks."
+     },
+     {
+      "name": "ge_5yr_min",
+      "type": "number",
+      "description": "Minimum of the same."
+     },
+     {
+      "name": "ge_5yr_max",
+      "type": "number",
+      "description": "Maximum of the same."
+     },
+     {
+      "name": "ci_5yr_mean",
+      "type": "number",
+      "description": "Mean condition index of those weeks."
+     },
+     {
+      "name": "ci_5yr_min",
+      "type": "number",
+      "description": "Minimum of the same."
+     },
+     {
+      "name": "ci_5yr_max",
+      "type": "number",
+      "description": "Maximum of the same."
+     },
+     {
+      "name": "hist_first_season",
+      "type": "integer",
+      "description": "Oldest season in the 5-year comparison."
+     },
+     {
+      "name": "hist_max_release_ts_utc",
+      "type": "datetime",
+      "description": "Newest release instant among the comparison weeks (always before release_ts_utc)."
+     },
+     {
+      "name": "source_url",
+      "type": "string",
+      "description": "ESMIS zip of the release whose values are shown."
+     },
+     {
+      "name": "is_latest_week",
+      "type": "boolean",
+      "description": "True on the crop's newest rated week."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "crop_progress__condition__v1_csv",
+   "path": "crop_progress__condition__v1.csv",
+   "title": "crop_progress__condition__v1 (csv)",
+   "description": "Weekly crop condition per crop (national): the five ratings, good-to-excellent share, condition index (1·VP + 2·P + 3·F + 4·G + 5·E)/100, NASS's published previous-year values and an own 5-year comparison (the 5 previous seasons at the week within ±3 days by day of year; NASS publishes no 5-year average for condition).",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 378330,
+   "hash": "sha256:6b9dae2736c8b3be89c02164e24a81c472257c0d3801c8a92570df4500be6488",
+   "rows": 1220,
+   "report_id": "crop_progress",
+   "dataset": "condition",
+   "schema_version": 1,
+   "dbt_model": "fct_crop_condition",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2010-06-06",
+    "end": "2026-11-01"
+   },
+   "latest_release_key": "2026-11-02",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Crop Progress)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "crop",
+      "type": "string",
+      "description": "Crop (corn, soybeans, winter_wheat, spring_wheat)."
+     },
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id."
+     },
+     {
+      "name": "season",
+      "type": "integer",
+      "description": "Calendar year of the week."
+     },
+     {
+      "name": "week_ending",
+      "type": "date",
+      "description": "Sunday that ends the reporting week (ISO date)."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Release whose values are shown (YYYY-MM-DD)."
+     },
+     {
+      "name": "first_release_key",
+      "type": "string",
+      "description": "First release that printed the week."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of the first release (16:00 ET in UTC)."
+     },
+     {
+      "name": "n_states",
+      "type": "integer",
+      "description": "States in the NASS aggregate."
+     },
+     {
+      "name": "very_poor_pct",
+      "type": "number",
+      "description": "Percent of acreage rated very poor."
+     },
+     {
+      "name": "poor_pct",
+      "type": "number",
+      "description": "Percent rated poor."
+     },
+     {
+      "name": "fair_pct",
+      "type": "number",
+      "description": "Percent rated fair."
+     },
+     {
+      "name": "good_pct",
+      "type": "number",
+      "description": "Percent rated good."
+     },
+     {
+      "name": "excellent_pct",
+      "type": "number",
+      "description": "Percent rated excellent."
+     },
+     {
+      "name": "sum_pct",
+      "type": "number",
+      "description": "Sum of the five ratings (100 ± 1 of rounding; tested)."
+     },
+     {
+      "name": "ge_pct",
+      "type": "number",
+      "description": "Good + excellent, percent of acreage (C1)."
+     },
+     {
+      "name": "ci",
+      "type": "number",
+      "description": "Condition index (1·VP + 2·P + 3·F + 4·G + 5·E) / 100, 1 = all very poor, 5 = all excellent (C3)."
+     },
+     {
+      "name": "nass_prev_week_ge_pct",
+      "type": "number",
+      "description": "Good + excellent of NASS's \"Previous week\" row."
+     },
+     {
+      "name": "nass_prev_year_ge_pct",
+      "type": "number",
+      "description": "Good + excellent of NASS's \"Previous year\" row (as published)."
+     },
+     {
+      "name": "nass_prev_year_ci",
+      "type": "number",
+      "description": "Condition index of NASS's \"Previous year\" row."
+     },
+     {
+      "name": "ge_vs_prev_year_pp",
+      "type": "number",
+      "description": "ge_pct − nass_prev_year_ge_pct, percentage points."
+     },
+     {
+      "name": "n_5yr",
+      "type": "integer",
+      "description": "Previous seasons (of the last 5) with a rated week within ±3 days by day of year (small sample, n <= 5)."
+     },
+     {
+      "name": "ge_5yr_mean",
+      "type": "number",
+      "description": "Mean good + excellent of those weeks."
+     },
+     {
+      "name": "ge_5yr_min",
+      "type": "number",
+      "description": "Minimum of the same."
+     },
+     {
+      "name": "ge_5yr_max",
+      "type": "number",
+      "description": "Maximum of the same."
+     },
+     {
+      "name": "ci_5yr_mean",
+      "type": "number",
+      "description": "Mean condition index of those weeks."
+     },
+     {
+      "name": "ci_5yr_min",
+      "type": "number",
+      "description": "Minimum of the same."
+     },
+     {
+      "name": "ci_5yr_max",
+      "type": "number",
+      "description": "Maximum of the same."
+     },
+     {
+      "name": "hist_first_season",
+      "type": "integer",
+      "description": "Oldest season in the 5-year comparison."
+     },
+     {
+      "name": "hist_max_release_ts_utc",
+      "type": "datetime",
+      "description": "Newest release instant among the comparison weeks (always before release_ts_utc)."
+     },
+     {
+      "name": "source_url",
+      "type": "string",
+      "description": "ESMIS zip of the release whose values are shown."
+     },
+     {
+      "name": "is_latest_week",
+      "type": "boolean",
+      "description": "True on the crop's newest rated week."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "grain_stocks__quarterly__v1_parquet",
+   "path": "grain_stocks__quarterly__v1.parquet",
+   "title": "grain_stocks__quarterly__v1 (parquet)",
+   "description": "U.S. corn, soybean and all-wheat stocks on December 1, March 1, June 1 and September 1 by position (on farms, off farms, all positions) from NASS Grain Stocks since the 2010-06-30 release: latest revised value, first print and the release that first printed each date (thousand bushels; metric tons via dim_unit).",
+   "format": "parquet",
+   "mediatype": "application/vnd.apache.parquet",
+   "bytes": 15586,
+   "hash": "sha256:f81f149d29c4e5ac78b978c186865402eb8b364d895be1988c6a3bbab002bf4d",
+   "rows": 213,
+   "report_id": "grain_stocks",
+   "dataset": "quarterly",
+   "schema_version": 1,
+   "dbt_model": "fct_grain_stocks_quarterly",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2009-03-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-09-30",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Grain Stocks)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id (corn, soybeans, wheat = all wheat)."
+     },
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Marketing year in which the stocks are held (corn/soybeans September-August, wheat June-May), e.g. September 1, 2026 corn stocks belong to 2025/26 (its ending stocks)."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "quarter_of_my",
+      "type": "integer",
+      "description": "1-4 within the marketing year; 4 = ending stocks (corn/soy September 1, wheat June 1), 1 = the harvest quarter (corn/soy December 1, wheat September 1)."
+     },
+     {
+      "name": "as_of_date",
+      "type": "date",
+      "description": "Stock date (the first day of the month, ISO date)."
+     },
+     {
+      "name": "unit_id",
+      "type": "string",
+      "description": "k_bu (thousand bushels) for the *_kbu columns."
+     },
+     {
+      "name": "on_farm_kbu",
+      "type": "number",
+      "description": "Stocks stored on farms (thousand bushels), latest revision."
+     },
+     {
+      "name": "off_farm_kbu",
+      "type": "number",
+      "description": "Stocks at mills, elevators, warehouses, terminals and processors (thousand bushels)."
+     },
+     {
+      "name": "total_kbu",
+      "type": "number",
+      "description": "Stocks in all positions (thousand bushels), latest revision."
+     },
+     {
+      "name": "total_mt",
+      "type": "number",
+      "description": "total_kbu in metric tons (dim_unit; corn 39.3679 bu/t, soybeans/wheat 36.7437 bu/t)."
+     },
+     {
+      "name": "on_farm_share",
+      "type": "number",
+      "description": "on_farm_kbu / total_kbu (G3)."
+     },
+     {
+      "name": "total_yoy_pct",
+      "type": "number",
+      "description": "total_kbu / the same date one year earlier − 1 (G3)."
+     },
+     {
+      "name": "total_first_kbu",
+      "type": "number",
+      "description": "Total as first printed (before later revisions)."
+     },
+     {
+      "name": "on_farm_first_kbu",
+      "type": "number",
+      "description": "On-farm stocks as first printed."
+     },
+     {
+      "name": "is_revised",
+      "type": "boolean",
+      "description": "True when the latest total differs from the first print."
+     },
+     {
+      "name": "first_release_key",
+      "type": "string",
+      "description": "Grain Stocks release (ESMIS release date, YYYY-MM-DD) that first printed the date."
+     },
+     {
+      "name": "first_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (12:00 ET in UTC)."
+     },
+     {
+      "name": "first_printed_as",
+      "type": "string",
+      "description": "current = first printed as the release's newest date; earlier = first seen as an older date (dates before the first ESMIS file used, 2010-06-30)."
+     },
+     {
+      "name": "latest_release_key",
+      "type": "string",
+      "description": "Release whose (latest revised) values are shown."
+     },
+     {
+      "name": "latest_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (UTC)."
+     },
+     {
+      "name": "n_vintages",
+      "type": "integer",
+      "description": "How many releases printed the date."
+     },
+     {
+      "name": "source_url",
+      "type": "string",
+      "description": "ESMIS zip of the release whose values are shown."
+     },
+     {
+      "name": "is_latest",
+      "type": "boolean",
+      "description": "True on the commodity's newest stock date."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "grain_stocks__quarterly__v1_csv",
+   "path": "grain_stocks__quarterly__v1.csv",
+   "title": "grain_stocks__quarterly__v1 (csv)",
+   "description": "U.S. corn, soybean and all-wheat stocks on December 1, March 1, June 1 and September 1 by position (on farms, off farms, all positions) from NASS Grain Stocks since the 2010-06-30 release: latest revised value, first print and the release that first printed each date (thousand bushels; metric tons via dim_unit).",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 70822,
+   "hash": "sha256:2f45041ec3716a20d04044956511d3720696b91a7f56db25d898d5f307ac9f0c",
+   "rows": 213,
+   "report_id": "grain_stocks",
+   "dataset": "quarterly",
+   "schema_version": 1,
+   "dbt_model": "fct_grain_stocks_quarterly",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2009-03-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-09-30",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Grain Stocks)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id (corn, soybeans, wheat = all wheat)."
+     },
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Marketing year in which the stocks are held (corn/soybeans September-August, wheat June-May), e.g. September 1, 2026 corn stocks belong to 2025/26 (its ending stocks)."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "quarter_of_my",
+      "type": "integer",
+      "description": "1-4 within the marketing year; 4 = ending stocks (corn/soy September 1, wheat June 1), 1 = the harvest quarter (corn/soy December 1, wheat September 1)."
+     },
+     {
+      "name": "as_of_date",
+      "type": "date",
+      "description": "Stock date (the first day of the month, ISO date)."
+     },
+     {
+      "name": "unit_id",
+      "type": "string",
+      "description": "k_bu (thousand bushels) for the *_kbu columns."
+     },
+     {
+      "name": "on_farm_kbu",
+      "type": "number",
+      "description": "Stocks stored on farms (thousand bushels), latest revision."
+     },
+     {
+      "name": "off_farm_kbu",
+      "type": "number",
+      "description": "Stocks at mills, elevators, warehouses, terminals and processors (thousand bushels)."
+     },
+     {
+      "name": "total_kbu",
+      "type": "number",
+      "description": "Stocks in all positions (thousand bushels), latest revision."
+     },
+     {
+      "name": "total_mt",
+      "type": "number",
+      "description": "total_kbu in metric tons (dim_unit; corn 39.3679 bu/t, soybeans/wheat 36.7437 bu/t)."
+     },
+     {
+      "name": "on_farm_share",
+      "type": "number",
+      "description": "on_farm_kbu / total_kbu (G3)."
+     },
+     {
+      "name": "total_yoy_pct",
+      "type": "number",
+      "description": "total_kbu / the same date one year earlier − 1 (G3)."
+     },
+     {
+      "name": "total_first_kbu",
+      "type": "number",
+      "description": "Total as first printed (before later revisions)."
+     },
+     {
+      "name": "on_farm_first_kbu",
+      "type": "number",
+      "description": "On-farm stocks as first printed."
+     },
+     {
+      "name": "is_revised",
+      "type": "boolean",
+      "description": "True when the latest total differs from the first print."
+     },
+     {
+      "name": "first_release_key",
+      "type": "string",
+      "description": "Grain Stocks release (ESMIS release date, YYYY-MM-DD) that first printed the date."
+     },
+     {
+      "name": "first_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (12:00 ET in UTC)."
+     },
+     {
+      "name": "first_printed_as",
+      "type": "string",
+      "description": "current = first printed as the release's newest date; earlier = first seen as an older date (dates before the first ESMIS file used, 2010-06-30)."
+     },
+     {
+      "name": "latest_release_key",
+      "type": "string",
+      "description": "Release whose (latest revised) values are shown."
+     },
+     {
+      "name": "latest_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (UTC)."
+     },
+     {
+      "name": "n_vintages",
+      "type": "integer",
+      "description": "How many releases printed the date."
+     },
+     {
+      "name": "source_url",
+      "type": "string",
+      "description": "ESMIS zip of the release whose values are shown."
+     },
+     {
+      "name": "is_latest",
+      "type": "boolean",
+      "description": "True on the commodity's newest stock date."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "cross__stocks_vs_wasde__v1_parquet",
+   "path": "cross__stocks_vs_wasde__v1.parquet",
+   "title": "cross__stocks_vs_wasde__v1 (parquet)",
+   "description": "Grain Stocks vs. USDA, point in time: NASS total stocks on the dates that are a WASDE ending stock (corn/soybeans September 1, wheat June 1), as first printed, against the old-crop ending stocks in the WASDE public at the release (million bushels and %).",
+   "format": "parquet",
+   "mediatype": "application/vnd.apache.parquet",
+   "bytes": 5592,
+   "hash": "sha256:a48878b40f2e61ecbef7eb40d5368963945dec75861d108af5ec93ae13cc0bea",
+   "rows": 51,
+   "report_id": "cross",
+   "dataset": "stocks_vs_wasde",
+   "schema_version": 1,
+   "dbt_model": "fct_stocks_vs_wasde",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2010-06-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-09-30",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Grain Stocks) and USDA OCE/WAOB (WASDE)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id (corn, soybeans, wheat)."
+     },
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Old-crop marketing year whose ending stocks these are, e.g. 2025/26."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "as_of_date",
+      "type": "date",
+      "description": "Stock date (September 1 for corn and soybeans, June 1 for wheat)."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Grain Stocks release (YYYY-MM-DD) that first printed the date."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (12:00 ET in UTC)."
+     },
+     {
+      "name": "unit_id",
+      "type": "string",
+      "description": "m_bu (million bushels) for the *_mbu columns."
+     },
+     {
+      "name": "nass_total_kbu",
+      "type": "number",
+      "description": "NASS stocks in all positions as first printed (thousand bushels)."
+     },
+     {
+      "name": "nass_total_mbu",
+      "type": "number",
+      "description": "The same in million bushels."
+     },
+     {
+      "name": "wasde_release_key",
+      "type": "string",
+      "description": "WASDE report month (YYYY-MM) public at the release (ASOF join)."
+     },
+     {
+      "name": "wasde_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that WASDE (12:00 ET in UTC); always <= release_ts_utc."
+     },
+     {
+      "name": "wasde_proj_est_flag",
+      "type": "string",
+      "description": "WASDE flag of the ending-stocks figure (est / proj)."
+     },
+     {
+      "name": "wasde_unit_id",
+      "type": "string",
+      "description": "Native WASDE unit (m_bu)."
+     },
+     {
+      "name": "wasde_ending_stocks_mbu",
+      "type": "number",
+      "description": "U.S. ending stocks of the marketing year in that WASDE (million bushels)."
+     },
+     {
+      "name": "surprise_mbu",
+      "type": "number",
+      "description": "nass_total_mbu − wasde_ending_stocks_mbu (G1)."
+     },
+     {
+      "name": "surprise_pct",
+      "type": "number",
+      "description": "surprise_mbu / wasde_ending_stocks_mbu."
+     },
+     {
+      "name": "is_latest",
+      "type": "boolean",
+      "description": "True on the commodity's newest date."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "cross__stocks_vs_wasde__v1_csv",
+   "path": "cross__stocks_vs_wasde__v1.csv",
+   "title": "cross__stocks_vs_wasde__v1 (csv)",
+   "description": "Grain Stocks vs. USDA, point in time: NASS total stocks on the dates that are a WASDE ending stock (corn/soybeans September 1, wheat June 1), as first printed, against the old-crop ending stocks in the WASDE public at the release (million bushels and %).",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 9297,
+   "hash": "sha256:19ea719d6b2f64e4b167beefacae51e4aa3464a915a9b2736e1485e92d3b9b09",
+   "rows": 51,
+   "report_id": "cross",
+   "dataset": "stocks_vs_wasde",
+   "schema_version": 1,
+   "dbt_model": "fct_stocks_vs_wasde",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2010-06-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-09-30",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Grain Stocks) and USDA OCE/WAOB (WASDE)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id (corn, soybeans, wheat)."
+     },
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Old-crop marketing year whose ending stocks these are, e.g. 2025/26."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "as_of_date",
+      "type": "date",
+      "description": "Stock date (September 1 for corn and soybeans, June 1 for wheat)."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Grain Stocks release (YYYY-MM-DD) that first printed the date."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (12:00 ET in UTC)."
+     },
+     {
+      "name": "unit_id",
+      "type": "string",
+      "description": "m_bu (million bushels) for the *_mbu columns."
+     },
+     {
+      "name": "nass_total_kbu",
+      "type": "number",
+      "description": "NASS stocks in all positions as first printed (thousand bushels)."
+     },
+     {
+      "name": "nass_total_mbu",
+      "type": "number",
+      "description": "The same in million bushels."
+     },
+     {
+      "name": "wasde_release_key",
+      "type": "string",
+      "description": "WASDE report month (YYYY-MM) public at the release (ASOF join)."
+     },
+     {
+      "name": "wasde_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that WASDE (12:00 ET in UTC); always <= release_ts_utc."
+     },
+     {
+      "name": "wasde_proj_est_flag",
+      "type": "string",
+      "description": "WASDE flag of the ending-stocks figure (est / proj)."
+     },
+     {
+      "name": "wasde_unit_id",
+      "type": "string",
+      "description": "Native WASDE unit (m_bu)."
+     },
+     {
+      "name": "wasde_ending_stocks_mbu",
+      "type": "number",
+      "description": "U.S. ending stocks of the marketing year in that WASDE (million bushels)."
+     },
+     {
+      "name": "surprise_mbu",
+      "type": "number",
+      "description": "nass_total_mbu − wasde_ending_stocks_mbu (G1)."
+     },
+     {
+      "name": "surprise_pct",
+      "type": "number",
+      "description": "surprise_mbu / wasde_ending_stocks_mbu."
+     },
+     {
+      "name": "is_latest",
+      "type": "boolean",
+      "description": "True on the commodity's newest date."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "cross__stocks_disappearance__v1_parquet",
+   "path": "cross__stocks_disappearance__v1.parquet",
+   "title": "cross__stocks_disappearance__v1 (parquet)",
+   "description": "Implied disappearance per quarter, point in time: previous stocks (as printed in the same release) + WASDE production as of the release in the harvest quarter only − new stocks (first print). Imports omitted; NASS may revise production on the same day.",
+   "format": "parquet",
+   "mediatype": "application/vnd.apache.parquet",
+   "bytes": 8693,
+   "hash": "sha256:15ce14784f5dc54dac8367f041ab5e5a25a81196ade8117f2ce1ffcaa4e3b29b",
+   "rows": 198,
+   "report_id": "cross",
+   "dataset": "stocks_disappearance",
+   "schema_version": 1,
+   "dbt_model": "fct_stocks_disappearance",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2010-06-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-09-30",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Grain Stocks) and USDA OCE/WAOB (WASDE)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id (corn, soybeans, wheat)."
+     },
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Marketing year in which the stocks of as_of_date are held."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "quarter_of_my",
+      "type": "integer",
+      "description": "Quarter of the marketing year ending on as_of_date (1 = harvest quarter, 4 = the quarter ending with the marketing year's ending stocks)."
+     },
+     {
+      "name": "as_of_date",
+      "type": "date",
+      "description": "Stock date that ends the quarter."
+     },
+     {
+      "name": "prev_as_of_date",
+      "type": "date",
+      "description": "Stock date that starts the quarter (three months earlier)."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Grain Stocks release (YYYY-MM-DD) that first printed as_of_date."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (12:00 ET in UTC)."
+     },
+     {
+      "name": "unit_id",
+      "type": "string",
+      "description": "k_bu (thousand bushels)."
+     },
+     {
+      "name": "stocks_kbu",
+      "type": "number",
+      "description": "Stocks in all positions on as_of_date, first print."
+     },
+     {
+      "name": "prev_stocks_kbu",
+      "type": "number",
+      "description": "Stocks on prev_as_of_date as printed in the same release (revised that day)."
+     },
+     {
+      "name": "prev_vintage_ts_utc",
+      "type": "datetime",
+      "description": "Release instant of the prev_stocks_kbu vintage (= release_ts_utc)."
+     },
+     {
+      "name": "is_harvest_quarter",
+      "type": "boolean",
+      "description": "True when production enters the identity."
+     },
+     {
+      "name": "wasde_release_key",
+      "type": "string",
+      "description": "WASDE report month whose production is used (harvest quarter only)."
+     },
+     {
+      "name": "wasde_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that WASDE; always <= release_ts_utc."
+     },
+     {
+      "name": "wasde_production_mbu",
+      "type": "number",
+      "description": "U.S. production of the marketing year in that WASDE (million bushels)."
+     },
+     {
+      "name": "production_kbu",
+      "type": "number",
+      "description": "Production used in the identity (thousand bushels; 0 outside the harvest quarter)."
+     },
+     {
+      "name": "implied_disappearance_kbu",
+      "type": "number",
+      "description": "prev_stocks_kbu + production_kbu − stocks_kbu (G2; imports omitted)."
+     },
+     {
+      "name": "is_latest",
+      "type": "boolean",
+      "description": "True on the commodity's newest date."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "cross__stocks_disappearance__v1_csv",
+   "path": "cross__stocks_disappearance__v1.csv",
+   "title": "cross__stocks_disappearance__v1 (csv)",
+   "description": "Implied disappearance per quarter, point in time: previous stocks (as printed in the same release) + WASDE production as of the release in the harvest quarter only − new stocks (first print). Imports omitted; NASS may revise production on the same day.",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 32731,
+   "hash": "sha256:274cff52a41afa180175b3b67676e3b399a7df821b42de692396ce401958f7f5",
+   "rows": 198,
+   "report_id": "cross",
+   "dataset": "stocks_disappearance",
+   "schema_version": 1,
+   "dbt_model": "fct_stocks_disappearance",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2010-06-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-09-30",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Grain Stocks) and USDA OCE/WAOB (WASDE)"
+    }
+   ],
+   "schema": {
+    "fields": [
+     {
+      "name": "commodity_id",
+      "type": "string",
+      "description": "Canonical commodity id (corn, soybeans, wheat)."
+     },
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Marketing year in which the stocks of as_of_date are held."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "quarter_of_my",
+      "type": "integer",
+      "description": "Quarter of the marketing year ending on as_of_date (1 = harvest quarter, 4 = the quarter ending with the marketing year's ending stocks)."
+     },
+     {
+      "name": "as_of_date",
+      "type": "date",
+      "description": "Stock date that ends the quarter."
+     },
+     {
+      "name": "prev_as_of_date",
+      "type": "date",
+      "description": "Stock date that starts the quarter (three months earlier)."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Grain Stocks release (YYYY-MM-DD) that first printed as_of_date."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (12:00 ET in UTC)."
+     },
+     {
+      "name": "unit_id",
+      "type": "string",
+      "description": "k_bu (thousand bushels)."
+     },
+     {
+      "name": "stocks_kbu",
+      "type": "number",
+      "description": "Stocks in all positions on as_of_date, first print."
+     },
+     {
+      "name": "prev_stocks_kbu",
+      "type": "number",
+      "description": "Stocks on prev_as_of_date as printed in the same release (revised that day)."
+     },
+     {
+      "name": "prev_vintage_ts_utc",
+      "type": "datetime",
+      "description": "Release instant of the prev_stocks_kbu vintage (= release_ts_utc)."
+     },
+     {
+      "name": "is_harvest_quarter",
+      "type": "boolean",
+      "description": "True when production enters the identity."
+     },
+     {
+      "name": "wasde_release_key",
+      "type": "string",
+      "description": "WASDE report month whose production is used (harvest quarter only)."
+     },
+     {
+      "name": "wasde_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that WASDE; always <= release_ts_utc."
+     },
+     {
+      "name": "wasde_production_mbu",
+      "type": "number",
+      "description": "U.S. production of the marketing year in that WASDE (million bushels)."
+     },
+     {
+      "name": "production_kbu",
+      "type": "number",
+      "description": "Production used in the identity (thousand bushels; 0 outside the harvest quarter)."
+     },
+     {
+      "name": "implied_disappearance_kbu",
+      "type": "number",
+      "description": "prev_stocks_kbu + production_kbu − stocks_kbu (G2; imports omitted)."
+     },
+     {
+      "name": "is_latest",
+      "type": "boolean",
+      "description": "True on the commodity's newest date."
      }
     ]
    }

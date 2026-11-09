@@ -6,19 +6,34 @@ import { CommodityName, T, useLang, useT } from "@/components/chrome/I18n";
 import type { ReleaseCatalog } from "@/lib/data-contract";
 import { bytes, num, shortDate } from "@/lib/format";
 import type { Key } from "@/lib/i18n";
+import { REPORT_COLOR, REPORT_NAME } from "@/lib/reports";
 
 /** One catalogue file with the link the site resolved at build time (site copy or release asset). */
 export type CatFile = ReleaseCatalog["files"][number] & { href: string | null; served: boolean };
 export type Workbook = { file: string; label: string; href: string; bytes: number; commodity: string | null };
 export type CatCommodity = { id: string; label: string; reports: string[] };
 
-const REPORT_COLOR: Record<string, string> = { wasde: "var(--r-wasde)", export_sales: "var(--r-esr)", oilseed_crush: "var(--r-crush)" };
-const REPORT_NAME: Record<string, Key> = { wasde: "report.wasde", export_sales: "report.export_sales", oilseed_crush: "report.crush" };
-const VINTAGE: Record<string, Key> = { wasde: "cat.vintage.wasde", export_sales: "cat.vintage.esr", oilseed_crush: "cat.vintage.crush" };
+const VINTAGE: Record<string, Key> = {
+  wasde: "cat.vintage.wasde",
+  export_sales: "cat.vintage.esr",
+  oilseed_crush: "cat.vintage.crush",
+  crop_progress: "cat.vintage.cp",
+  grain_stocks: "cat.vintage.gs",
+};
 
-/** Report group of a catalogue file: cross-report datasets sit with the report they pace. */
+/** Report group of a catalogue file: cross-report datasets sit with the report they compare. */
 export const groupOf = (f: { report_id: string; dataset: string }) =>
-  f.report_id !== "cross" ? f.report_id : f.dataset === "crush_pace" ? "oilseed_crush" : "export_sales";
+  f.report_id !== "cross"
+    ? f.report_id
+    : f.dataset === "crush_pace"
+      ? "oilseed_crush"
+      : f.dataset.startsWith("stocks_")
+        ? "grain_stocks"
+        : "export_sales";
+
+/** Dataset name (Crop Progress "weekly" is not Export Sales "weekly"). */
+export const datasetKey = (f: { report_id: string; dataset: string }): Key =>
+  (f.report_id === "crop_progress" && f.dataset === "weekly" ? "ds.crop_progress.weekly" : `ds.${f.dataset}`) as Key;
 
 function fmtKey(key: string | null | undefined, lang: "en" | "pt") {
   if (!key) return "—";
@@ -72,7 +87,7 @@ function DatasetTable({ files, reportId }: { files: CatFile[]; reportId: string 
             return (
               <tr key={ds} data-testid="dataset-row" data-report={reportId} data-dataset={ds}>
                 <th scope="row" className="font-normal">
-                  <div className="font-semibold">{t(`ds.${ds}` as Key)}</div>
+                  <div className="font-semibold">{t(datasetKey(f0))}</div>
                   <code className="text-xs text-muted">{`${f0.report_id}__${ds}__v${f0.schema_version}`}</code>
                 </th>
                 <td className="tabular">{num(f0.rows)}</td>
@@ -239,6 +254,8 @@ export default function ReleaseCatalogue({
                 {c.reports.includes("wasde") && <li>· {t("cat.wasdeIn")}</li>}
                 {c.reports.includes("export_sales") && <li>· {t("cat.esrIn")}</li>}
                 {c.reports.includes("oilseed_crush") && <li>· {t("cat.crushIn")}</li>}
+                {c.reports.includes("crop_progress") && <li>· {t("cat.cpIn")}</li>}
+                {c.reports.includes("grain_stocks") && <li>· {t("cat.gsIn")}</li>}
               </ul>
               {workbooks
                 .filter((w) => w.commodity === c.id)

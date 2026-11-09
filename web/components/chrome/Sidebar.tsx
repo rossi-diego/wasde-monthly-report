@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { T, useT } from "@/components/chrome/I18n";
+import { CommodityName, T, useT } from "@/components/chrome/I18n";
 import { num } from "@/lib/format";
-import { REPORTS } from "@/lib/reports";
+import { LENSES, REPORTS } from "@/lib/reports";
 
 const itemBase = "flex min-h-11 items-center gap-2.5 rounded-[10px] px-3 text-ink";
 
@@ -37,11 +37,15 @@ export default function Sidebar({
   rows,
   esrReleases = null,
   crushReleases = null,
+  cpReleases = null,
+  gsReleases = null,
 }: {
   reports: number;
   rows: number;
   esrReleases?: number | null;
   crushReleases?: number | null;
+  cpReleases?: number | null;
+  gsReleases?: number | null;
 }) {
   const path = usePathname() ?? "/";
   const t = useT();
@@ -91,8 +95,9 @@ export default function Sidebar({
             </>
           );
           if (r.live && r.href) {
-            // Commodity pages are WASDE views, so they keep the WASDE row active too.
-            const on = r.id === "wasde" ? is(r.href) || is("/commodity") : is(r.href);
+            // /commodity/<id>/ pages are WASDE views, so they keep the WASDE row active too
+            // (the trailing slash keeps the /commodities/ lenses out of it).
+            const on = r.id === "wasde" ? is(r.href) || is("/commodity/") : is(r.href);
             return (
               <NavLink key={r.id} href={r.href} active={on}>
                 {inner}
@@ -115,6 +120,18 @@ export default function Sidebar({
           </svg>
           <T k="nav.allReports" />
         </NavLink>
+
+        <GroupLabel>
+          <T k="nav.commodities" />
+        </GroupLabel>
+        {LENSES.map((l) => (
+          <NavLink key={l.id} href={`/commodities/${l.id}/`} active={is(`/commodities/${l.id}`)}>
+            <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M12 21V9M12 9c0-3 2-5 5-6 0 3-2 5-5 6zM12 13c0-3-2-5-5-6 0 3 2 5 5 6zM12 17c0-2.5 1.8-4.2 4.5-5" />
+            </svg>
+            <CommodityName id={l.id} fallback={l.label} />
+          </NavLink>
+        ))}
 
         <GroupLabel>
           <T k="nav.data" />
@@ -143,16 +160,23 @@ export default function Sidebar({
         <div>
           <T k="pipeline.counts" v={{ reports: num(reports), rows: num(rows) }} />
         </div>
-        {esrReleases ? (
-          <div>
-            <T k="pipeline.esr" v={{ releases: num(esrReleases) }} />
-          </div>
-        ) : null}
-        {crushReleases ? (
-          <div>
-            <T k="pipeline.crush" v={{ releases: num(crushReleases) }} />
-          </div>
-        ) : null}
+        {(() => {
+          // One compact line: "+ 850 Export Sales · 133 Crush (NASS) · … releases"
+          const parts = (
+            [
+              [esrReleases, "report.export_sales"],
+              [crushReleases, "report.crush"],
+              [cpReleases, "report.crop_progress"],
+              [gsReleases, "report.grain_stocks"],
+            ] as const
+          ).filter(([n]) => Boolean(n));
+          if (!parts.length) return null;
+          return (
+            <div data-testid="pipeline-releases">
+              {t("pipeline.releases", { list: parts.map(([n, k]) => `${num(n)} ${t(k)}`).join(" · ") })}
+            </div>
+          );
+        })()}
         <div>
           <T k="pipeline.auto" />
         </div>

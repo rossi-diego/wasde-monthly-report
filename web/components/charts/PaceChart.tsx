@@ -129,7 +129,8 @@ export default function PaceChart({
             return last ? <circle key={`${l.id}-dot`} cx={x(last[0])} cy={y(last[1] as number)} r={4.5} style={{ fill: color }} /> : null;
           })}
         {xTicks.map((w) => (
-          <text key={w.x} x={x(w.x)} y={height - 8} textAnchor="middle" fontSize={11} style={{ fill: "var(--muted)" }}>
+          // A label at the right edge is end-anchored so it is never clipped.
+          <text key={w.x} x={x(w.x)} y={height - 8} textAnchor={x(w.x) > width - m.r - 24 ? "end" : "middle"} fontSize={11} style={{ fill: "var(--muted)" }}>
             {w.label}
           </text>
         ))}

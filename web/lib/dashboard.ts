@@ -2,8 +2,8 @@ import "server-only";
 
 import type { Pill, ReleaseInfo } from "@/components/chrome/TopBar";
 
-import { getIndex, getMeta, getMetaReports, getOverview, getSeries } from "./data";
-import { monthName, monthYear, num, unitShort } from "./format";
+import { getIndex, getMeta, getOverview, getReportsMeta, getSeries } from "./data";
+import { monthName, monthYear, num, unitShort, withNumberLang } from "./format";
 import { LANGS, translate, type Key, type Lang } from "./i18n";
 import {
   changeRows,
@@ -78,6 +78,8 @@ export type HomeData = {
     tag: string | null;
     esrReleases: string | null;
     crushReleases: string | null;
+    cpReleases: string | null;
+    gsReleases: string | null;
   };
 };
 
@@ -153,8 +155,11 @@ export function homeData(lang: Lang = "en"): HomeData {
     }
   }
 
-  const esrReleases = getMetaReports().export_sales?.releases ?? null;
-  const crushReleases = getMetaReports().oilseed_crush?.releases ?? null;
+  const reportsMeta = getReportsMeta();
+  const esrReleases = reportsMeta.export_sales?.releases ?? null;
+  const cpReleases = reportsMeta.crop_progress?.releases ?? null;
+  const gsReleases = reportsMeta.grain_stocks?.releases ?? null;
+  const crushReleases = reportsMeta.oilseed_crush?.releases ?? null;
   return {
     month: monthYear(meta.latest.report_month, lang),
     prevMonth,
@@ -171,10 +176,12 @@ export function homeData(lang: Lang = "en"): HomeData {
       tag: meta.data_release_tag,
       esrReleases: esrReleases ? num(esrReleases) : null,
       crushReleases: crushReleases ? num(crushReleases) : null,
+      cpReleases: cpReleases ? num(cpReleases) : null,
+      gsReleases: gsReleases ? num(gsReleases) : null,
     },
   };
 }
 
 /** The home page in every language, so the language toggle never mixes languages. */
 export const homeDataAll = (): Record<Lang, HomeData> =>
-  Object.fromEntries(LANGS.map((l) => [l, homeData(l)])) as Record<Lang, HomeData>;
+  Object.fromEntries(LANGS.map((l) => [l, withNumberLang(l, () => homeData(l))])) as Record<Lang, HomeData>;

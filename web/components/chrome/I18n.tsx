@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
-import { monthYear, shortDate } from "@/lib/format";
+import { monthYear, setNumberLang, shortDate } from "@/lib/format";
 import { LANG_KEY, translate, type Key, type Lang, type Vars } from "@/lib/i18n";
 import { commodityName } from "@/lib/labels";
 
@@ -12,6 +12,9 @@ const LangContext = createContext<Ctx>({ lang: "en", setLang: () => {} });
 /** Server and first client render are EN; a stored PT choice is applied after hydration. */
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>("en");
+  // Numbers follow the language (pt-BR: "1.234,5"). Set during render, before any consumer
+  // renders, so a language switch re-renders every number in the new locale.
+  setNumberLang(lang);
 
   useEffect(() => {
     let stored: string | null = null;
@@ -50,22 +53,23 @@ export function useT() {
 
 /** Translated text, usable from server components. `months` are "YYYY-MM" values that are
  *  formatted as "October 2026" / "outubro de 2026" in the active language. */
-export function T({ k, v, months }: { k: Key; v?: Vars; months?: Record<string, string | null | undefined> }) {
+export function T({
+  k,
+  v,
+  months,
+  keys,
+}: {
+  k: Key;
+  v?: Vars;
+  months?: Record<string, string | null | undefined>;
+  /** Variables that are themselves translation keys (e.g. "local build"). */
+  keys?: Record<string, Key>;
+}) {
   const { lang } = useLang();
   const vars: Vars = { ...v };
   for (const [name, m] of Object.entries(months ?? {})) vars[name] = monthYear(m, lang);
-  return <>{translate(lang, k, v || months ? vars : undefined)}</>;
-}
-
-/** A notice shown only when the active language is not English (for EN-only long-form copy). */
-export function EnglishOnlyNote() {
-  const { lang } = useLang();
-  if (lang === "en") return null;
-  return (
-    <p className="m-0 max-w-3xl rounded-xl bg-bg px-3 py-2 text-[13px] text-muted" data-testid="en-only">
-      {translate(lang, "method.enOnly")}
-    </p>
-  );
+  for (const [name, key] of Object.entries(keys ?? {})) vars[name] = translate(lang, key);
+  return <>{translate(lang, k, v || months || keys ? vars : undefined)}</>;
 }
 
 /** "2026-10" -> "October 2026" / "outubro de 2026", usable from server components. */

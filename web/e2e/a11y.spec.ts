@@ -1,22 +1,42 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-// axe on every route, in light and dark: no serious or critical violations.
-const ROUTES = ["/", "/reports/", "/reports/wasde/", "/reports/export-sales/", "/reports/oilseed-crush/", "/commodity/corn/", "/commodity/soybeans/", "/data/", "/methodology/"];
+// axe on every route, in EN and PT, light and dark: no serious or critical violations.
+const ROUTES = [
+  "/",
+  "/reports/",
+  "/reports/wasde/",
+  "/reports/export-sales/",
+  "/reports/oilseed-crush/",
+  "/reports/crop-progress/",
+  "/reports/grain-stocks/",
+  "/commodities/soybeans/",
+  "/commodities/corn/",
+  "/commodity/corn/",
+  "/commodity/soybeans/",
+  "/data/",
+  "/methodology/",
+];
 
-for (const scheme of ["light", "dark"] as const) {
-  for (const url of ROUTES) {
-    test(`axe ${scheme} ${url}`, async ({ page }) => {
-      await page.emulateMedia({ colorScheme: scheme });
-      await page.goto(url);
-      await page.waitForTimeout(400);
-      const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
-      const bad = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
-      expect(
-        bad.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).slice(0, 3).join(" | ")}`),
-        `${scheme} ${url}`,
-      ).toEqual([]);
-    });
+// Every route in English and Portuguese, light and dark.
+for (const lang of ["en", "pt"] as const) {
+  for (const scheme of ["light", "dark"] as const) {
+    for (const url of ROUTES) {
+      test(`axe ${lang} ${scheme} ${url}`, async ({ page }) => {
+        // The language is a stored preference (applied after hydration).
+        if (lang === "pt") await page.addInitScript(() => localStorage.setItem("usda-lang", "pt"));
+        await page.emulateMedia({ colorScheme: scheme });
+        await page.goto(url);
+        await expect(page.locator("html")).toHaveAttribute("lang", lang === "pt" ? "pt-BR" : "en");
+        await page.waitForTimeout(400);
+        const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+        const bad = violations.filter((v) => v.impact === "serious" || v.impact === "critical");
+        expect(
+          bad.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).slice(0, 3).join(" | ")}`),
+          `${lang} ${scheme} ${url}`,
+        ).toEqual([]);
+      });
+    }
   }
 }
 
