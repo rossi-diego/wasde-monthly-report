@@ -66,20 +66,37 @@ jobs:
           cp /tmp/prev/manifest.json data/manifest.json
           # Preferred: the append-only shards this manifest names (v2 manifests only).
           shards=$(usda-reports required-shards)
-          if [ -n "$shards" ] && gh release view "$BRONZE_STORE" >/dev/null 2>&1; then
-            mkdir -p /tmp/shards
-            ok=true
-            for s in $shards; do
-              gh release download "$BRONZE_STORE" --pattern "$s" --dir /tmp/shards --clobber || ok=false
-            done
-            if $ok && usda-reports unpack-shards /tmp/shards; then
-              echo "Bronze restored from $BRONZE_STORE: $shards" >> "$GITHUB_STEP_SUMMARY"
-              exit 0
+          missing=""
+          if [ -n "$shards" ]; then
+            if gh release view "$BRONZE_STORE" >/dev/null 2>&1; then
+              mkdir -p /tmp/shards
+              for s in $shards; do
+                got=false
+                for attempt in 1 2 3; do
+                  if gh release download "$BRONZE_STORE" --pattern "$s" --dir /tmp/shards --clobber; then
+                    got=true
+                    break
+                  fi
+                  echo "::warning::download of $BRONZE_STORE/$s failed (attempt $attempt/3)"
+                  sleep $((attempt * 10))
+                done
+                $got || missing="$missing $s"
+              done
+              if [ -z "$missing" ] && usda-reports unpack-shards /tmp/shards; then
+                echo "Bronze restored from $BRONZE_STORE: $shards" >> "$GITHUB_STEP_SUMMARY"
+                exit 0
+              fi
+            else
+              missing=" $(echo $shards)"
             fi
-            echo "::warning::bronze-store restore failed; falling back to $tag/bronze.tar.gz"
+            echo "::warning::bronze-store restore failed (missing:${missing:- none, unpack failed}); trying $tag/bronze.tar.gz"
           fi
           # Fallback: the single bronze archive of the data release (v1 manifests, before the
-          # first bronze-store shard exists).
+          # first bronze-store shard exists). v2 data releases no longer attach it.
+          if ! gh release view "$tag" --json assets -q '.assets[].name' | grep -qx 'bronze.tar.gz'; then
+            echo "::error::Cannot restore bronze: $tag has no bronze.tar.gz and the $BRONZE_STORE shard(s)${missing:-} could not be restored."
+            exit 1
+          fi
           echo "Bronze restored from $tag/bronze.tar.gz (legacy archive)" >> "$GITHUB_STEP_SUMMARY"
           gh release download "$tag" --pattern bronze.tar.gz --dir /tmp/prev --clobber
           usda-reports unpack-bronze /tmp/prev/bronze.tar.gz

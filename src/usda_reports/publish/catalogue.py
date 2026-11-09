@@ -28,7 +28,14 @@ WASDE_VALUES_COLUMNS = """
     commodity_id, commodity_label, region_id, region, attribute_id, attribute_label,
     reliability_stat, market_year, proj_est_flag, period, value, unit_id, unit_label
 """
-WASDE_VALUES_ORDER = "report_month, table_id, commodity_id, region_id, attribute_id, market_year"
+# Total order: the natural key first, then every remaining column. A partial order (the key
+# alone) leaves ties (reliability_stat / proj_est_flag / period variants) in thread-dependent
+# order, so the Parquet bytes would differ between machines and break sha256 pins.
+WASDE_VALUES_ORDER = (
+    "report_month, table_id, commodity_id, region_id, attribute_id, market_year, "
+    "reliability_stat, proj_est_flag, period, value, wasde_number, release_date, source, "
+    "table_label, commodity_label, region, attribute_label, unit_id, unit_label"
+)
 
 # CSV above this size is gzip-compressed (keeps release assets small).
 CSV_PLAIN_MAX_BYTES = 25 * 1024 * 1024
