@@ -41,6 +41,23 @@ def build_export_sales_silver(settings: Settings, manifest: Manifest, fixtures: 
     spec.build_silver(manifest)
 
 
+CRUSH_FIXTURE_RELEASES = ("2024-06-03", "2024-07-01")
+
+
+def build_crush_silver(settings: Settings, manifest: Manifest, fixtures: Path) -> None:
+    """Store two recorded Fats & Oils zips in bronze (as the ingest would) and parse them."""
+    store = BronzeStore(settings.bronze_dir, manifest, "oilseed_crush", "15:00")
+    for key in CRUSH_FIXTURE_RELEASES:
+        store.put(
+            key,
+            (fixtures / "oilseed_crush" / f"{key}.zip").read_bytes(),
+            source="esmis_zip",
+            url=f"https://esmis.nal.usda.gov/fixture/{key}.zip",
+            release_date=key,
+        )
+    load_registry(settings.config_dir).spec("oilseed_crush", settings).build_silver(manifest)
+
+
 def mini_settings(root: Path) -> Settings:
     return Settings(
         data_dir=root / "data", web_data_dir=root / "web", config_dir=PROJECT_ROOT / "config"
@@ -100,6 +117,7 @@ def built(tmp_path_factory, request) -> Settings:
     fixtures = Path(request.config.rootpath) / "tests" / "fixtures"
     manifest = write_wasde_silver(settings, fixtures)
     build_export_sales_silver(settings, manifest, fixtures)
+    build_crush_silver(settings, manifest, fixtures)
 
     assert run_dbt(settings, command="run") == 0
     publish_all(settings, manifest, tag="data-2024-05", now=BUILT_NOW)

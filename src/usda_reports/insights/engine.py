@@ -14,6 +14,7 @@ from usda_reports.core.logs import get_logger
 from usda_reports.core.registry import load_registry
 from usda_reports.insights import gates as gates_mod
 from usda_reports.insights.hero import build_hero, home_cards
+from usda_reports.insights.rules import crush as crush_rules
 from usda_reports.insights.rules import export_sales as es_rules
 from usda_reports.insights.rules import wasde as wasde_rules
 from usda_reports.insights.schema import Insight, InsightsDoc
@@ -64,10 +65,20 @@ def build(
             raw += e1 + e2 + e3
             screened.update({"E1": len(e1), "E2": len(e2), "E3": len(e3)})
 
+    if _table_exists(con, "fct_crush_pace"):
+        crush = crush_rules.pace_frame(con)
+        if len(crush):
+            f1 = crush_rules.f1_crush_pace(crush)
+            f2 = crush_rules.f2_required_monthly_crush(crush, gates.f2_min_months_remaining)
+            f3 = crush_rules.f3_oil_yield(crush)
+            raw += f1 + f2 + f3
+            screened.update({"F1": len(f1), "F2": len(f2), "F3": len(f3)})
+
     idx = release_index(con)
     out = []
     for i in raw:
         # E2 compares with a 4-week mean by definition: its window, not a history sample.
+        # F2 has no such exception (plan §6): n = months compared, so the default min_n applies.
         min_n = 4 if i.rule == "E2" else None
         out.append(gates_mod.apply(i, gates, now, idx, min_n=min_n))
 

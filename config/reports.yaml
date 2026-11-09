@@ -8,6 +8,8 @@
 #   grace_days       insight cards go stale after cadence + grace
 #   key_env          env var holding the API key (null = no key needed)
 #   spec             import path of the ReportSpec implementation
+#   release_key_format  month (YYYY-MM, WASDE) | date (YYYY-MM-DD, weekly reports and NASS
+#                    monthly reports, whose release month can hold two releases after a shutdown)
 reports:
   wasde:
     enabled: true
@@ -39,17 +41,26 @@ reports:
     history_start: "2010/11"
     spec: usda_reports.reports.export_sales.spec:ExportSalesSpec
 
-  # Planned (plan §3). Kept disabled until their stage lands.
+  # NASS Fats & Oils (ESMIS findByIdentifier/FatsOils → zip from files[] → cafo_all_tables.csv),
+  # soybean table only. Source details verified in the spike: config/reports/oilseed_crush/source.yaml.
+  # Released about the first business day of each month at 15:00 ET and covers month − 2
+  # (one to three months back during shutdowns). History from 2015-10 only (ESMIS limit).
   oilseed_crush:
-    enabled: false
-    title: Fats & Oils — Oilseed Crushings
+    enabled: true
+    title: Fats & Oils (soybean crush)
     agency: USDA NASS
     cadence: monthly
     release_time_et: "15:00"
     window_h: 6
     grace_days: 45
     key_env: null
-    licence: "US Government work, public domain; cite USDA NASS"
+    licence: "US Government work, public domain; cite USDA NASS (Fats & Oils: Oilseed Crushings, Production, Consumption and Stocks)"
+    min_rows: 12
+    history_start: "2015-10"
+    release_key_format: date
+    spec: usda_reports.reports.oilseed_crush.spec:OilseedCrushSpec
+
+  # Planned (plan §3). Kept disabled until their stage lands.
   crop_progress:
     enabled: false
     title: Crop Progress

@@ -67,13 +67,14 @@ def backfill(
     seed_dir: Annotated[Path | None, typer.Option(help="Local folder with ESMIS XML files")] = None,
     start: Annotated[str | None, typer.Option(help="First month YYYY-MM")] = None,
     end: Annotated[str | None, typer.Option(help="Last month YYYY-MM")] = None,
+    report: Annotated[str | None, typer.Option(help="Only this report_id")] = None,
 ) -> None:
     """Ingest every missing release of every enabled report into bronze."""
     from usda_reports.bronze.store import BronzeStore
     from usda_reports.core.manifest import Manifest
     from usda_reports.core.net import make_client
     from usda_reports.core.registry import load_registry
-    from usda_reports.reports.export_sales.source import EsrError, MissingKeyError
+    from usda_reports.reports.export_sales.source import MissingKeyError
 
     s = get_settings()
     manifest = Manifest.load(s.manifest_path)
@@ -81,6 +82,8 @@ def backfill(
     failed: list[str] = []
     with make_client() as client:
         for spec in load_registry(s.config_dir).enabled_specs(s):
+            if report and spec.report_id != report:
+                continue
             store = BronzeStore(s.bronze_dir, manifest, spec.report_id, spec.config.release_time_et)
             try:
                 keys = spec.backfill(
@@ -90,7 +93,8 @@ def backfill(
                 # Per-report isolation: WASDE needs no key; Export Sales is skipped.
                 log.warning("backfill.skipped", report=spec.report_id, reason=str(exc))
                 continue
-            except EsrError as exc:
+            except spec.source_errors() as exc:
+                # Isolated reports (Export Sales, oilseed crush) fail alone.
                 log.error("backfill.failed", report=spec.report_id, error=str(exc))
                 failed.append(spec.report_id)
                 continue
@@ -124,18 +128,21 @@ def detect(
     force_month: Annotated[
         str | None, typer.Option(help="Ingest this YYYY-MM regardless of calendar")
     ] = None,
-    report: Annotated[str, typer.Option(help="Report to detect (wasde | export_sales)")] = WASDE,
-    force: Annotated[bool, typer.Option(help="Weekly reports: pull even if not due")] = False,
+    report: Annotated[
+        str, typer.Option(help="Report to detect (wasde | export_sales | oilseed_crush)")
+    ] = WASDE,
+    force: Annotated[bool, typer.Option(help="Date-keyed reports: pull even if not due")] = False,
 ) -> None:
     """Ingest the latest scheduled release (or a revised edition) of one report if it is out.
 
     WASDE sets GitHub outputs ``new_report`` (true/false), ``report_month`` and ``problems``;
-    weekly reports set ``new_<report>``, ``<report>_release`` and ``<report>_problems``.
+    date-keyed reports (Export Sales, oilseed crush) set ``new_<report>``, ``<report>_release``
+    and ``<report>_problems``.
     Exit code 2 = a watchdog fired (overdue report, stale data, empty calendar);
     exit code 1 = a forced month could not be found / the source failed.
     """
     if report != WASDE:
-        _detect_weekly(report, force)
+        _detect_dated(report, force)
         return
     from usda_reports.core.calendar import load_calendar
     from usda_reports.core.net import make_client
@@ -175,19 +182,24 @@ def _weekly_state(spec: ReportSpec, have: set[str], now: datetime) -> WeeklyDue:
         have,
         spec.config.release_time_et,
         spec.config.grace_days,
+        overdue_days=2 if spec.config.cadence == "weekly" else 3,
+        cadence_days=spec.config.cadence_days,
     )
 
 
-def _detect_weekly(report_id: str, force: bool) -> None:
-    """ET-clock guard first: no network at all unless a release is due and missing."""
+def _detect_dated(report_id: str, force: bool) -> None:
+    """Date-keyed reports (Export Sales weekly, oilseed crush monthly).
+
+    ET-clock guard first: no network at all unless a release is due and missing (or forced).
+    """
     from usda_reports.core.net import make_client
     from usda_reports.core.registry import load_registry
-    from usda_reports.reports.export_sales.source import EsrError
-    from usda_reports.reports.export_sales.spec import ExportSalesSpec
 
     s, manifest, store = _store(report_id)
     spec = load_registry(s.config_dir).spec(report_id, s)
-    assert isinstance(spec, ExportSalesSpec)
+    ingest = getattr(spec, "ingest", None)
+    if spec.config.release_key_format != "date" or ingest is None:
+        raise typer.BadParameter(f"{report_id} is not a date-keyed report with an ingest")
     now = datetime.now(UTC)
     have = {k for k, e in store.entries.items() if e.status == "ok"}
     state = _weekly_state(spec, have, now)
@@ -196,8 +208,8 @@ def _detect_weekly(report_id: str, force: bool) -> None:
     if force or not have or state.missing:
         try:
             with make_client() as client:
-                result = spec.ingest(client, store, now, force=force)
-        except EsrError as exc:
+                result = ingest(client, store, now, force=force)
+        except spec.source_errors() as exc:
             log.error("detect.failed", report=report_id, error=str(exc))
             _gh_output(**{f"new_{report_id}": "false", f"{report_id}_problems": str(exc)})
             raise typer.Exit(1) from exc
@@ -251,8 +263,15 @@ def due(
     for cfg in load_registry(s.config_dir).enabled():
         dates = load_calendar(s.calendars_dir / f"{cfg.id}.yaml")
         have = set(manifest.report(cfg.id).ok())
-        if cfg.cadence == "weekly":
-            st = weekly_due(dates, now, have, cfg.release_time_et, cfg.grace_days)
+        if cfg.release_key_format == "date":
+            st = weekly_due(
+                dates,
+                now,
+                have,
+                cfg.release_time_et,
+                cfg.grace_days,
+                cadence_days=cfg.cadence_days,
+            )
             out[cfg.id] = {
                 "due": str(st.due) if st.due else None,
                 "latest": st.have_latest,

@@ -50,9 +50,9 @@ def test_usda_prefix_and_fas_key_fallback(monkeypatch):
 # ── registry / spec ─────────────────────────────────────────────────────────
 
 
-def test_registry_enables_wasde_and_export_sales(config_dir):
+def test_registry_enables_wasde_export_sales_and_crush(config_dir):
     reg = load_registry(config_dir)
-    assert [r.id for r in reg.enabled()] == ["wasde", "export_sales"]
+    assert [r.id for r in reg.enabled()] == ["wasde", "export_sales", "oilseed_crush"]
     assert {"export_sales", "oilseed_crush", "crop_progress", "grain_stocks"} <= set(reg.reports)
     spec = reg.spec("wasde", Settings(config_dir=config_dir))
     assert isinstance(spec, WasdeSpec)
@@ -65,7 +65,7 @@ def test_registry_enables_wasde_and_export_sales(config_dir):
     assert isinstance(esr, ExportSalesSpec)
     assert esr.config.release_time_et == "08:30" and esr.config.cadence == "weekly"
     with pytest.raises(ValueError, match="no spec"):
-        reg.spec("oilseed_crush", Settings(config_dir=config_dir))
+        reg.spec("crop_progress", Settings(config_dir=config_dir))
 
 
 # ── envelope + contract ─────────────────────────────────────────────────────

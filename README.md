@@ -8,11 +8,12 @@
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Every USDA WASDE report since July 2010 and every weekly U.S. Export Sales release since
-marketing year 2010/11, harmonized into one point-in-time data product — updated automatically
-on release day, and turned into the view a trading desk actually needs: what changed, whether
-it is tight or loose versus history, and whether export sales are on pace for what USDA itself
-projected at the time.**
+**Every USDA WASDE report since July 2010, every weekly U.S. Export Sales release since
+marketing year 2010/11 and every monthly NASS soybean crush release since October 2015,
+harmonized into one point-in-time data product — updated automatically on release day, and
+turned into the view a trading desk actually needs: what changed, whether it is tight or loose
+versus history, and whether export sales and crush are on pace for what USDA itself projected
+at the time.**
 
 🔗 **Live site:** https://usda-reports.vercel.app · 📦 **Data:** [latest release](https://github.com/rossi-diego/usda-reports-dashboard/releases/latest)
 
@@ -40,6 +41,7 @@ error-prone. This project does it end to end:
 | Is this tight or loose? | **Stocks-to-use history** since 2008/09 with percentile |
 | Are export sales on pace for USDA? | **Commitments as % of the WASDE projection public at each ESR release**, vs the same week of the 5 prior years (each against *its* as-of WASDE) |
 | Who is buying? | China and **unknown destinations** shares of commitments, vs 5 years |
+| Is the crush on pace for USDA? | **NASS crush to date as % of the WASDE crush projection public when NASS printed the month**, what is still needed per month, and the oil yield per bushel vs 5 years and vs the WASDE-implied yield |
 | Can I get it in Excel / Parquet? | Latest report workbook, per-commodity history, versioned catalogue with `datapackage.json` |
 
 ### Reports
@@ -48,7 +50,8 @@ error-prone. This project does it end to end:
 |---|---|---|---|---|---|---|
 | WASDE | USDA OCE/WAOB | monthly, 12:00 | OCE CSV (2021+) + ESMIS XML | 2010-07 → | [/reports/wasde](https://usda-reports.vercel.app/reports/wasde/) · [commodity pages](https://usda-reports.vercel.app/commodity/soybeans/) | live |
 | Export Sales (ESR) | USDA FAS | weekly, Thu 08:30 | FAS ESR API (`api.fas.usda.gov`, api.data.gov key) | MY 2010/11 → | [/reports/export-sales](https://usda-reports.vercel.app/reports/export-sales/) | live |
-| NASS crush · Crop Progress · Grain Stocks | USDA NASS | monthly · weekly · quarterly | ESMIS zip CSV | — | placeholder cards | planned |
+| Fats & Oils: soybean crush | USDA NASS | monthly, ~1st business day 15:00 | ESMIS `FatsOils` → release zip → `cafo_all_tables.csv` (no key) | 2015-10 → (ESMIS limit) | [/reports/oilseed-crush](https://usda-reports.vercel.app/reports/oilseed-crush/) | live |
+| Crop Progress · Grain Stocks | USDA NASS | weekly · quarterly | ESMIS zip CSV | — | placeholder cards | planned |
 
 Release dates, next releases and freshness of every report: [/reports](https://usda-reports.vercel.app/reports/)
 (a stale banner appears when a report is older than its cadence plus grace).
@@ -75,6 +78,37 @@ Parquet/CSV files. The home page adds a **hero line** built from `insights.json`
 report plus the cross-report E1 card, each with n, a *small sample* chip for 5-year windows and
 its source release. Every number on these cards is checked against the JSON by a Playwright
 contract test (`web/e2e/contract.spec.ts`), in English and Portuguese.
+
+### Soybean crush on the site
+
+![Soybean crush](docs/screenshots/crush-light.png)
+
+`/reports/oilseed-crush/` reads the monthly NASS *Fats and Oils: Oilseed Crushings, Production,
+Consumption and Stocks* report (released about the first business day of each month at 15:00 ET
+and covering the month two months earlier). Header numbers: the newest month's crush (bushels,
+short tons and metric tonnes), the marketing-year-to-date crush against USDA's crush projection
+**as of the release**, the oil yield and the next NASS release date. Three chapters:
+
+1. **Pace vs USDA and 5 years (F1)**: crush to date as % of the WASDE crush projection that was
+   public when NASS first printed each month, plotted as percentage points vs the 5-yr mean at
+   that month, with the 5 prior marketing years and their band (cumulative shares are nearly
+   linear, so the raw 0–100% view hides the gap).
+2. **What is still needed (F2)**: monthly crush required to reach USDA vs the same remaining
+   months of last year (suppressed with fewer than 5 months left: n = months compared, min n = 5).
+3. **Oil yield (F3)**: crude oil lb per bushel vs the same month of the 5 prior years and vs the
+   WASDE-implied yield (soybean oil production ÷ crush).
+
+Units are exactly as NASS prints them (tons = short tons; oil in 1,000 lb; bushels = short tons
+× 33.3333). The marketing year runs September–August. **History window: 2015-10+** (ESMIS holds
+NASS files from the October 2015 release only, so 2015/16 is the first complete year and no
+crush comparison reaches further back). Each release zip is stored byte-for-byte and every
+printed value (year-ago, revised previous month, current month) is kept with the release that
+printed it, so a year-to-date sum always uses the NASS vintages public at that instant.
+
+> **NOPA.** NOPA members represent roughly 95% of US soybean crush and publish about two weeks
+> earlier; NOPA data is proprietary and not redistributed here. This site uses the
+> public-domain NASS Fats & Oils series, which covers all reporting facilities.
+> ([nopa.org](https://www.nopa.org/); licensing evidence in [`docs/DATA_LICENSES.md`](docs/DATA_LICENSES.md).)
 
 ## Architecture
 
@@ -111,7 +145,12 @@ flowchart LR
 light gate that only reads the calendars and the newest manifest: when nothing is due it exits
 in seconds without touching any source. **Export Sales** is pulled after Thursday 08:30 ET
 (holiday weeks move to Friday); new content becomes an immutable prerelease
-`weekly-YYYY-MM-DD`, never marked *Latest*. **WASDE** is polled from 12:00 ET on release day. When the new report appears it ingests it (CSV first, ESMIS XML as
+`weekly-YYYY-MM-DD`, never marked *Latest*. **NASS crush** is detected from 15:00 ET on its
+release day by listing ESMIS (page 0, the newest releases); a build whose only new content is
+crush data publishes the same kind of immutable `weekly-YYYY-MM-DD` prerelease (named after the
+build day; `.2`, `.3`… when that tag exists), so `data-*` stays *Latest* for Soy Outlook and
+other users. Export Sales and crush are each isolated: a failing source keeps its last good
+data, is flagged in `build.json` and opens the alert issue, and never blocks WASDE. **WASDE** is polled from 12:00 ET on release day. When the new report appears it ingests it (CSV first, ESMIS XML as
 fallback), rebuilds silver and gold deterministically from all bronze files, runs the dbt data
 tests, publishes a **versioned GitHub release** (`data-YYYY-MM`) with every file, deploys the
 site, and checks the live URL shows the new report. Skipped months (government shutdowns) are
@@ -148,6 +187,8 @@ not failures; a report missing 3 days after its scheduled date is.
 | `fct_export_sales_weekly` | commodity × MY × week × destination | Latest value of weekly exports, accumulated, outstanding, net sales, commitments, next-MY sales (MT) |
 | `fct_export_sales_totals` | commodity × MY × week | All destinations, with China and unknown-destination commitments and the 4-week net-sales mean |
 | `fct_export_pace` *(cross)* | commodity × MY × week | Commitments ÷ as-of WASDE exports, required weekly sales, 5-prior-MY mean/min/max at the same week |
+| `fct_soy_crush_monthly` | month | NASS soybeans crushed (short tons, bushels), crude oil and meal produced, oil and meal yield per bushel; latest revision with the release that first printed the month |
+| `fct_crush_pace` *(cross)* | MY × month | At the instant NASS first printed the month: crush to date (vintages public then) ÷ as-of WASDE crush, required monthly crush, oil yield vs the WASDE-implied yield, 5-prior-MY band |
 
 Models live in `dbt/models/{staging/<report>, marts/core, marts/<report>, marts/cross}` so
 every new USDA report adds its own folder. Published ESR and cross marts have enforced dbt
@@ -168,6 +209,8 @@ listed with rows, bytes and sha256 in `datasets.json`:
 | `export_sales__weekly__v1` | `fct_export_sales_totals` |
 | `export_sales__by_country__v1` | `fct_export_sales_weekly` |
 | `cross__export_pace__v1` | `fct_export_pace` |
+| `oilseed_crush__monthly__v1` | `fct_soy_crush_monthly` |
+| `cross__crush_pace__v1` | `fct_crush_pace` |
 
 `config/datasets.yaml` maps model → file → schema version. Every release also carries
 **`datapackage.json`** (Frictionless; per resource: sha256, bytes, rows, temporal coverage,
@@ -235,8 +278,8 @@ variables (now `USDA_*`; see `.env.example`).
 | ![Commodity](docs/screenshots/commodity-light.png) | <img src="docs/screenshots/home-mobile.png" alt="Home on a phone" width="260"> |
 | **Data catalogue** (by report or commodity; sha256, schema version, `datapackage.json`) | **Dark mode** |
 | ![Downloads](docs/screenshots/downloads-light.png) | ![Dark](docs/screenshots/home-dark.png) |
-| **Export Sales, dark** | |
-| ![Export Sales dark](docs/screenshots/export-sales-dark.png) | |
+| **Export Sales, dark** | **Soybean crush, dark** |
+| ![Export Sales dark](docs/screenshots/export-sales-dark.png) | ![Crush dark](docs/screenshots/crush-dark.png) |
 
 ## Project structure
 
@@ -244,18 +287,21 @@ variables (now `USDA_*`; see `.env.example`).
 .github/workflows/   ci.yml · release.yml (gate → detect → build → deploy → verify → release) · keepalive.yml
 config/              reports.yaml (registry) · datasets.yaml · calendars/ · contracts/ · vocab/
                      reports/wasde/{mappings.yaml, focus.yaml, xml_layout/} · reports/export_sales/source.yaml
+                     reports/oilseed_crush/source.yaml (verified table title, unit and row labels)
 src/usda_reports/
   core/              settings, logging, HTTP, manifest v2, calendars, contracts, vocab, registry
   reports/           ReportSpec base · wasde/ (sources, CSV + XML parsers, XML layout, silver)
                      export_sales/ (ESR API client, ingest, snapshot change-log parser)
-  insights/          rules W1–W4, E1–E3 · gates · hero/card selection · typed insights.json schema
+                     oilseed_crush/ (ESMIS zip ingest, soybean-table parser, vintages)
+  nass_common/       ESMIS client (0-based paging, files[] URLs), zip fetch, NASS t/h/u/d CSV grammar
+  insights/          rules W1–W4, E1–E3, F1–F3 · gates · hero/card selection · typed insights.json schema
   bronze/            raw store + bronze-store delta shards
   silver/            report-agnostic driver + common envelope
   gold.py            runs dbt
   publish/           highlights, web JSON/Parquet, Excel, versioned catalogue, datapackage,
-                     catalog.json, Export Sales page JSON, release/tag contract
+                     catalog.json, Export Sales and crush page JSON, release/tag contract
   cli.py             `usda-reports` command
-dbt/                 staging/{wasde,export_sales} · marts/{core,wasde,export_sales,cross} ·
+dbt/                 staging/{wasde,export_sales,oilseed_crush} · marts/{core,wasde,export_sales,oilseed_crush,cross} ·
                      seeds (dim_unit, dim_commodity, esr_corrections) · macros (assert_no_lookahead) · tests
 web/                 Next.js 16 static site (ECharts, hyparquet, SheetJS), Playwright tests
 tests/               unit + integration (dbt + publish on real fixture data)
@@ -275,11 +321,16 @@ data/manifest.json   audit trail of every ingested release (schema v2; data live
   non-decreasing ESR accumulated exports (`esr_corrections` seed) and an ESR ↔ WASDE
   reconciliation warning (±10% on completed marketing years).
 - **ESR without a key or network in CI:** recorded, trimmed API responses (`tests/fixtures/export_sales/`).
+- **NASS crush without network in CI:** six recorded ESMIS zips (including the four-month 2015-10
+  layout, the 2022-03 header typo and the 2025 shutdown release) and a slice of the gold marts
+  (`tests/fixtures/oilseed_crush/`); a dbt unit test pins the crush ASOF boundary and
+  `assert_no_lookahead` runs on the WASDE crush, WASDE oil and NASS-vintage timestamps.
 - **Web:** ESLint, TypeScript, Playwright (desktop + mobile): smoke, axe in light and dark on
   every route, 360px no-horizontal-scroll, and a copy-vs-JSON contract test for the hero, the
-  home cards and the Export Sales header; re-run against the live site after every deploy.
-  Until the first data release that carries `insights.json`, CI overlays a recorded cut-A set
-  (`web/e2e/fixtures/cut-a/`) on the downloaded release; afterwards it tests the real files.
+  home cards, the Export Sales header and the crush card and page (plus the exact NOPA note);
+  re-run against the live site after every deploy. Until the first data release that carries
+  the crush JSON, CI overlays a recorded cut-B set (`web/e2e/fixtures/cut-b/`) on the
+  downloaded release; afterwards it tests the real files.
 - **Charts:** colour palette validated for colour-vision deficiency and contrast in light and dark mode.
 
 ## Known limitations
@@ -293,6 +344,10 @@ data/manifest.json   audit trail of every ingested release (schema v2; data live
 - Export Sales history before the first weekly capture is `latest_only`: the API returns
   today's revised values for old weeks. Release instants of backfilled weeks follow the weekly
   calendar rule (never earlier than the real publication, so no look-ahead).
+- NASS crush history starts with the October 2015 ESMIS file (Quick Stats would reach further
+  back; v2 backlog). Future crush release dates in `config/calendars/oilseed_crush.yaml` follow
+  NASS's first-business-day pattern and are checked against the NASS calendar each December;
+  detection itself always follows what ESMIS lists.
 - ESR counts sales and shipments reported by exporters; WASDE exports follow Census trade data.
   The two differ (notably soybean oil and some wheat years); the reconciliation test warns, the
   pace insights carry the caveat.
@@ -301,5 +356,6 @@ data/manifest.json   audit trail of every ingested release (schema v2; data live
 
 **Diego Rossi** — Market Risk & Data Engineering · commodity markets, derivatives, agribusiness.
 
-Data: USDA World Agricultural Outlook Board and USDA Foreign Agricultural Service (public
-domain). Not affiliated with USDA.
+Data: USDA World Agricultural Outlook Board, USDA Foreign Agricultural Service and USDA
+National Agricultural Statistics Service (public domain; see
+[`docs/DATA_LICENSES.md`](docs/DATA_LICENSES.md)). Not affiliated with USDA.

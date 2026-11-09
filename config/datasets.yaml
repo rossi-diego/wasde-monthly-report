@@ -11,6 +11,7 @@
 #   release_column  column holding the release key (latest_release_key in datapackage.json)
 #   site_preview    also copy into web/public/data/downloads/ when the Parquet is <= 5 MB
 #   aliases         byte-identical copies under legacy names (never remove: Soy Outlook)
+#   licence         citation line for cross datasets (default: the report's licence)
 datasets:
   - report_id: wasde
     dataset: values
@@ -80,6 +81,35 @@ datasets:
     description: >-
       U.S. export sales per commodity, marketing year, week and destination country since MY
       2010/11 (metric tons), latest known value of every metric.
+  - report_id: oilseed_crush
+    dataset: monthly
+    schema_version: 1
+    model: fct_soy_crush_monthly
+    columns: "*"
+    order_by: month
+    coverage: month
+    release_column: latest_release_key
+    site_preview: true
+    description: >-
+      U.S. soybean crush per month from NASS Fats & Oils (ESMIS files since the 2015-10-01
+      release; marketing year September–August): soybeans crushed (short tons and bushels),
+      crude oil (thousand pounds) and meal (short tons) produced, oil and meal yield per bushel,
+      latest revised value with the release that first printed each month.
+  - report_id: cross
+    dataset: crush_pace
+    schema_version: 1
+    model: fct_crush_pace
+    columns: "*"
+    order_by: month
+    coverage: month
+    release_column: release_key
+    site_preview: true
+    licence: "US Government work, public domain; cite USDA NASS (Fats & Oils) and USDA OCE/WAOB (WASDE)"
+    description: >-
+      Soybean crush pace vs. USDA, point in time: marketing-year-to-date NASS crush as a share
+      of the WASDE crush projection public when NASS first printed each month, what is still
+      needed per month, oil yield vs the WASDE-implied yield, and the same month of the 5 prior
+      marketing years (from MY 2015/16).
   - report_id: cross
     dataset: export_pace
     schema_version: 1

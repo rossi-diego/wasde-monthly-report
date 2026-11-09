@@ -3,12 +3,13 @@
 //   insights.json                       src/usda_reports/insights/schema.py (JSON Schema: docs/schemas/insights.schema.json)
 //   catalog.json                        src/usda_reports/publish/catalog.py
 //   reports/export_sales/*.json         src/usda_reports/publish/web_export_sales.py
+//   reports/oilseed_crush/*.json        src/usda_reports/publish/web_crush.py
 //   meta.json `reports`                 src/usda_reports/publish/run.py (reports_meta)
 //   build.json                          `usda-reports build-info`
 
 // ------------------------------------------------------------------ insights.json
 
-export type InsightRule = "W1" | "W2" | "W3" | "W4" | "E1" | "E2" | "E3";
+export type InsightRule = "W1" | "W2" | "W3" | "W4" | "E1" | "E2" | "E3" | "F1" | "F2" | "F3";
 export type InsightKind =
   | "change_vs_prev"
   | "stocks_to_use_rank"
@@ -16,12 +17,16 @@ export type InsightKind =
   | "brazil_soy_export_share"
   | "commitment_pace"
   | "required_weekly_sales"
-  | "china_share_soy";
+  | "china_share_soy"
+  | "crush_pace"
+  | "required_monthly_crush"
+  | "oil_yield";
 export type SuppressedReason =
   | "n_below_min"
   | "stale_input"
   | "asof_missing"
   | "weeks_remaining_below_min"
+  | "months_remaining_below_min"
   | "no_data"
   | "first_projection"
   | "gap_after_cancelled_report";
@@ -32,13 +37,16 @@ export type Caveat =
   | "local_marketing_years"
   | "history_point_in_time"
   | "latest_only_history"
-  | "partial_denominator";
+  | "partial_denominator"
+  | "crush_history_from_2015"
+  | "nass_revises_previous_month"
+  | "wasde_oil_year_oct_sep";
 export type InputRef = { report_id: string; release_key: string };
 
 export type Insight = {
-  id: string; // "W2:corn", "E1:soybeans", "W1:headline" …
+  id: string; // "W2:corn", "E1:soybeans", "F1:soybeans", "W1:headline" …
   rule: InsightRule;
-  report_id: "wasde" | "export_sales" | "cross";
+  report_id: "wasde" | "export_sales" | "oilseed_crush" | "cross";
   commodity_id: string | null;
   kind: InsightKind;
   params: Record<string, unknown>; // numbers / ids only; see the per-rule params below
@@ -110,6 +118,7 @@ export type InsightsDoc = {
     percentile_min_n: number;
     small_sample_below: number;
     e2_min_weeks_remaining: number;
+    f2_min_months_remaining?: number; // since cut B
     stale_after_days: Record<string, number>;
   };
   n_screened: Record<string, number>;
@@ -248,6 +257,98 @@ export type EsrCommodity = {
     other_mt: number;
     china_unknown_history: { market_year: string; china_share: number | null; unknown_share: number | null }[];
   };
+};
+
+// ------------------------------------------------- reports/oilseed_crush/<commodity>.json
+
+export type CrushLatest = {
+  release_key: string; // ESMIS release date YYYY-MM-DD
+  release_ts_utc: string | null;
+  month: string; // first day of the data month (about two months before the release)
+  month_of_my: number; // 1 = September
+  first_printed_as: "current" | "previous" | null; // previous: a shutdown skipped the month's own release
+  vintage_quality: "as_published";
+};
+export type CrushIndex = {
+  schema_version: 1;
+  report_id: "oilseed_crush";
+  latest: CrushLatest;
+  next_release: string | null;
+  history_start: string; // "2015-10": first ESMIS Fats & Oils file
+  commodities: { id: string; label: string; market_year: string; file: string }[];
+};
+/** [month_of_my, mean, min, max, n] of the 5 prior MYs at that month */
+export type MonthBand = [number, number | null, number | null, number | null, number];
+
+export type CrushCommodity = {
+  schema_version: 1;
+  report_id: "oilseed_crush";
+  commodity_id: "soybeans";
+  label: string;
+  history_start: string;
+  market_year: string;
+  my_start: number;
+  latest: CrushLatest;
+  next_release: string | null;
+  target: {
+    wasde_release_key: string | null;
+    wasde_release_ts_utc: string | null;
+    crush_native: number | null; // million bushels
+    crush_bu: number | null;
+    unit_id: string | null; // m_bu
+    flag: string | null;
+    oil_release_key: string | null;
+    oil_production_native: number | null; // million pounds
+    oil_unit_id: string | null; // m_lbs
+    implied_oil_yield_lb_bu: number | null;
+  };
+  kpis: {
+    month_crushed_st: number | null;
+    month_crushed_bu: number | null;
+    month_oil_klb: number | null;
+    month_meal_st: number | null;
+    oil_yield_lb_bu: number | null;
+    cum_bu: number | null;
+    cum_st: number | null;
+    pct_of_target: number | null;
+    n_5yr: number;
+    pct_5yr_mean: number | null;
+    pct_5yr_min: number | null;
+    pct_5yr_max: number | null;
+    months_remaining: number;
+    required_monthly_bu: number | null;
+    last_my_remaining_mean_bu: number | null;
+    last_my_remaining_n: number;
+    n_yield_5yr: number;
+    yield_5yr_mean: number | null;
+    yield_5yr_min: number | null;
+    yield_5yr_max: number | null;
+  };
+  pace: {
+    basis: "pct_of_usda_projection_at_the_time";
+    series: {
+      market_year: string;
+      my_start: number;
+      current: boolean;
+      points: PacePoint[]; // [month_of_my, pct, wasde_release_key]
+      yield: [number, number | null][]; // [month_of_my, lb/bu as first printed]
+    }[];
+    band: MonthBand[];
+  };
+  yield: { unit_id: "lb_per_bu"; band: MonthBand[]; wasde_implied_lb_bu: number | null };
+  remaining: { market_year: string; last_my_months: { month: string; month_of_my: number; crushed_bu: number | null }[] };
+  monthly: {
+    month: string;
+    market_year: string;
+    month_of_my: number;
+    crushed_st: number | null;
+    crushed_bu: number | null;
+    oil_klb: number | null;
+    meal_st: number | null;
+    oil_yield_lb_bu: number | null;
+    is_revised: boolean;
+    latest_release_key: string;
+  }[];
 };
 
 // ------------------------------------------------------------- meta.json / build.json

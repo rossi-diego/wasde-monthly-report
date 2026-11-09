@@ -12,9 +12,23 @@ export default function DataStrip({
   history,
 }: {
   links: { excel: string | null; csv: string | null; parquet: string | null };
-  history: { first: string; reports: string; rows: string; tag: string | null; esrReleases: string | null };
+  history: {
+    first: string;
+    reports: string;
+    rows: string;
+    tag: string | null;
+    esrReleases: string | null;
+    crushReleases: string | null;
+  };
 }) {
   const t = useT();
+  const titleKey = history.esrReleases
+    ? history.crushReleases
+      ? "data.titleEsrCrush"
+      : "data.titleEsr"
+    : history.crushReleases
+      ? "data.titleCrush"
+      : "data.title";
   return (
     <section
       aria-labelledby="h-data"
@@ -26,7 +40,7 @@ export default function DataStrip({
           <T k="data.eyebrow" />
         </div>
         <h2 id="h-data" className="m-0 text-lg font-bold">
-          <T k={history.esrReleases ? "data.titleEsr" : "data.title"} v={{ first: history.first }} />
+          <T k={titleKey} v={{ first: history.first }} />
         </h2>
         <div className="text-[13px]">
           <T k="data.sub" v={{ reports: history.reports, rows: history.rows, tag: history.tag ?? t("footer.local") }} />
@@ -34,6 +48,12 @@ export default function DataStrip({
             <>
               {" · "}
               <T k="data.subEsr" v={{ releases: history.esrReleases }} />
+            </>
+          )}
+          {history.crushReleases && (
+            <>
+              {" · "}
+              <T k="data.subCrush" v={{ releases: history.crushReleases }} />
             </>
           )}
         </div>

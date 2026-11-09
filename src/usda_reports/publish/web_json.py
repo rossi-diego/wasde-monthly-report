@@ -30,23 +30,25 @@ REVISION_ATTRS = [
 N_REVISION_YEARS = 8
 
 
-def _clean(v: Any) -> Any:
-    """JSON-safe scalars (NaN -> None, numpy -> python, round floats)."""
+def _clean(v: Any, nd: int = 4) -> Any:
+    """JSON-safe scalars (NaN -> None, numpy -> python, round floats to ``nd`` decimals)."""
     if v is None:
         return None
     if isinstance(v, float | int) and not isinstance(v, bool):
         f = float(v)
         if math.isnan(f) or math.isinf(f):
             return None
-        return round(f, 4) if not f.is_integer() else (int(f) if abs(f) < 2**53 else f)
+        return round(f, nd) if not f.is_integer() else (int(f) if abs(f) < 2**53 else f)
     if hasattr(v, "item"):
-        return _clean(v.item())
+        return _clean(v.item(), nd)
     if isinstance(v, date | datetime):
         return v.isoformat()
     return v
 
 
-def _dump(path: Path, obj: Any) -> None:
+def _dump(path: Path, obj: Any, nd: int = 4) -> None:
+    """Write compact JSON. ``nd`` caps float decimals: pages that print shares as "7.2%" pass 6
+    so the browser rounds once (4 dp turns 0.071521 into 0.0715, which prints 7.1%)."""
     path.parent.mkdir(parents=True, exist_ok=True)
 
     def walk(o: Any) -> Any:
@@ -54,7 +56,7 @@ def _dump(path: Path, obj: Any) -> None:
             return {k: walk(v) for k, v in o.items()}
         if isinstance(o, list | tuple):
             return [walk(v) for v in o]
-        return _clean(o)
+        return _clean(o, nd)
 
     path.write_text(
         json.dumps(walk(obj), separators=(",", ":"), ensure_ascii=False), encoding="utf-8"

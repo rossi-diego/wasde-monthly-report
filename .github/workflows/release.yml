@@ -1,6 +1,7 @@
 name: Data release
 
-# Release days (WASDE monthly 12:00 ET, Export Sales weekly Thursday 08:30 ET): detect what is
+# Release days (WASDE monthly 12:00 ET, Export Sales weekly Thursday 08:30 ET, NASS crush monthly
+# ~1st business day 15:00 ET): detect what is
 # new, rebuild bronze → silver → gold, deploy the site, verify it live, and only then publish
 # the versioned data release (the commit point). Anything that fails before that point is
 # retried automatically by the next scheduled run.
@@ -10,8 +11,10 @@ name: Data release
 #
 # Modes (release job)
 #   new      a new WASDE report (or a revised edition)  → data-YYYY-MM, marked Latest
-#   weekly   new Export Sales content only               → immutable prerelease weekly-YYYY-MM-DD
-#                                                          (--latest=false; data-* stays Latest)
+#   weekly   new Export Sales and/or NASS crush content  → immutable prerelease weekly-YYYY-MM-DD
+#            (no new WASDE)                                (--latest=false; data-* stays Latest;
+#                                                          named after the build day, .2/.3… when
+#                                                          that tag exists)
 #   rebuild  code/config changed, or the live site is behind main / the newest data release
 #   none     nothing to do (watchdogs still ran)
 #
@@ -20,8 +23,8 @@ name: Data release
 
 on:
   schedule:
-    # Every 30 min, 12:05–23:35 UTC on weekdays: covers ESR (08:30 ET = 12:30/13:30 UTC) and
-    # WASDE (12:00 ET = 16:00/17:00 UTC) in both DST offsets. ET-clock guards live in
+    # Every 30 min, 12:05–23:35 UTC on weekdays: covers ESR (08:30 ET = 12:30/13:30 UTC), WASDE
+    # (12:00 ET = 16:00/17:00 UTC) and NASS crush (15:00 ET = 19:00/20:00 UTC) in both DST offsets. ET-clock guards live in
     # `usda-reports due` / `detect`.
     - cron: "5,35 12-23 * * 1-5"
   workflow_dispatch:
@@ -31,6 +34,10 @@ on:
         required: false
       force_export_sales:
         description: "Re-pull the newest Export Sales release even if it is already ingested"
+        type: boolean
+        default: false
+      force_oilseed_crush:
+        description: "Re-check the newest NASS Fats & Oils releases on ESMIS even if not due"
         type: boolean
         default: false
   push:
@@ -205,6 +212,17 @@ jobs:
         continue-on-error: true
         run: usda-reports detect --report export_sales ${{ inputs.force_export_sales && '--force' || '' }}
 
+      - name: Detect NASS crush (ESMIS FatsOils; ET-clock guard; backfill on first run)
+        id: detect_crush
+        # Per-report isolation, exactly like Export Sales: every zip is parsed and
+        # contract-checked before it reaches bronze; a failure keeps the last good crush data,
+        # is flagged in build.json and opens the alert issue, and never blocks WASDE or ESR.
+        if: >-
+          always() && steps.prev.outcome == 'success' &&
+          (github.event_name != 'push' || contains(needs.gate.outputs.due, 'oilseed_crush'))
+        continue-on-error: true
+        run: usda-reports detect --report oilseed_crush ${{ inputs.force_oilseed_crush && '--force' || '' }}
+
       - name: Decide
         id: plan
         if: always()
@@ -212,7 +230,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ "${{ steps.detect.outputs.new_report }}" = "true" ]; then mode=new
-          elif [ "${{ steps.detect_esr.outputs.new_export_sales }}" = "true" ]; then mode=weekly
+          elif [ "${{ steps.detect_esr.outputs.new_export_sales }}" = "true" ] || [ "${{ steps.detect_crush.outputs.new_oilseed_crush }}" = "true" ]; then mode=weekly
           elif [ "${{ github.event_name }}" != "schedule" ] || [ "${{ needs.gate.outputs.behind }}" = "true" ]; then mode=rebuild
           else mode=none; fi
           case "$mode" in
@@ -223,6 +241,7 @@ jobs:
           esac
           failed=""
           [ "${{ steps.detect_esr.outcome }}" = "failure" ] && failed="export_sales"
+          [ "${{ steps.detect_crush.outcome }}" = "failure" ] && failed="$failed oilseed_crush"
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "failed=$failed" >> "$GITHUB_OUTPUT"
@@ -237,6 +256,7 @@ jobs:
           tag="${{ steps.plan.outputs.tag }}"
           echo "month=$(usda-reports latest-key wasde)" >> "$GITHUB_OUTPUT"
           echo "esr=$(usda-reports latest-key export_sales || true)" >> "$GITHUB_OUTPUT"
+          echo "crush=$(usda-reports latest-key oilseed_crush || true)" >> "$GITHUB_OUTPUT"
           # Sets output `silver_failed` (isolated reports rebuilt from their last good state).
           usda-reports run --tag "$tag"
           # Weekly releases are immutable. A code-only rebuild on top of weekly-X must not
@@ -342,8 +362,14 @@ jobs:
                 exit 0
               fi
               esr="${{ steps.build.outputs.esr }}"
-              printf 'Automated weekly build: U.S. Export Sales release %s (FAS ESR).\n\nPrerelease, never marked Latest: the latest data-* release stays the monthly WASDE release.\n' "$esr" > /tmp/notes.md
-              gh release create "$tag" --draft --prerelease --latest=false --title "Export Sales $esr" --notes-file /tmp/notes.md
+              crush="${{ steps.build.outputs.crush }}"
+              # Title names what changed in this build (ESR, NASS crush or both).
+              parts=""
+              [ "${{ steps.detect_esr.outputs.new_export_sales }}" = "true" ] && parts="Export Sales $esr"
+              [ "${{ steps.detect_crush.outputs.new_oilseed_crush }}" = "true" ] && parts="${parts:+$parts · }NASS crush $crush"
+              [ -n "$parts" ] || parts="Rebuild"
+              printf 'Automated weekly build: %s. Latest releases included: U.S. Export Sales %s (FAS ESR), NASS Fats & Oils %s.\n\nPrerelease, never marked Latest: the latest data-* release stays the monthly WASDE release.\n' "$parts" "$esr" "$crush" > /tmp/notes.md
+              gh release create "$tag" --draft --prerelease --latest=false --title "$parts" --notes-file /tmp/notes.md
               gh release upload "$tag" data/publish/*
               gh release edit "$tag" --draft=false --prerelease --latest=false
               ;;
@@ -356,7 +382,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/manifest.json config/calendars/
-          if [ "${{ steps.plan.outputs.mode }}" = "new" ]; then msg="data: WASDE ${{ steps.build.outputs.month }}"; else msg="data: Export Sales ${{ steps.build.outputs.esr }}"; fi
+          if [ "${{ steps.plan.outputs.mode }}" = "new" ]; then msg="data: WASDE ${{ steps.build.outputs.month }}"; else msg="data: Export Sales ${{ steps.build.outputs.esr }} · NASS crush ${{ steps.build.outputs.crush }}"; fi
           git diff --staged --quiet || git commit -m "$msg"
           git pull --rebase --autostash origin main && git push || echo "::warning::audit commit not pushed"
 
@@ -369,11 +395,11 @@ jobs:
           if [ "${{ job.status }}" = "success" ]; then curl -fsS -m 10 "$HC" >/dev/null; else curl -fsS -m 10 "$HC/fail" >/dev/null; fi
 
       - name: Open the pipeline-alert issue (once; scheduled retries stay quiet)
-        if: failure() || steps.detect_esr.outcome == 'failure' || steps.build.outputs.silver_failed != ''
+        if: failure() || steps.detect_esr.outcome == 'failure' || steps.detect_crush.outcome == 'failure' || steps.build.outputs.silver_failed != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          body="Run ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} needs attention (event: ${{ github.event_name }}). WASDE watchdogs: ${{ steps.detect.outputs.problems || 'none' }}. Export Sales: ${{ steps.detect_esr.outcome }} ${{ steps.detect_esr.outputs.export_sales_problems }}. Silver fell back to the last good state for: ${{ steps.build.outputs.silver_failed || 'none' }}."
+          body="Run ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} needs attention (event: ${{ github.event_name }}). WASDE watchdogs: ${{ steps.detect.outputs.problems || 'none' }}. Export Sales: ${{ steps.detect_esr.outcome }} ${{ steps.detect_esr.outputs.export_sales_problems }}. NASS crush: ${{ steps.detect_crush.outcome }} ${{ steps.detect_crush.outputs.oilseed_crush_problems }}. Silver fell back to the last good state for: ${{ steps.build.outputs.silver_failed || 'none' }}."
           gh label create pipeline-alert --color B60205 --force >/dev/null
           num=$(gh issue list --label pipeline-alert --state open --json number -q '.[0].number')
           if [ -z "$num" ]; then

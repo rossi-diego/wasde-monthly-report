@@ -1,0 +1,24 @@
+{
+ "pager": {
+  "total_pages": 1
+ },
+ "results": [
+  {
+   "id": "519004",
+   "files": [
+    "https://esmis.nal.usda.gov/sites/default/release-files/mp48sc77c/hq37vt863/79408309r/01-30-19_Report_Reschedule_ASB_Notice_Final.pdf",
+    "https://esmis.nal.usda.gov/sites/default/release-files/mp48sc77c/hq37vt863/dj52w981v/01-30-19_Report_Reschedule_ASB_Notice_Final.txt"
+   ],
+   "title": "Fats and Oils: Oilseed Crushings, Production, Consumption and Stocks",
+   "release_datetime": "2019-01-02T12:00:00+0000",
+   "identifier": [
+    "FatsOils"
+   ],
+   "agency_acronym": "NASS",
+   "bibliographic_citation": "",
+   "description": "",
+   "equipment_software": "",
+   "temporal_coverage": ""
+  }
+ ]
+}

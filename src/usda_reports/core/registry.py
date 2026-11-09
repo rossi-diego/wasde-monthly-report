@@ -27,7 +27,14 @@ class ReportConfig(BaseModel):
     licence: str
     min_rows: int = 0
     history_start: str | None = None
+    # month = YYYY-MM keys (WASDE); date = YYYY-MM-DD keys (weekly reports, NASS monthly
+    # reports whose release month can hold two releases after a shutdown).
+    release_key_format: Literal["month", "date"] = "month"
     spec: str | None = None  # "package.module:ClassName"
+
+    @property
+    def cadence_days(self) -> int:
+        return {"weekly": 7, "monthly": 31, "quarterly": 92}[self.cadence]
 
 
 class Registry(BaseModel):

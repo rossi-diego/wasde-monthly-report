@@ -1,9 +1,9 @@
 {
  "profile": "tabular-data-package",
  "name": "usda-reports",
- "title": "USDA Reports Dashboard: harmonized WASDE and Export Sales data",
- "version": "data-2026-10",
- "created": "2026-11-09T11:42:01+00:00",
+ "title": "USDA Reports Dashboard: harmonized WASDE, Export Sales and NASS crush data",
+ "version": "weekly-2026-11-09",
+ "created": "2026-11-09T14:35:34+00:00",
  "homepage": "https://github.com/rossi-diego/usda-reports-dashboard",
  "licenses": [
   {
@@ -19,10 +19,15 @@
   {
    "title": "USDA FAS: Export Sales Reporting (ESR) API",
    "path": "https://api.fas.usda.gov"
+  },
+  {
+   "title": "USDA NASS: Fats & Oils (Oilseed Crushings, Production, Consumption and Stocks), via ESMIS",
+   "path": "https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/FatsOils"
   }
  ],
  "resources": [
   {
+   "profile": "tabular-data-resource",
    "name": "wasde__values__v1_parquet",
    "path": "wasde__values__v1.parquet",
    "title": "wasde__values__v1 (parquet)",
@@ -48,7 +53,7 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/wasde__values__v1.parquet",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__values__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -150,6 +155,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "wasde__values__v1_csv_gz",
    "path": "wasde__values__v1.csv.gz",
    "title": "wasde__values__v1 (csv)",
@@ -177,7 +183,7 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/wasde__values__v1.csv.gz",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__values__v1.csv.gz",
    "schema": {
     "fields": [
      {
@@ -279,6 +285,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "wasde__balance_sheets__v1_parquet",
    "path": "wasde__balance_sheets__v1.parquet",
    "title": "wasde__balance_sheets__v1 (parquet)",
@@ -304,7 +311,7 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/wasde__balance_sheets__v1.parquet",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__balance_sheets__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -466,6 +473,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "wasde__balance_sheets__v1_csv",
    "path": "wasde__balance_sheets__v1.csv",
    "title": "wasde__balance_sheets__v1 (csv)",
@@ -492,7 +500,7 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/wasde__balance_sheets__v1.csv",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__balance_sheets__v1.csv",
    "schema": {
     "fields": [
      {
@@ -654,6 +662,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "wasde__revisions__v1_parquet",
    "path": "wasde__revisions__v1.parquet",
    "title": "wasde__revisions__v1 (parquet)",
@@ -679,7 +688,7 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/wasde__revisions__v1.parquet",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__revisions__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -856,6 +865,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "wasde__revisions__v1_csv_gz",
    "path": "wasde__revisions__v1.csv.gz",
    "title": "wasde__revisions__v1 (csv)",
@@ -883,7 +893,7 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/wasde__revisions__v1.csv.gz",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__revisions__v1.csv.gz",
    "schema": {
     "fields": [
      {
@@ -1060,6 +1070,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "wasde__changes__v1_parquet",
    "path": "wasde__changes__v1.parquet",
    "title": "wasde__changes__v1 (parquet)",
@@ -1085,7 +1096,7 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/wasde__changes__v1.parquet",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__changes__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -1292,6 +1303,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "wasde__changes__v1_csv_gz",
    "path": "wasde__changes__v1.csv.gz",
    "title": "wasde__changes__v1 (csv)",
@@ -1319,7 +1331,7 @@
      "title": "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/wasde__changes__v1.csv.gz",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/wasde__changes__v1.csv.gz",
    "schema": {
     "fields": [
      {
@@ -1526,14 +1538,15 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "export_sales__weekly__v1_parquet",
    "path": "export_sales__weekly__v1.parquet",
    "title": "export_sales__weekly__v1 (parquet)",
    "description": "U.S. export sales to all destinations per commodity, marketing year and week since MY 2010/11 (metric tons): weekly exports, accumulated exports, outstanding and net sales, commitments, next-MY sales, China and unknown-destination commitments.",
    "format": "parquet",
    "mediatype": "application/vnd.apache.parquet",
-   "bytes": 165725,
-   "hash": "sha256:512498d1d4c0fd9badda71694f356fea3cb3927478fd64d91d202b400ca53c98",
+   "bytes": 165784,
+   "hash": "sha256:aff2554c817310a445b4ed1a92a372905f929bdc5b497d217fbc054dad5063d7",
    "rows": 4295,
    "report_id": "export_sales",
    "dataset": "weekly",
@@ -1551,7 +1564,7 @@
      "title": "US Government work, public domain; cite USDA FAS (Export Sales Reporting Program)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/export_sales__weekly__v1.parquet",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/export_sales__weekly__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -1597,12 +1610,12 @@
      {
       "name": "release_ts_source",
       "type": "string",
-      "description": "api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history (never earlier than the real publication)."
+      "description": "api = the API's releaseTimeStamp; calendar_override = a shutdown catch-up week pinned to its actual FAS release date; calendar_rule = the weekly Thursday rule for backfilled history."
      },
      {
       "name": "vintage_quality",
       "type": "string",
-      "description": "captured = first seen by a weekly pull (as published); latest_only = backfilled with values as revised by the backfill day."
+      "description": "captured = tracked by weekly pulls since first capture (the latest revision is shown; every vintage is kept in silver); latest_only = backfilled with values as revised by the backfill day."
      },
      {
       "name": "n_destinations",
@@ -1678,6 +1691,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "export_sales__weekly__v1_csv",
    "path": "export_sales__weekly__v1.csv",
    "title": "export_sales__weekly__v1 (csv)",
@@ -1685,8 +1699,8 @@
    "format": "csv",
    "mediatype": "text/csv",
    "encoding": "utf-8",
-   "bytes": 1242707,
-   "hash": "sha256:56677aba53dc8b5b8fe66e1b4485e09a29728f611e3caf0096fa7c33169b361f",
+   "bytes": 1243263,
+   "hash": "sha256:e911e0e5c9a075e626afc3dc94848a66672fd39c886e7cdfc001a81b1c9a37f4",
    "rows": 4295,
    "report_id": "export_sales",
    "dataset": "weekly",
@@ -1704,7 +1718,7 @@
      "title": "US Government work, public domain; cite USDA FAS (Export Sales Reporting Program)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/export_sales__weekly__v1.csv",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/export_sales__weekly__v1.csv",
    "schema": {
     "fields": [
      {
@@ -1750,12 +1764,12 @@
      {
       "name": "release_ts_source",
       "type": "string",
-      "description": "api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history (never earlier than the real publication)."
+      "description": "api = the API's releaseTimeStamp; calendar_override = a shutdown catch-up week pinned to its actual FAS release date; calendar_rule = the weekly Thursday rule for backfilled history."
      },
      {
       "name": "vintage_quality",
       "type": "string",
-      "description": "captured = first seen by a weekly pull (as published); latest_only = backfilled with values as revised by the backfill day."
+      "description": "captured = tracked by weekly pulls since first capture (the latest revision is shown; every vintage is kept in silver); latest_only = backfilled with values as revised by the backfill day."
      },
      {
       "name": "n_destinations",
@@ -1831,14 +1845,15 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "export_sales__by_country__v1_parquet",
    "path": "export_sales__by_country__v1.parquet",
    "title": "export_sales__by_country__v1 (parquet)",
    "description": "U.S. export sales per commodity, marketing year, week and destination country since MY 2010/11 (metric tons), latest known value of every metric.",
    "format": "parquet",
    "mediatype": "application/vnd.apache.parquet",
-   "bytes": 1955848,
-   "hash": "sha256:2ee50d309b04d864103dbefd7fc757771fbf980a71a7bb6bb6d3052d7593bc46",
+   "bytes": 1955869,
+   "hash": "sha256:16ba7635aa575cfc7754ff3bbe5d3a4fa038b32d95d8f565e085057a50f78546",
    "rows": 195767,
    "report_id": "export_sales",
    "dataset": "by_country",
@@ -1856,7 +1871,7 @@
      "title": "US Government work, public domain; cite USDA FAS (Export Sales Reporting Program)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/export_sales__by_country__v1.parquet",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/export_sales__by_country__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -1917,12 +1932,12 @@
      {
       "name": "release_ts_source",
       "type": "string",
-      "description": "api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history (never earlier than the real publication)."
+      "description": "api = the API's releaseTimeStamp; calendar_override = a shutdown catch-up week pinned to its actual FAS release date; calendar_rule = the weekly Thursday rule for backfilled history."
      },
      {
       "name": "vintage_quality",
       "type": "string",
-      "description": "captured = first seen by a weekly pull (as published); latest_only = backfilled with values as revised by the backfill day."
+      "description": "captured = tracked by weekly pulls since first capture (the latest revision is shown; every vintage is kept in silver); latest_only = backfilled with values as revised by the backfill day."
      },
      {
       "name": "n_vintages",
@@ -1983,6 +1998,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "export_sales__by_country__v1_csv_gz",
    "path": "export_sales__by_country__v1.csv.gz",
    "title": "export_sales__by_country__v1 (csv)",
@@ -1991,8 +2007,8 @@
    "mediatype": "text/csv",
    "encoding": "utf-8",
    "compression": "gz",
-   "bytes": 3348637,
-   "hash": "sha256:f0a9c929306142de003cc06d263bc75db79d780497982b9194b8bfdfbfdbe4d3",
+   "bytes": 3342988,
+   "hash": "sha256:6f0cf9a385965850df71454dc94c17c5e40b99174310798eb744bfd0190c62b4",
    "rows": 195767,
    "report_id": "export_sales",
    "dataset": "by_country",
@@ -2010,7 +2026,7 @@
      "title": "US Government work, public domain; cite USDA FAS (Export Sales Reporting Program)"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/export_sales__by_country__v1.csv.gz",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/export_sales__by_country__v1.csv.gz",
    "schema": {
     "fields": [
      {
@@ -2071,12 +2087,12 @@
      {
       "name": "release_ts_source",
       "type": "string",
-      "description": "api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history (never earlier than the real publication)."
+      "description": "api = the API's releaseTimeStamp; calendar_override = a shutdown catch-up week pinned to its actual FAS release date; calendar_rule = the weekly Thursday rule for backfilled history."
      },
      {
       "name": "vintage_quality",
       "type": "string",
-      "description": "captured = first seen by a weekly pull (as published); latest_only = backfilled with values as revised by the backfill day."
+      "description": "captured = tracked by weekly pulls since first capture (the latest revision is shown; every vintage is kept in silver); latest_only = backfilled with values as revised by the backfill day."
      },
      {
       "name": "n_vintages",
@@ -2137,14 +2153,759 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
+   "name": "oilseed_crush__monthly__v1_parquet",
+   "path": "oilseed_crush__monthly__v1.parquet",
+   "title": "oilseed_crush__monthly__v1 (parquet)",
+   "description": "U.S. soybean crush per month from NASS Fats & Oils (ESMIS files since the 2015-10-01 release; marketing year September–August): soybeans crushed (short tons and bushels), crude oil (thousand pounds) and meal (short tons) produced, oil and meal yield per bushel, latest revised value with the release that first printed each month.",
+   "format": "parquet",
+   "mediatype": "application/vnd.apache.parquet",
+   "bytes": 14400,
+   "hash": "sha256:8d99405a726bb4df4f54048f19343c1a3730a52065d0fa85a0553540ff4a49d7",
+   "rows": 137,
+   "report_id": "oilseed_crush",
+   "dataset": "monthly",
+   "schema_version": 1,
+   "dbt_model": "fct_soy_crush_monthly",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2015-05-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-11-02",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Fats & Oils: Oilseed Crushings, Production, Consumption and Stocks)"
+    }
+   ],
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/oilseed_crush__monthly__v1.parquet",
+   "schema": {
+    "fields": [
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Soybean marketing year (September–August) in WASDE notation, e.g. 2026/27."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "month_of_my",
+      "type": "integer",
+      "description": "Month index within the marketing year (1 = September … 12 = August)."
+     },
+     {
+      "name": "month",
+      "type": "date",
+      "description": "First day of the data month (ISO date)."
+     },
+     {
+      "name": "crushed_st",
+      "type": "number",
+      "description": "Soybeans crushed (NASS \"tons\" = short tons of 2,000 lb)."
+     },
+     {
+      "name": "crushed_bu",
+      "type": "number",
+      "description": "Soybeans crushed in bushels (short tons × 33.3333; 60 lb per bushel, dim_unit)."
+     },
+     {
+      "name": "oil_klb",
+      "type": "number",
+      "description": "Crude soybean oil produced (thousand pounds, NASS \"1,000 pounds\")."
+     },
+     {
+      "name": "meal_st",
+      "type": "number",
+      "description": "Soybean cake and meal produced (short tons)."
+     },
+     {
+      "name": "oil_stocks_klb",
+      "type": "number",
+      "description": "Crude soybean oil on hand at the end of the month (thousand pounds)."
+     },
+     {
+      "name": "oil_yield_lb_bu",
+      "type": "number",
+      "description": "Crude oil extraction rate, oil_klb × 1000 / crushed_bu (pounds per bushel)."
+     },
+     {
+      "name": "meal_yield_lb_bu",
+      "type": "number",
+      "description": "Meal yield, meal_st × 2000 / crushed_bu (pounds per bushel)."
+     },
+     {
+      "name": "crushed_st_first",
+      "type": "number",
+      "description": "Soybeans crushed as first printed (before NASS revised it in later releases)."
+     },
+     {
+      "name": "is_revised",
+      "type": "boolean",
+      "description": "True when the latest crushed_st differs from the first print."
+     },
+     {
+      "name": "first_release_key",
+      "type": "string",
+      "description": "Fats & Oils release (ESMIS release date, YYYY-MM-DD) that first printed the month."
+     },
+     {
+      "name": "first_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (15:00 ET, stored in UTC)."
+     },
+     {
+      "name": "first_printed_as",
+      "type": "string",
+      "description": "Column the month was first printed in (current; previous after a shutdown; year_ago or earlier for months before the first ESMIS file)."
+     },
+     {
+      "name": "latest_release_key",
+      "type": "string",
+      "description": "Release whose (latest revised) values are shown."
+     },
+     {
+      "name": "latest_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (UTC)."
+     },
+     {
+      "name": "n_vintages",
+      "type": "integer",
+      "description": "How many releases printed the month (current, previous, year-ago columns)."
+     },
+     {
+      "name": "source_url",
+      "type": "string",
+      "description": "ESMIS zip of the release whose values are shown (from ESMIS files[])."
+     },
+     {
+      "name": "is_latest_month",
+      "type": "boolean",
+      "description": "True on the newest month published."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "oilseed_crush__monthly__v1_csv",
+   "path": "oilseed_crush__monthly__v1.csv",
+   "title": "oilseed_crush__monthly__v1 (csv)",
+   "description": "U.S. soybean crush per month from NASS Fats & Oils (ESMIS files since the 2015-10-01 release; marketing year September–August): soybeans crushed (short tons and bushels), crude oil (thousand pounds) and meal (short tons) produced, oil and meal yield per bushel, latest revised value with the release that first printed each month.",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 43422,
+   "hash": "sha256:2d9e85946580cd3176a767ff8ab6f120243e30ff1d65cf5476eedb5af147c74a",
+   "rows": 137,
+   "report_id": "oilseed_crush",
+   "dataset": "monthly",
+   "schema_version": 1,
+   "dbt_model": "fct_soy_crush_monthly",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2015-05-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-11-02",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Fats & Oils: Oilseed Crushings, Production, Consumption and Stocks)"
+    }
+   ],
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/oilseed_crush__monthly__v1.csv",
+   "schema": {
+    "fields": [
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Soybean marketing year (September–August) in WASDE notation, e.g. 2026/27."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "month_of_my",
+      "type": "integer",
+      "description": "Month index within the marketing year (1 = September … 12 = August)."
+     },
+     {
+      "name": "month",
+      "type": "date",
+      "description": "First day of the data month (ISO date)."
+     },
+     {
+      "name": "crushed_st",
+      "type": "number",
+      "description": "Soybeans crushed (NASS \"tons\" = short tons of 2,000 lb)."
+     },
+     {
+      "name": "crushed_bu",
+      "type": "number",
+      "description": "Soybeans crushed in bushels (short tons × 33.3333; 60 lb per bushel, dim_unit)."
+     },
+     {
+      "name": "oil_klb",
+      "type": "number",
+      "description": "Crude soybean oil produced (thousand pounds, NASS \"1,000 pounds\")."
+     },
+     {
+      "name": "meal_st",
+      "type": "number",
+      "description": "Soybean cake and meal produced (short tons)."
+     },
+     {
+      "name": "oil_stocks_klb",
+      "type": "number",
+      "description": "Crude soybean oil on hand at the end of the month (thousand pounds)."
+     },
+     {
+      "name": "oil_yield_lb_bu",
+      "type": "number",
+      "description": "Crude oil extraction rate, oil_klb × 1000 / crushed_bu (pounds per bushel)."
+     },
+     {
+      "name": "meal_yield_lb_bu",
+      "type": "number",
+      "description": "Meal yield, meal_st × 2000 / crushed_bu (pounds per bushel)."
+     },
+     {
+      "name": "crushed_st_first",
+      "type": "number",
+      "description": "Soybeans crushed as first printed (before NASS revised it in later releases)."
+     },
+     {
+      "name": "is_revised",
+      "type": "boolean",
+      "description": "True when the latest crushed_st differs from the first print."
+     },
+     {
+      "name": "first_release_key",
+      "type": "string",
+      "description": "Fats & Oils release (ESMIS release date, YYYY-MM-DD) that first printed the month."
+     },
+     {
+      "name": "first_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (15:00 ET, stored in UTC)."
+     },
+     {
+      "name": "first_printed_as",
+      "type": "string",
+      "description": "Column the month was first printed in (current; previous after a shutdown; year_ago or earlier for months before the first ESMIS file)."
+     },
+     {
+      "name": "latest_release_key",
+      "type": "string",
+      "description": "Release whose (latest revised) values are shown."
+     },
+     {
+      "name": "latest_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (UTC)."
+     },
+     {
+      "name": "n_vintages",
+      "type": "integer",
+      "description": "How many releases printed the month (current, previous, year-ago columns)."
+     },
+     {
+      "name": "source_url",
+      "type": "string",
+      "description": "ESMIS zip of the release whose values are shown (from ESMIS files[])."
+     },
+     {
+      "name": "is_latest_month",
+      "type": "boolean",
+      "description": "True on the newest month published."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "cross__crush_pace__v1_parquet",
+   "path": "cross__crush_pace__v1.parquet",
+   "title": "cross__crush_pace__v1 (parquet)",
+   "description": "Soybean crush pace vs. USDA, point in time: marketing-year-to-date NASS crush as a share of the WASDE crush projection public when NASS first printed each month, what is still needed per month, oil yield vs the WASDE-implied yield, and the same month of the 5 prior marketing years (from MY 2015/16).",
+   "format": "parquet",
+   "mediatype": "application/vnd.apache.parquet",
+   "bytes": 24418,
+   "hash": "sha256:3e5ca86475f1f69ef19f36138aab8b4d0df0465dff1366e8c622d6cbc4a76a2f",
+   "rows": 133,
+   "report_id": "cross",
+   "dataset": "crush_pace",
+   "schema_version": 1,
+   "dbt_model": "fct_crush_pace",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2015-09-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-11-02",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Fats & Oils) and USDA OCE/WAOB (WASDE)"
+    }
+   ],
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/cross__crush_pace__v1.parquet",
+   "schema": {
+    "fields": [
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Soybean marketing year (September–August), e.g. 2026/27."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "month_of_my",
+      "type": "integer",
+      "description": "Month index within the marketing year (1 = September)."
+     },
+     {
+      "name": "month",
+      "type": "date",
+      "description": "First day of the data month."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Fats & Oils release (YYYY-MM-DD) that first printed the month."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (15:00 ET in UTC); every input on the row was public at or before it."
+     },
+     {
+      "name": "first_printed_as",
+      "type": "string",
+      "description": "current, or previous when a shutdown skipped the month's own release."
+     },
+     {
+      "name": "month_crushed_st",
+      "type": "number",
+      "description": "Soybeans crushed in the month as printed then (short tons)."
+     },
+     {
+      "name": "month_crushed_bu",
+      "type": "number",
+      "description": "The same in bushels (× 33.3333)."
+     },
+     {
+      "name": "month_oil_klb",
+      "type": "number",
+      "description": "Crude soybean oil produced in the month as printed then (thousand pounds)."
+     },
+     {
+      "name": "oil_yield_lb_bu",
+      "type": "number",
+      "description": "month_oil_klb × 1000 / month_crushed_bu (F3, pounds per bushel)."
+     },
+     {
+      "name": "cum_st",
+      "type": "number",
+      "description": "Marketing-year-to-date crush through the month, NASS vintages public at release_ts_utc (short tons)."
+     },
+     {
+      "name": "cum_bu",
+      "type": "number",
+      "description": "The same in bushels (F1 numerator)."
+     },
+     {
+      "name": "n_months_known",
+      "type": "integer",
+      "description": "Months summed in cum_* (always = month_of_my)."
+     },
+     {
+      "name": "inputs_max_release_ts_utc",
+      "type": "datetime",
+      "description": "Newest NASS release used on the row (<= release_ts_utc, no look-ahead)."
+     },
+     {
+      "name": "wasde_release_key",
+      "type": "string",
+      "description": "WASDE report month (YYYY-MM) whose soybean crush was public at release_ts_utc (ASOF)."
+     },
+     {
+      "name": "wasde_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that WASDE (12:00 ET in UTC); always <= release_ts_utc."
+     },
+     {
+      "name": "wasde_proj_est_flag",
+      "type": "string",
+      "description": "WASDE flag of the crush figure (proj / est / blank for final)."
+     },
+     {
+      "name": "wasde_crush_unit_id",
+      "type": "string",
+      "description": "Native WASDE unit of the crush figure (m_bu = million bushels)."
+     },
+     {
+      "name": "wasde_crush_native",
+      "type": "number",
+      "description": "WASDE U.S. soybean crush for this MY as of release_ts_utc (million bushels)."
+     },
+     {
+      "name": "wasde_crush_bu",
+      "type": "number",
+      "description": "The same in bushels (F1 denominator)."
+     },
+     {
+      "name": "wasde_oil_release_key",
+      "type": "string",
+      "description": "WASDE report month whose soybean oil production was public at release_ts_utc."
+     },
+     {
+      "name": "wasde_oil_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that WASDE (UTC)."
+     },
+     {
+      "name": "wasde_oil_unit_id",
+      "type": "string",
+      "description": "Native WASDE unit of soybean oil production (m_lbs = million pounds)."
+     },
+     {
+      "name": "wasde_oil_production_native",
+      "type": "number",
+      "description": "WASDE U.S. soybean oil production for the same MY label (million pounds; WASDE's oil year runs October–September)."
+     },
+     {
+      "name": "wasde_implied_oil_yield_lb_bu",
+      "type": "number",
+      "description": "WASDE soybean oil production ÷ WASDE soybean crush (pounds per bushel), as of release_ts_utc."
+     },
+     {
+      "name": "pct_of_target",
+      "type": "number",
+      "description": "cum_bu / wasde_crush_bu (F1)."
+     },
+     {
+      "name": "months_remaining",
+      "type": "integer",
+      "description": "Months of the marketing year still to be reported (12 − month_of_my)."
+     },
+     {
+      "name": "required_monthly_bu",
+      "type": "number",
+      "description": "(wasde_crush_bu − cum_bu) / months_remaining (F2; null in August)."
+     },
+     {
+      "name": "last_my_remaining_mean_bu",
+      "type": "number",
+      "description": "Mean monthly crush of the same remaining months in the previous MY, as known at release_ts_utc (bushels)."
+     },
+     {
+      "name": "last_my_remaining_n",
+      "type": "integer",
+      "description": "Months behind last_my_remaining_mean_bu."
+     },
+     {
+      "name": "n_5yr",
+      "type": "integer",
+      "description": "Prior MYs (of the last 5) with an as-of pct_of_target at the same month (small sample)."
+     },
+     {
+      "name": "pct_5yr_mean",
+      "type": "number",
+      "description": "Mean pct_of_target of those MYs at the same month."
+     },
+     {
+      "name": "pct_5yr_min",
+      "type": "number",
+      "description": "Minimum of the same."
+     },
+     {
+      "name": "pct_5yr_max",
+      "type": "number",
+      "description": "Maximum of the same."
+     },
+     {
+      "name": "n_yield_5yr",
+      "type": "integer",
+      "description": "Prior MYs (of the last 5) with an oil yield for the same month."
+     },
+     {
+      "name": "yield_5yr_mean",
+      "type": "number",
+      "description": "Mean oil yield of the same month in those MYs (lb/bu, as first printed)."
+     },
+     {
+      "name": "yield_5yr_min",
+      "type": "number",
+      "description": "Minimum of the same."
+     },
+     {
+      "name": "yield_5yr_max",
+      "type": "number",
+      "description": "Maximum of the same."
+     },
+     {
+      "name": "is_latest",
+      "type": "boolean",
+      "description": "True on the newest month."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
+   "name": "cross__crush_pace__v1_csv",
+   "path": "cross__crush_pace__v1.csv",
+   "title": "cross__crush_pace__v1 (csv)",
+   "description": "Soybean crush pace vs. USDA, point in time: marketing-year-to-date NASS crush as a share of the WASDE crush projection public when NASS first printed each month, what is still needed per month, oil yield vs the WASDE-implied yield, and the same month of the 5 prior marketing years (from MY 2015/16).",
+   "format": "csv",
+   "mediatype": "text/csv",
+   "encoding": "utf-8",
+   "bytes": 62723,
+   "hash": "sha256:d6530c023e1d00afad378cea435963b435466b649f476a004bd2b54271f0616a",
+   "rows": 133,
+   "report_id": "cross",
+   "dataset": "crush_pace",
+   "schema_version": 1,
+   "dbt_model": "fct_crush_pace",
+   "contract_enforced": true,
+   "temporal_coverage": {
+    "start": "2015-09-01",
+    "end": "2026-09-01"
+   },
+   "latest_release_key": "2026-11-02",
+   "licenses": [
+    {
+     "name": "public-domain",
+     "title": "US Government work, public domain; cite USDA NASS (Fats & Oils) and USDA OCE/WAOB (WASDE)"
+    }
+   ],
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/cross__crush_pace__v1.csv",
+   "schema": {
+    "fields": [
+     {
+      "name": "market_year",
+      "type": "string",
+      "description": "Soybean marketing year (September–August), e.g. 2026/27."
+     },
+     {
+      "name": "my_start",
+      "type": "integer",
+      "description": "First calendar year of the marketing year."
+     },
+     {
+      "name": "month_of_my",
+      "type": "integer",
+      "description": "Month index within the marketing year (1 = September)."
+     },
+     {
+      "name": "month",
+      "type": "date",
+      "description": "First day of the data month."
+     },
+     {
+      "name": "release_key",
+      "type": "string",
+      "description": "Fats & Oils release (YYYY-MM-DD) that first printed the month."
+     },
+     {
+      "name": "release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that release (15:00 ET in UTC); every input on the row was public at or before it."
+     },
+     {
+      "name": "first_printed_as",
+      "type": "string",
+      "description": "current, or previous when a shutdown skipped the month's own release."
+     },
+     {
+      "name": "month_crushed_st",
+      "type": "number",
+      "description": "Soybeans crushed in the month as printed then (short tons)."
+     },
+     {
+      "name": "month_crushed_bu",
+      "type": "number",
+      "description": "The same in bushels (× 33.3333)."
+     },
+     {
+      "name": "month_oil_klb",
+      "type": "number",
+      "description": "Crude soybean oil produced in the month as printed then (thousand pounds)."
+     },
+     {
+      "name": "oil_yield_lb_bu",
+      "type": "number",
+      "description": "month_oil_klb × 1000 / month_crushed_bu (F3, pounds per bushel)."
+     },
+     {
+      "name": "cum_st",
+      "type": "number",
+      "description": "Marketing-year-to-date crush through the month, NASS vintages public at release_ts_utc (short tons)."
+     },
+     {
+      "name": "cum_bu",
+      "type": "number",
+      "description": "The same in bushels (F1 numerator)."
+     },
+     {
+      "name": "n_months_known",
+      "type": "integer",
+      "description": "Months summed in cum_* (always = month_of_my)."
+     },
+     {
+      "name": "inputs_max_release_ts_utc",
+      "type": "datetime",
+      "description": "Newest NASS release used on the row (<= release_ts_utc, no look-ahead)."
+     },
+     {
+      "name": "wasde_release_key",
+      "type": "string",
+      "description": "WASDE report month (YYYY-MM) whose soybean crush was public at release_ts_utc (ASOF)."
+     },
+     {
+      "name": "wasde_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that WASDE (12:00 ET in UTC); always <= release_ts_utc."
+     },
+     {
+      "name": "wasde_proj_est_flag",
+      "type": "string",
+      "description": "WASDE flag of the crush figure (proj / est / blank for final)."
+     },
+     {
+      "name": "wasde_crush_unit_id",
+      "type": "string",
+      "description": "Native WASDE unit of the crush figure (m_bu = million bushels)."
+     },
+     {
+      "name": "wasde_crush_native",
+      "type": "number",
+      "description": "WASDE U.S. soybean crush for this MY as of release_ts_utc (million bushels)."
+     },
+     {
+      "name": "wasde_crush_bu",
+      "type": "number",
+      "description": "The same in bushels (F1 denominator)."
+     },
+     {
+      "name": "wasde_oil_release_key",
+      "type": "string",
+      "description": "WASDE report month whose soybean oil production was public at release_ts_utc."
+     },
+     {
+      "name": "wasde_oil_release_ts_utc",
+      "type": "datetime",
+      "description": "Publication instant of that WASDE (UTC)."
+     },
+     {
+      "name": "wasde_oil_unit_id",
+      "type": "string",
+      "description": "Native WASDE unit of soybean oil production (m_lbs = million pounds)."
+     },
+     {
+      "name": "wasde_oil_production_native",
+      "type": "number",
+      "description": "WASDE U.S. soybean oil production for the same MY label (million pounds; WASDE's oil year runs October–September)."
+     },
+     {
+      "name": "wasde_implied_oil_yield_lb_bu",
+      "type": "number",
+      "description": "WASDE soybean oil production ÷ WASDE soybean crush (pounds per bushel), as of release_ts_utc."
+     },
+     {
+      "name": "pct_of_target",
+      "type": "number",
+      "description": "cum_bu / wasde_crush_bu (F1)."
+     },
+     {
+      "name": "months_remaining",
+      "type": "integer",
+      "description": "Months of the marketing year still to be reported (12 − month_of_my)."
+     },
+     {
+      "name": "required_monthly_bu",
+      "type": "number",
+      "description": "(wasde_crush_bu − cum_bu) / months_remaining (F2; null in August)."
+     },
+     {
+      "name": "last_my_remaining_mean_bu",
+      "type": "number",
+      "description": "Mean monthly crush of the same remaining months in the previous MY, as known at release_ts_utc (bushels)."
+     },
+     {
+      "name": "last_my_remaining_n",
+      "type": "integer",
+      "description": "Months behind last_my_remaining_mean_bu."
+     },
+     {
+      "name": "n_5yr",
+      "type": "integer",
+      "description": "Prior MYs (of the last 5) with an as-of pct_of_target at the same month (small sample)."
+     },
+     {
+      "name": "pct_5yr_mean",
+      "type": "number",
+      "description": "Mean pct_of_target of those MYs at the same month."
+     },
+     {
+      "name": "pct_5yr_min",
+      "type": "number",
+      "description": "Minimum of the same."
+     },
+     {
+      "name": "pct_5yr_max",
+      "type": "number",
+      "description": "Maximum of the same."
+     },
+     {
+      "name": "n_yield_5yr",
+      "type": "integer",
+      "description": "Prior MYs (of the last 5) with an oil yield for the same month."
+     },
+     {
+      "name": "yield_5yr_mean",
+      "type": "number",
+      "description": "Mean oil yield of the same month in those MYs (lb/bu, as first printed)."
+     },
+     {
+      "name": "yield_5yr_min",
+      "type": "number",
+      "description": "Minimum of the same."
+     },
+     {
+      "name": "yield_5yr_max",
+      "type": "number",
+      "description": "Maximum of the same."
+     },
+     {
+      "name": "is_latest",
+      "type": "boolean",
+      "description": "True on the newest month."
+     }
+    ]
+   }
+  },
+  {
+   "profile": "tabular-data-resource",
    "name": "cross__export_pace__v1_parquet",
    "path": "cross__export_pace__v1.parquet",
    "title": "cross__export_pace__v1 (parquet)",
    "description": "Export commitments as a share of the USDA (WASDE) export projection that was public at each ESR release (point in time), with the same week of the 5 prior marketing years.",
    "format": "parquet",
    "mediatype": "application/vnd.apache.parquet",
-   "bytes": 326654,
-   "hash": "sha256:99366a892d651db2744cba1cc40216e893c7ff60a5c192ea16ad55bb6d6ed31c",
+   "bytes": 326596,
+   "hash": "sha256:e8ec7070cf4d5e1cf3ef01998530883322db3105f551d0aae9779b008fb57e1e",
    "rows": 4295,
    "report_id": "cross",
    "dataset": "export_pace",
@@ -2162,7 +2923,7 @@
      "title": "US Government work, public domain; cite USDA FAS and USDA OCE/WAOB"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/cross__export_pace__v1.parquet",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/cross__export_pace__v1.parquet",
    "schema": {
     "fields": [
      {
@@ -2208,12 +2969,12 @@
      {
       "name": "release_ts_source",
       "type": "string",
-      "description": "api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history (never earlier than the real publication)."
+      "description": "api = the API's releaseTimeStamp; calendar_override = a shutdown catch-up week pinned to its actual FAS release date; calendar_rule = the weekly Thursday rule for backfilled history."
      },
      {
       "name": "vintage_quality",
       "type": "string",
-      "description": "captured = first seen by a weekly pull (as published); latest_only = backfilled with values as revised by the backfill day."
+      "description": "captured = tracked by weekly pulls since first capture (the latest revision is shown; every vintage is kept in silver); latest_only = backfilled with values as revised by the backfill day."
      },
      {
       "name": "unit_id",
@@ -2349,6 +3110,7 @@
    }
   },
   {
+   "profile": "tabular-data-resource",
    "name": "cross__export_pace__v1_csv",
    "path": "cross__export_pace__v1.csv",
    "title": "cross__export_pace__v1 (csv)",
@@ -2356,8 +3118,8 @@
    "format": "csv",
    "mediatype": "text/csv",
    "encoding": "utf-8",
-   "bytes": 1617172,
-   "hash": "sha256:37c6bc000dfaf870a08ba978f0cc38af3daac4988eb1505632dd8405b7261782",
+   "bytes": 1617657,
+   "hash": "sha256:1a60f166dcdb58dd43cc94fa2f5eb95042888291da00fa41b04f6053fbf1e578",
    "rows": 4295,
    "report_id": "cross",
    "dataset": "export_pace",
@@ -2375,7 +3137,7 @@
      "title": "US Government work, public domain; cite USDA FAS and USDA OCE/WAOB"
     }
    ],
-   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/data-2026-10/cross__export_pace__v1.csv",
+   "release_url": "https://github.com/rossi-diego/usda-reports-dashboard/releases/download/weekly-2026-11-09/cross__export_pace__v1.csv",
    "schema": {
     "fields": [
      {
@@ -2421,12 +3183,12 @@
      {
       "name": "release_ts_source",
       "type": "string",
-      "description": "api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history (never earlier than the real publication)."
+      "description": "api = the API's releaseTimeStamp; calendar_override = a shutdown catch-up week pinned to its actual FAS release date; calendar_rule = the weekly Thursday rule for backfilled history."
      },
      {
       "name": "vintage_quality",
       "type": "string",
-      "description": "captured = first seen by a weekly pull (as published); latest_only = backfilled with values as revised by the backfill day."
+      "description": "captured = tracked by weekly pulls since first capture (the latest revision is shown; every vintage is kept in silver); latest_only = backfilled with values as revised by the backfill day."
      },
      {
       "name": "unit_id",

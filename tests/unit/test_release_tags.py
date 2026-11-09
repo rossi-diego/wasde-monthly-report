@@ -68,3 +68,21 @@ def test_datasets_changed_detects_bytes_new_and_removed_files():
     assert datasets_changed(old, [old[0], {"file": "b.csv.gz", "sha256": "3"}]) == ["b.csv.gz"]
     assert datasets_changed(old, [*old, {"file": "c.parquet", "sha256": "4"}]) == ["c.parquet"]
     assert datasets_changed(old, old[:1]) == ["b.csv.gz"]
+
+
+def test_catalogue_csv_timestamps_are_utc_on_any_machine(tmp_path):
+    """*_ts_utc columns print in UTC whatever the machine's zone (byte-reproducible CSVs)."""
+    import duckdb
+
+    from usda_reports.publish.catalogue import utc_session
+
+    con = duckdb.connect()
+    con.execute("set TimeZone = 'America/Sao_Paulo'")
+    con.execute("create table t as select timestamptz '2015-10-01 19:00:00+00' as release_ts_utc")
+    out = tmp_path / "t.csv"
+    with utc_session(con):
+        con.execute(f"copy t to '{out.as_posix()}' (header)")
+    text = out.read_text(encoding="utf-8")
+    assert "2015-10-01 19:00:00+00" in text and "-03" not in text
+    row = con.execute("select current_setting('TimeZone')").fetchone()
+    assert row is not None and row[0] == "America/Sao_Paulo"

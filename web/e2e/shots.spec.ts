@@ -14,12 +14,13 @@ for (const scheme of ["light", "dark"] as const) {
     await page.screenshot({ path: `${OUT}/home-${scheme}.png`, fullPage: true });
     for (const [name, url] of [
       ["export-sales", "/reports/export-sales/"],
+      ["crush", "/reports/oilseed-crush/"],
       ["commodity", "/commodity/corn/"],
       ["downloads", "/data/"],
     ] as const) {
       await page.goto(url);
       await page.waitForTimeout(800);
-      await page.screenshot({ path: `${OUT}/${name}-${scheme}.png`, fullPage: name === "export-sales" });
+      await page.screenshot({ path: `${OUT}/${name}-${scheme}.png`, fullPage: name === "export-sales" || name === "crush" });
     }
     if (process.env.SHOTS_ALL) {
       for (const [name, url] of [

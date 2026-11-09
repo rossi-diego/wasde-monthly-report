@@ -109,7 +109,7 @@ def build_datapackage(
             pq = pub_dir / f"{stem}.parquet"
             schemas[stem] = table_schema(con, pq, models.get(ds.model, {}).get("columns", {}))
         cfg = registry.reports.get(ds.report_id)
-        licence = (
+        licence = ds.licence or (
             cfg.licence
             if cfg
             else "US Government work, public domain; cite USDA FAS and USDA OCE/WAOB"
@@ -146,7 +146,7 @@ def build_datapackage(
     return {
         "profile": PROFILE,
         "name": "usda-reports",
-        "title": "USDA Reports Dashboard: harmonized WASDE and Export Sales data",
+        "title": "USDA Reports Dashboard: harmonized WASDE, Export Sales and NASS crush data",
         "version": tag or "unreleased",
         "created": datetime.now(UTC).isoformat(timespec="seconds"),
         "homepage": f"https://github.com/{repo}",
@@ -161,6 +161,11 @@ def build_datapackage(
             {
                 "title": "USDA FAS: Export Sales Reporting (ESR) API",
                 "path": "https://api.fas.usda.gov",
+            },
+            {
+                "title": "USDA NASS: Fats & Oils (Oilseed Crushings, Production, Consumption "
+                "and Stocks), via ESMIS",
+                "path": "https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/FatsOils",
             },
         ],
         "resources": resources,

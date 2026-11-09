@@ -1,0 +1,75 @@
+# NASS Fats & Oils: Oilseed Crushings, Production, Consumption and Stocks (monthly).
+#
+# Spike 2026-11-09 (ESMIS findByIdentifier/FatsOils, pages 0..5, no key needed):
+#   134 releases, 2015-10-01 → 2026-11-02; a zip in files[] on 133 of them. The exception is
+#   2019-01-02 (only a reschedule notice PDF/TXT: the shutdown moved that month to 2019-02-04
+#   and 2019-02-22). Zip names are not reliable (cafo0726.zip is both the 2026-07-01 and the
+#   2026-08-03 release; 2015-2018 use FatsOils-MM-DD-YYYY.zip), so URLs come from files[].
+#   Every zip holds cafo_all_tables.csv (Windows-1252) plus per-table CSVs and help pages.
+#
+#   Table 1 of cafo_all_tables.csv (every release checked) is
+#     "Soybean Crushing, Production, Consumption and Stocks – United States: <Month YYYY> with
+#      Comparisons"   (2015-10-01 through 2016-06-01, the first 9 releases, print four
+#      consecutive months instead, e.g. "...: May 2015 - August 2015"; the "with Comparisons"
+#      layout starts on 2016-07-01)
+#   Header row: "Item", "", then one column per month: year-ago month, previous month (revised),
+#   current month. Data rows: label, unit label, values.
+#   Units as printed in the CSV: "tons" (NASS short tons, 2,000 lb) and "1,000 pounds".
+#
+# Validation against the published text (cafo1126.txt, released 2026-11-02): "Soybeans crushed
+# for crude oil was 5.96 million tons (199 million bushels) in September 2026, compared with
+# 6.29 million tons (210 million bushels) in August 2026 and 6.15 million tons (205 million
+# bushels) in September 2025" = 5,964,861 / 6,289,327 / 6,148,544 tons × 33.3333 bu/st.
+esmis_url: https://esmis.nal.usda.gov/api/v1/release/findByIdentifier/FatsOils
+zip_member: "*_all_tables.csv"
+# First release used (ESMIS limit; Quick Stats would reach further back, plan v2 backlog).
+history_start: "2015-10-01"
+# How many newest releases a regular detect run re-checks for changed bytes (new edition).
+recheck_last: 2
+# A release covers the month two months back (one to three months during shutdowns).
+lag_months: {min: 1, max: 3}
+table:
+  # Matched on the title (dash/space-insensitive), never on the table number alone.
+  title_prefix: "Soybean Crushing, Production, Consumption and Stocks - United States"
+  number: "1"
+  header_first_cell: Item
+# Typos in a published month header, corrected per release (checked by hand against the
+# table title and the neighbouring releases; anything not listed here fails the report).
+#   2022-03-01: the header prints "January 2021, December 2022, January 2022" under the title
+#   "...: January 2022 with Comparisons"; the previous month is December 2021 (its values
+#   match the 2022-02-01 release's December 2021 column).
+header_fixes:
+  "2022-03-01": {"December 2022": "December 2021"}
+oilseed: soybeans
+# NASS unit label (exactly as in the CSV) → dim_unit id.
+units:
+  "tons": short_ton
+  "1,000 pounds": klb
+# Table-1 row label → silver metric (plan §4). The commodity is the product the metric counts.
+metrics:
+  "Soybeans crushed": {metric: crushed_st, unit: short_ton, commodity_id: soybeans}
+  "Crude oil produced": {metric: crude_oil_produced_klb, unit: klb, commodity_id: soybean_oil}
+  "Cake and meal produced": {metric: meal_produced_st, unit: short_ton, commodity_id: soybean_meal}
+  "Crude oil on hand end of month": {metric: crude_oil_stocks_klb, unit: klb, commodity_id: soybean_oil}
+# Every other label seen in table 1 since 2015-10 (kept out of silver). A label that is in
+# neither list fails the report (a format change must be looked at, not silently skipped).
+known_rows:
+  - Crush
+  - "For animal feed"
+  - "For edible protein products"
+  - "Millfeed produced"
+  - Refine
+  - "Crude oil processed in refining"
+  - "Once refined oil produced"
+  - Consumption
+  - "Crude oil removed for inedible use in processing"
+  - "Once refined oil removed for use in processing"
+  - "Removed for edible use in processing"
+  - "Removed for inedible use in processing"
+  - Stocks
+  - "Cake and meal on hand end of month"
+  - "Millfeed on hand end of month"
+  - Crusher
+  - Refiner
+  - Offsite
+  - "Once refined oil on hand end of month"

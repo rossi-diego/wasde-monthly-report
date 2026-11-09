@@ -147,6 +147,172 @@ models:
         left_ts: release_ts_utc
         right_ts: wasde_release_ts_utc
 
+- name: fct_crush_pace
+  description: "Soybean crush pace vs. USDA, point in time (plan §6 F1–F3): one row per marketing year
+    × month at the instant NASS first printed that month; the MY-to-date crush uses the NASS vintages
+    public at that instant and is ASOF-joined to the latest WASDE crush public then. History = the
+    same month of the 5 prior MYs against their own as-of WASDE (from MY 2015/16). Published as
+    cross__crush_pace__v1."
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: market_year
+    data_type: varchar
+    description: Soybean marketing year (September–August), e.g. 2026/27.
+    data_tests:
+    - not_null
+  - name: my_start
+    data_type: integer
+    description: First calendar year of the marketing year.
+  - name: month_of_my
+    data_type: integer
+    description: Month index within the marketing year (1 = September).
+  - name: month
+    data_type: date
+    description: First day of the data month.
+    data_tests:
+    - not_null
+    - unique
+  - name: release_key
+    data_type: varchar
+    description: Fats & Oils release (YYYY-MM-DD) that first printed the month.
+    data_tests:
+    - not_null
+  - name: release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that release (15:00 ET in UTC); every input on the row was
+      public at or before it.
+    data_tests:
+    - not_null
+  - name: first_printed_as
+    data_type: varchar
+    description: current, or previous when a shutdown skipped the month's own release.
+  - name: month_crushed_st
+    data_type: double
+    description: Soybeans crushed in the month as printed then (short tons).
+  - name: month_crushed_bu
+    data_type: double
+    description: The same in bushels (× 33.3333).
+  - name: month_oil_klb
+    data_type: double
+    description: Crude soybean oil produced in the month as printed then (thousand pounds).
+  - name: oil_yield_lb_bu
+    data_type: double
+    description: month_oil_klb × 1000 / month_crushed_bu (F3, pounds per bushel).
+  - name: cum_st
+    data_type: double
+    description: Marketing-year-to-date crush through the month, NASS vintages public at release_ts_utc
+      (short tons).
+  - name: cum_bu
+    data_type: double
+    description: The same in bushels (F1 numerator).
+  - name: n_months_known
+    data_type: integer
+    description: Months summed in cum_* (always = month_of_my).
+  - name: inputs_max_release_ts_utc
+    data_type: timestamp with time zone
+    description: Newest NASS release used on the row (<= release_ts_utc, no look-ahead).
+  - name: wasde_release_key
+    data_type: varchar
+    description: WASDE report month (YYYY-MM) whose soybean crush was public at release_ts_utc (ASOF).
+  - name: wasde_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that WASDE (12:00 ET in UTC); always <= release_ts_utc.
+  - name: wasde_proj_est_flag
+    data_type: varchar
+    description: WASDE flag of the crush figure (proj / est / blank for final).
+  - name: wasde_crush_unit_id
+    data_type: varchar
+    description: Native WASDE unit of the crush figure (m_bu = million bushels).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [m_bu]
+  - name: wasde_crush_native
+    data_type: double
+    description: WASDE U.S. soybean crush for this MY as of release_ts_utc (million bushels).
+  - name: wasde_crush_bu
+    data_type: double
+    description: The same in bushels (F1 denominator).
+  - name: wasde_oil_release_key
+    data_type: varchar
+    description: WASDE report month whose soybean oil production was public at release_ts_utc.
+  - name: wasde_oil_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that WASDE (UTC).
+  - name: wasde_oil_unit_id
+    data_type: varchar
+    description: Native WASDE unit of soybean oil production (m_lbs = million pounds).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values: [m_lbs]
+  - name: wasde_oil_production_native
+    data_type: double
+    description: WASDE U.S. soybean oil production for the same MY label (million pounds; WASDE's oil
+      year runs October–September).
+  - name: wasde_implied_oil_yield_lb_bu
+    data_type: double
+    description: WASDE soybean oil production ÷ WASDE soybean crush (pounds per bushel), as of
+      release_ts_utc.
+  - name: pct_of_target
+    data_type: double
+    description: cum_bu / wasde_crush_bu (F1).
+  - name: months_remaining
+    data_type: integer
+    description: Months of the marketing year still to be reported (12 − month_of_my).
+  - name: required_monthly_bu
+    data_type: double
+    description: (wasde_crush_bu − cum_bu) / months_remaining (F2; null in August).
+  - name: last_my_remaining_mean_bu
+    data_type: double
+    description: Mean monthly crush of the same remaining months in the previous MY, as known at
+      release_ts_utc (bushels).
+  - name: last_my_remaining_n
+    data_type: integer
+    description: Months behind last_my_remaining_mean_bu.
+  - name: n_5yr
+    data_type: integer
+    description: Prior MYs (of the last 5) with an as-of pct_of_target at the same month (small sample).
+  - name: pct_5yr_mean
+    data_type: double
+    description: Mean pct_of_target of those MYs at the same month.
+  - name: pct_5yr_min
+    data_type: double
+    description: Minimum of the same.
+  - name: pct_5yr_max
+    data_type: double
+    description: Maximum of the same.
+  - name: n_yield_5yr
+    data_type: integer
+    description: Prior MYs (of the last 5) with an oil yield for the same month.
+  - name: yield_5yr_mean
+    data_type: double
+    description: Mean oil yield of the same month in those MYs (lb/bu, as first printed).
+  - name: yield_5yr_min
+    data_type: double
+    description: Minimum of the same.
+  - name: yield_5yr_max
+    data_type: double
+    description: Maximum of the same.
+  - name: is_latest
+    data_type: boolean
+    description: True on the newest month.
+  data_tests:
+  - assert_no_lookahead:
+      arguments:
+        left_ts: release_ts_utc
+        right_ts: wasde_release_ts_utc
+  - assert_no_lookahead:
+      arguments:
+        left_ts: release_ts_utc
+        right_ts: wasde_oil_release_ts_utc
+  - assert_no_lookahead:
+      arguments:
+        left_ts: release_ts_utc
+        right_ts: inputs_max_release_ts_utc
+
 unit_tests:
   # Same-timestamp boundary of the ASOF join (plan §5): a WASDE released at exactly the ESR
   # release instant counts as public; one released a second later must not be used, and an
@@ -181,3 +347,41 @@ unit_tests:
            pct_of_target: 0.5}
         - {release_key: 2026-11-05, wasde_release_key: 2026-10, wasde_exports_mt: 4000,
            pct_of_target: 0.225}
+
+  # Crush pace: a WASDE released at exactly the NASS release instant counts as public, one a
+  # second later does not; the MY-to-date sum uses only NASS vintages public at that instant
+  # (the later revision of September is ignored on the September row, used on October's).
+  - name: crush_pace_asof_same_timestamp_boundary
+    model: fct_crush_pace
+    given:
+      - input: ref('stg_oilseed_crush')
+        rows:
+          - {release_key: 2026-11-02, release_ts_utc: "2026-11-02 20:00:00+00", oilseed: soybeans,
+             metric: crushed_st, month: 2026-09-01, market_year: 2026/27, my_start: 2026,
+             month_of_my: 1, column_role: current, value: 60000}
+          - {release_key: 2026-11-02, release_ts_utc: "2026-11-02 20:00:00+00", oilseed: soybeans,
+             metric: crude_oil_produced_klb, month: 2026-09-01, market_year: 2026/27,
+             my_start: 2026, month_of_my: 1, column_role: current, value: 540}
+          - {release_key: 2026-12-01, release_ts_utc: "2026-12-01 20:00:00+00", oilseed: soybeans,
+             metric: crushed_st, month: 2026-09-01, market_year: 2026/27, my_start: 2026,
+             month_of_my: 1, column_role: previous, value: 70000}
+          - {release_key: 2026-12-01, release_ts_utc: "2026-12-01 20:00:00+00", oilseed: soybeans,
+             metric: crushed_st, month: 2026-10-01, market_year: 2026/27, my_start: 2026,
+             month_of_my: 2, column_role: current, value: 40000}
+      - input: ref('dim_unit')
+        rows:
+          - {unit_id: short_ton, commodity_id: soybeans, bu_per_unit: 30}
+      - input: ref('int_wasde_asof')
+        rows:
+          - {commodity_id: soybeans, market_year: 2026/27, wasde_release_key: 2026-10,
+             wasde_release_ts_utc: "2026-10-09 16:00:00+00", unit_id: m_bu, crush_native: 4}
+          - {commodity_id: soybeans, market_year: 2026/27, wasde_release_key: 2026-11,
+             wasde_release_ts_utc: "2026-11-02 20:00:00+00", unit_id: m_bu, crush_native: 2}
+          - {commodity_id: soybeans, market_year: 2026/27, wasde_release_key: 2026-12,
+             wasde_release_ts_utc: "2026-11-02 20:00:01+00", unit_id: m_bu, crush_native: 8}
+    expect:
+      rows:
+        - {month: 2026-09-01, wasde_release_key: 2026-11, cum_bu: 1800000, wasde_crush_bu: 2000000,
+           pct_of_target: 0.9, months_remaining: 11, oil_yield_lb_bu: 0.3}
+        - {month: 2026-10-01, wasde_release_key: 2026-12, cum_bu: 3300000, wasde_crush_bu: 8000000,
+           pct_of_target: 0.4125, months_remaining: 10, oil_yield_lb_bu: null}

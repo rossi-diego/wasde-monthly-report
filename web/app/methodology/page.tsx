@@ -8,9 +8,9 @@ import { monthLabel, num } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Methodology · USDA Reports Dashboard" };
 
-function Block({ title, children }: { title: string; children: React.ReactNode }) {
+function Block({ title, id, children }: { title: string; id?: string; children: React.ReactNode }) {
   return (
-    <section className="card max-w-3xl space-y-3 p-5 sm:p-6">
+    <section id={id} className="card max-w-3xl space-y-3 p-5 sm:p-6">
       <h2 className="m-0 text-[17px] font-bold">{title}</h2>
       <div className="space-y-3 leading-relaxed">{children}</div>
     </section>
@@ -139,6 +139,44 @@ export default function Methodology() {
         </p>
       </Block>
 
+      <Block title="Soybean crush (USDA NASS Fats & Oils)" id="crush">
+        <p>
+          The monthly NASS report <em>Fats and Oils: Oilseed Crushings, Production, Consumption and Stocks</em>, released
+          about the first business day of each month at 15:00 ET and covering the month two months earlier (September data
+          in early November). Each release zip is found through the ESMIS API (the file URL always comes from the API, never
+          from a file-name pattern) and stored byte-for-byte. The soybean table (soybeans crushed, crude oil and meal
+          produced, crude oil stocks) prints the year-ago month, the previous month (revised) and the current month; every
+          printed value is kept with the release that printed it.
+        </p>
+        <p>
+          Units as printed: tons are short tons (2,000 lb), oil is in 1,000 lb. Bushels = short tons × 33.3333 (60 lb per
+          bushel). The marketing year runs September–August. <strong className="text-ink">History window: 2015-10+</strong>:
+          ESMIS holds NASS files from the October 2015 release only, so 2015/16 is the first complete marketing year and no
+          crush comparison reaches further back.
+        </p>
+        <p>
+          <strong className="text-ink">Crush pace (F1)</strong>: marketing-year-to-date crush in bushels ÷ the U.S. soybean
+          crush projection of the latest WASDE released before NASS first printed that month (as-of join on release
+          timestamps). The year-to-date sum uses, for each earlier month, the latest NASS revision public at that moment,
+          never a later one. Each of the 5 previous marketing years is measured the same way at the same month, against the
+          WASDE public at the time. <strong className="text-ink">Still needed (F2)</strong>: (as-of projection − crush to
+          date) ÷ months left, compared with the mean of the same remaining months in the previous marketing year; not shown
+          with fewer than {ins?.gates.f2_min_months_remaining ?? 5} months left.{" "}
+          <strong className="text-ink">Oil yield (F3)</strong>: crude oil produced × 1,000 ÷ bushels crushed (lb/bu) for the
+          newest month, against the same month of the 5 previous years and against the WASDE-implied yield (WASDE soybean oil
+          production ÷ WASDE crush, as of the release; WASDE&apos;s oil year runs October–September).
+        </p>
+        <p>
+          After the 2018–19 and 2025 shutdowns NASS published some months late (September 2025 first appeared next to
+          October 2025 on 2025-12-10); those months are dated by the release that actually printed them first.
+        </p>
+        <p>
+          NOPA members represent roughly 95% of US soybean crush and publish about two weeks earlier; NOPA data is
+          proprietary and not redistributed here. This site uses the public-domain NASS Fats &amp; Oils series, which covers
+          all reporting facilities. See <a href="https://www.nopa.org/" className="text-link underline">nopa.org</a>.
+        </p>
+      </Block>
+
       <Block title="Insight rules and honesty gates">
         <ul className="list-disc space-y-2 pl-5">
           <li>Insights are computed in Python as typed parameters (ranks, shares, n); the site only turns them into words, and a test checks that the page matches the JSON.</li>
@@ -170,6 +208,11 @@ export default function Methodology() {
           Sales is isolated from WASDE: a failed or invalid ESR pull keeps the last good ESR data, is flagged on the
           Reports page and never blocks the WASDE release. An external heartbeat and an auto-updated GitHub issue alert the
           maintainer if a report is late or a check fails.
+        </p>
+        <p>
+          NASS crush is detected the same way (ESMIS listing on release day, 15:00 ET) and isolated the same way. A build
+          whose only new content is crush data publishes the same kind of immutable <code>weekly-YYYY-MM-DD</code>{" "}
+          prerelease (named after the build day, never marked Latest), so <code>data-*</code> stays the Latest release.
         </p>
       </Block>
       </div>

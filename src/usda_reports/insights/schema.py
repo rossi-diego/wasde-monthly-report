@@ -30,12 +30,16 @@ InsightKind = Literal[
     "commitment_pace",  # E1
     "required_weekly_sales",  # E2
     "china_share_soy",  # E3
+    "crush_pace",  # F1
+    "required_monthly_crush",  # F2
+    "oil_yield",  # F3
 ]
 SuppressedReason = Literal[
     "n_below_min",  # comparison sample smaller than gates.min_n
     "stale_input",  # an input is older than cadence + grace_days
     "asof_missing",  # no point-in-time WASDE target for the ESR week
     "weeks_remaining_below_min",  # E2: fewer than gates.e2_min_weeks_remaining weeks left
+    "months_remaining_below_min",  # F2: fewer than gates.f2_min_months_remaining months left
     "no_data",  # the inputs needed are absent
     "first_projection",  # W3: a first projection has no revision to rank
     "gap_after_cancelled_report",  # W3: Δ spans 2+ months (a WASDE was cancelled)
@@ -48,6 +52,9 @@ Caveat = Literal[
     "history_point_in_time",  # history uses the WASDE public at the time, not the final one
     "latest_only_history",  # ESR history is backfilled with revised values
     "partial_denominator",  # W4: exporters listed vary by WASDE vintage
+    "crush_history_from_2015",  # NASS crush history starts with the 2015-10 ESMIS file
+    "nass_revises_previous_month",  # each NASS release revises the previous month
+    "wasde_oil_year_oct_sep",  # WASDE soybean oil year is Oct–Sep, the crush year Sep–Aug
 ]
 
 
@@ -62,8 +69,8 @@ class Insight(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     id: str = Field(description="Stable id, e.g. 'E1:soybeans' or 'W2:corn'.")
-    rule: Literal["W1", "W2", "W3", "W4", "E1", "E2", "E3"]
-    report_id: Literal["wasde", "export_sales", "cross"]
+    rule: Literal["W1", "W2", "W3", "W4", "E1", "E2", "E3", "F1", "F2", "F3"]
+    report_id: Literal["wasde", "export_sales", "oilseed_crush", "cross"]
     commodity_id: str | None
     kind: InsightKind
     params: dict[str, Any] = Field(description="Numbers and ids only; never prose.")
@@ -108,6 +115,7 @@ class Gates(BaseModel):
     percentile_min_n: int = 10
     small_sample_below: int = 10
     e2_min_weeks_remaining: int = 6
+    f2_min_months_remaining: int = 5  # = min_n: F2 compares n = months_remaining months
     # Per-report staleness: cadence days + grace_days from config/reports.yaml.
     stale_after_days: dict[str, int] = Field(default_factory=dict)
 

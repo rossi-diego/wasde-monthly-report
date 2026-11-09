@@ -5,7 +5,7 @@ import Link from "next/link";
 import RangeBar from "@/components/charts/RangeBar";
 import { T, useLang, useT } from "@/components/chrome/I18n";
 import type { Insight, InsightsDoc } from "@/lib/data-contract";
-import { share } from "@/lib/format";
+import { lbPerBu, num, share } from "@/lib/format";
 import { cardView, finding, heroView, type CardView } from "@/lib/insight-text";
 
 /** "small sample" chip: shown whenever the insight carries the small_sample caveat (n < 10). */
@@ -47,8 +47,13 @@ export function InsightCard({ v, dataHref }: { v: CardView; dataHref?: string })
           mean={v.range.mean}
           value={v.range.value}
           color={v.color}
-          format={(x) => share(x, 0)}
-          ariaLabel={t("card.rangeAria", { min: share(v.range.lo), max: share(v.range.hi), v: v.value })}
+          fromZero={v.rangeUnit === "share"}
+          format={(x) => (v.rangeUnit === "share" ? share(x, 0) : num(x, 2))}
+          ariaLabel={t("card.rangeAria", {
+            min: v.rangeUnit === "share" ? share(v.range.lo) : lbPerBu(v.range.lo),
+            max: v.rangeUnit === "share" ? share(v.range.hi) : lbPerBu(v.range.hi),
+            v: v.value,
+          })}
         />
       )}
       {v.context.map((c) => (

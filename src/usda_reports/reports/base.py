@@ -85,6 +85,17 @@ class ReportSpec(ABC):
         """Silver from the last good bronze state after :meth:`build_silver` failed."""
         raise NotImplementedError(f"{self.report_id} has no last-good silver fallback")
 
+    def write_empty_silver(self) -> None:
+        """Write an empty silver with the full schema (isolated reports only)."""
+        raise NotImplementedError(f"{self.report_id} has no empty silver")
+
+    def source_errors(self) -> tuple[type[Exception], ...]:
+        """Known data problems of this report (an isolated report falls back on these)."""
+        from usda_reports.core.contracts import ContractError
+        from usda_reports.core.vocab import UnseenLabelError
+
+        return (UnseenLabelError, ContractError)
+
     def silver_alerts(self, silver: pd.DataFrame) -> list[str]:
         """Problems that must fail the run after silver was written (e.g. new labels)."""
         return []

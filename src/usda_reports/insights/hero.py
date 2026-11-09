@@ -1,7 +1,8 @@
 """Deterministic home story selection (plan §6 'Home story selection').
 
 * Cards (≤ 5): one per report plus at most one cross-report card, each the passing insight
-  with the most extreme rank of its report.
+  with the most extreme rank of its report. The crush card is the F1/F3 insight furthest
+  outside its 5-year range (F1 on ties and when both sit inside).
 * Hero clauses:
   - "tighter / looser U.S. {commodity}": W2 in the tightest / loosest third of n **and** the
     W1 ending-stocks Δ < 0 / > 0 for the same commodity; the most extreme W2 wins.
@@ -47,6 +48,13 @@ def export_sales_card(insights: list[Insight]) -> Insight | None:
     return e2[0] if e2 else None
 
 
+def crush_card(insights: list[Insight]) -> Insight | None:
+    cands = [i for i in passing(insights) if i.rule in ("F1", "F3") and i.params.get("position")]
+    if not cands:
+        return None
+    return min(cands, key=lambda i: (-float(i.params.get("outside_distance") or 0), i.rule != "F1"))
+
+
 def cross_card(insights: list[Insight]) -> Insight | None:
     e1 = [i for i in passing(insights) if i.rule == "E1" and i.params.get("position")]
     if not e1:
@@ -57,7 +65,12 @@ def cross_card(insights: list[Insight]) -> Insight | None:
 
 
 def home_cards(insights: list[Insight]) -> list[str]:
-    cards = [wasde_card(insights), export_sales_card(insights), cross_card(insights)]
+    cards = [
+        wasde_card(insights),
+        export_sales_card(insights),
+        crush_card(insights),
+        cross_card(insights),
+    ]
     return [c.id for c in cards if c is not None][:5]
 
 
