@@ -17,8 +17,12 @@ from usda_reports.core.manifest import Manifest, ReleaseEntry, release_ts_utc
 
 log = get_logger(__name__)
 
-# Bronze sub-folders per source format (WASDE).
-SOURCE_DIRS = {"usda_csv": ("usda_csv", "csv"), "esmis_xml": ("esmis_xml", "xml")}
+# Bronze sub-folders per source format (WASDE keeps its historical top-level folders).
+SOURCE_DIRS = {
+    "usda_csv": ("usda_csv", "csv"),
+    "esmis_xml": ("esmis_xml", "xml"),
+    "fas_esr_api": ("export_sales", "json.gz"),
+}
 CSV_DIR = "usda_csv"
 XML_DIR = "esmis_xml"
 

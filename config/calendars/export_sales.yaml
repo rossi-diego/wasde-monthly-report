@@ -1,0 +1,19 @@
+# U.S. Export Sales (FAS ESR): weekly, Thursday 08:30 ET, covering the week that ended the
+# previous Thursday. A federal holiday from Monday through Thursday of the release week moves
+# the report to Friday (holiday_shift_days: 1).
+#
+# The live API reports the actual time of the newest release (/api/esr/datareleasedates,
+# releaseTimeStamp); detect uses it and only falls back to this rule for history. Rule dates
+# never precede the real publication (shutdown catch-ups only ever come later), so an as-of
+# WASDE join on a rule date can only pick an older WASDE, never one that was not yet public.
+source: https://www.fas.usda.gov/programs/export-sales-reporting-program
+release_time_et: "08:30"
+rule:
+  weekday: thursday
+  # First release of marketing year 2010/11 data (wheat MY starts June 1, 2010).
+  start: "2010-06-10"
+  lag_days: 7
+  holiday_shift_days: 1
+# scheduled date -> actual date (special schedules). None recorded so far.
+overrides: {}
+cancelled: []

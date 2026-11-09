@@ -1,0 +1,26 @@
+# Silver contract for U.S. Export Sales (checked by usda_reports.core.contracts on every build).
+# Silver is a change log: one row per (snapshot, commodity, MY, week, destination, metric)
+# whose value is new or differs from the previous snapshot.
+report_id: export_sales
+release_column: release_key
+release_label: ESR releases
+key:
+  - snapshot_key
+  - commodity_id
+  - esr_market_year
+  - week_ending
+  - country_id
+  - metric
+not_null:
+  - release_key
+  - commodity_id
+  - market_year
+  - week_ending
+  - week_of_my
+  - country_id
+  - metric
+  - value
+  - unit_id
+# Each weekly release carries at least a few destinations × 7 metrics.
+min_rows_per_release: 20
+envelope: true

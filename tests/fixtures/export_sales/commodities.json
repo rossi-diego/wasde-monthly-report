@@ -1,0 +1,222 @@
+[
+{
+"commodityCode": 101,
+"commodityName": "Wheat - HRW",
+"unitId": 1
+},
+{
+"commodityCode": 102,
+"commodityName": "Wheat - SRW",
+"unitId": 1
+},
+{
+"commodityCode": 103,
+"commodityName": "Wheat - HRS",
+"unitId": 1
+},
+{
+"commodityCode": 104,
+"commodityName": "Wheat - White",
+"unitId": 1
+},
+{
+"commodityCode": 105,
+"commodityName": "Wheat - Durum",
+"unitId": 1
+},
+{
+"commodityCode": 106,
+"commodityName": "Wheat - Mixed",
+"unitId": 1
+},
+{
+"commodityCode": 107,
+"commodityName": "All Wheat",
+"unitId": 1
+},
+{
+"commodityCode": 201,
+"commodityName": "Wheat Products",
+"unitId": 1
+},
+{
+"commodityCode": 301,
+"commodityName": "Barley",
+"unitId": 1
+},
+{
+"commodityCode": 401,
+"commodityName": "Corn",
+"unitId": 1
+},
+{
+"commodityCode": 501,
+"commodityName": "Rye",
+"unitId": 1
+},
+{
+"commodityCode": 601,
+"commodityName": "Oats",
+"unitId": 1
+},
+{
+"commodityCode": 701,
+"commodityName": "Sorghum",
+"unitId": 1
+},
+{
+"commodityCode": 801,
+"commodityName": "Soybeans",
+"unitId": 1
+},
+{
+"commodityCode": 901,
+"commodityName": "Soybean cake & meal",
+"unitId": 1
+},
+{
+"commodityCode": 902,
+"commodityName": "Soybean Oil",
+"unitId": 1
+},
+{
+"commodityCode": 1001,
+"commodityName": "Flaxseed",
+"unitId": 1
+},
+{
+"commodityCode": 1101,
+"commodityName": "Linseed Oil",
+"unitId": 1
+},
+{
+"commodityCode": 1110,
+"commodityName": "Sunflowerseed Oil",
+"unitId": 1
+},
+{
+"commodityCode": 1201,
+"commodityName": "Cottonseed",
+"unitId": 1
+},
+{
+"commodityCode": 1202,
+"commodityName": "Cottonseed cake & meal",
+"unitId": 1
+},
+{
+"commodityCode": 1203,
+"commodityName": "Cottonseed Oil",
+"unitId": 1
+},
+{
+"commodityCode": 1301,
+"commodityName": "Cotton- Am Pima",
+"unitId": 2
+},
+{
+"commodityCode": 1401,
+"commodityName": "Cotton- Upland 1 1/16\" & over",
+"unitId": 2
+},
+{
+"commodityCode": 1402,
+"commodityName": "Cotton- Upland 1\"-1 1/16\" & over",
+"unitId": 2
+},
+{
+"commodityCode": 1403,
+"commodityName": "Cotton- Upland under 1\"",
+"unitId": 2
+},
+{
+"commodityCode": 1404,
+"commodityName": "All Upland Cotton",
+"unitId": 2
+},
+{
+"commodityCode": 1498,
+"commodityName": "Rice - LG Rough",
+"unitId": 1
+},
+{
+"commodityCode": 1499,
+"commodityName": "Rice- Med, Short,Other Rough",
+"unitId": 1
+},
+{
+"commodityCode": 1501,
+"commodityName": "Rice- LG Brown",
+"unitId": 1
+},
+{
+"commodityCode": 1502,
+"commodityName": "Rice- Med,Short, Other Brown",
+"unitId": 1
+},
+{
+"commodityCode": 1503,
+"commodityName": "Rice - Long Grain, Milled",
+"unitId": 1
+},
+{
+"commodityCode": 1504,
+"commodityName": "Rice- Med,Short,Other Milled",
+"unitId": 1
+},
+{
+"commodityCode": 1505,
+"commodityName": "All Rice",
+"unitId": 1
+},
+{
+"commodityCode": 1601,
+"commodityName": "Cattle Hides - Whole - Excluding Wet Blues",
+"unitId": 3
+},
+{
+"commodityCode": 1602,
+"commodityName": "Calf Skins - Whole - Excluding Wet Blues",
+"unitId": 3
+},
+{
+"commodityCode": 1603,
+"commodityName": "Kip Skins - Whole - Excluding Wet Blues",
+"unitId": 3
+},
+{
+"commodityCode": 1604,
+"commodityName": "Cattle Hides-Cut into Croupons, etc-excl Wet Blues",
+"unitId": 4
+},
+{
+"commodityCode": 1605,
+"commodityName": "Cattle Hides and Skins-other-excluding Wet Blues",
+"unitId": 5
+},
+{
+"commodityCode": 1606,
+"commodityName": "Cattle Wet Blues-Unsplit (Whole or Sided)",
+"unitId": 4
+},
+{
+"commodityCode": 1607,
+"commodityName": "Cattle Wet Blues-Grain Splits (Whole or Sided)",
+"unitId": 4
+},
+{
+"commodityCode": 1608,
+"commodityName": "Cattle Wet Blues-Splits-Excluding Grain Splits",
+"unitId": 5
+},
+{
+"commodityCode": 1701,
+"commodityName": "Fresh, Chilled, or Frozen Muscle Cuts of Beef",
+"unitId": 1
+},
+{
+"commodityCode": 1702,
+"commodityName": "Fresh, Chilled, or Frozen Muscle Cuts of Pork",
+"unitId": 1
+}
+]
