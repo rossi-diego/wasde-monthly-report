@@ -9,7 +9,7 @@ export default function BalanceSheet({ series }: { series: Series }) {
   const { columns, rows } = series.balance_sheet;
   if (!rows.length) return <p className="text-sm text-muted">No balance sheet for this region.</p>;
   return (
-    <div className="overflow-x-auto">
+    <div tabIndex={0} role="region" aria-label="Balance sheet table" className="overflow-x-auto">
       <table className="w-full min-w-[420px] text-sm">
         <thead>
           <tr className="border-b border-line text-xs text-muted">
@@ -18,7 +18,7 @@ export default function BalanceSheet({ series }: { series: Series }) {
             </th>
             {columns.map((c) => (
               <th key={c.market_year} scope="col" className="pb-2 text-right font-normal">
-                <span className="text-ink-2">{c.market_year}</span> {flagLabel(c.flag)}
+                <span className="text-muted">{c.market_year}</span> {flagLabel(c.flag)}
               </th>
             ))}
           </tr>
@@ -29,7 +29,7 @@ export default function BalanceSheet({ series }: { series: Series }) {
             const key = KEY_ROWS.has(r.id);
             return (
               <tr key={r.id} className={`border-b border-line last:border-0 ${key ? "font-medium" : ""}`}>
-                <th scope="row" className={`py-1.5 pr-3 text-left font-normal ${key ? "text-ink" : "text-ink-2"}`}>
+                <th scope="row" className={`py-1.5 pr-3 text-left font-normal ${key ? "text-ink" : "text-muted"}`}>
                   {r.label}
                   {r.unit && r.unit !== series.unit_label && (
                     <span className="block text-xs font-normal text-muted">{r.unit}</span>

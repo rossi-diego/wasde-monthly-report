@@ -54,6 +54,31 @@ export function monthLabel(m: string, style: "long" | "short" = "long"): string 
   });
 }
 
+/** "2026-10-09T00:00:00" -> "Oct 9, 2026" (no time-zone drift: the date part only). */
+export function shortDate(iso: string | null | undefined, withYear = true): string | null {
+  if (!iso) return null;
+  const [y, m, d] = iso.slice(0, 10).split("-").map(Number);
+  if (!y || !m || !d) return null;
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    ...(withYear ? { year: "numeric" } : {}),
+    timeZone: "UTC",
+  });
+}
+
+/** "2026-09" -> "September" (or "Sep" with style "short"). */
+export function monthName(m: string | null | undefined, style: "long" | "short" = "long"): string {
+  if (!m) return "";
+  const [y, mo] = m.split("-").map(Number);
+  return new Date(Date.UTC(y, mo - 1, 1)).toLocaleDateString("en-US", { month: style, timeZone: "UTC" });
+}
+
+export function ordinal(n: number): string {
+  const s = n % 100 >= 11 && n % 100 <= 13 ? "th" : ({ 1: "st", 2: "nd", 3: "rd" } as Record<number, string>)[n % 10] ?? "th";
+  return `${n}${s}`;
+}
+
 export function bytes(n: number): string {
   if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
   return `${(n / 1024 / 1024).toFixed(1)} MB`;

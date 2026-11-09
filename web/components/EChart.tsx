@@ -44,19 +44,19 @@ export type Tokens = Record<
 >;
 
 const VARS: Record<keyof Tokens, string> = {
-  surface: "--surface",
-  ink: "--ink",
-  ink2: "--ink-2",
+  surface: "--card",
+  ink: "--text",
+  ink2: "--muted",
   muted: "--muted",
   grid: "--grid",
-  axis: "--axis",
-  series1: "--series-1",
-  series2: "--series-2",
-  context: "--context",
+  axis: "--bar-past",
+  series1: "--wasde",
+  series2: "--r-crush",
+  context: "--bar-past",
   up: "--up",
   down: "--down",
   neutral: "--neutral",
-  barMuted: "--bar-muted",
+  barMuted: "--bar-est",
 };
 
 function readTokens(): Tokens {
@@ -88,7 +88,7 @@ export function useTokens(): Tokens | null {
 export function baseOption(t: Tokens) {
   return {
     animationDuration: 300,
-    textStyle: { fontFamily: "system-ui, -apple-system, Segoe UI, sans-serif", color: t.ink2 },
+    textStyle: { fontFamily: "IBM Plex Sans, system-ui, -apple-system, Segoe UI, sans-serif", color: t.ink2 },
     grid: { left: 8, right: 16, top: 36, bottom: 8, containLabel: true },
     tooltip: {
       backgroundColor: t.surface,

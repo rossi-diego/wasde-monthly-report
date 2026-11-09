@@ -119,7 +119,7 @@ export default function RevisionChart({ series }: { series: Series }) {
             role="tab"
             aria-selected={a === active}
             onClick={() => setAttr(a)}
-            className={`rounded-full px-3 py-1 text-xs ${a === active ? "bg-accent text-white" : "border border-line text-ink-2 hover:bg-surface-2"}`}
+            className={`min-h-11 rounded-full px-3 text-xs font-semibold ${a === active ? "bg-[var(--pill-active)] text-white" : "border border-line text-ink hover:bg-nav-active"}`}
           >
             {ATTR_LABEL[a]}
           </button>

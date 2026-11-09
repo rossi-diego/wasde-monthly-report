@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import CommodityView from "@/components/CommodityView";
+import { commodityPills, releaseInfo } from "@/lib/dashboard";
 import { getIndex, getSeries } from "@/lib/data";
 
 export const dynamicParams = false;
@@ -21,5 +22,5 @@ export default async function CommodityPage({ params }: { params: Promise<{ slug
   const entry = getIndex().find((x) => x.id === slug);
   if (!entry) notFound();
   const initial = getSeries(entry.id, "united_states");
-  return <CommodityView entry={entry} initial={initial} />;
+  return <CommodityView entry={entry} initial={initial} release={releaseInfo()} pills={commodityPills()} />;
 }

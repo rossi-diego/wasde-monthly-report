@@ -131,10 +131,10 @@ cd web && npm ci && npm run dev
 
 ## Screenshots
 
-| Commodity page | Revision paths & stocks-to-use |
+| Commodity page | Phone (360–390px) |
 |---|---|
-| ![Commodity](docs/screenshots/commodity-light.png) | ![Revisions](docs/screenshots/revisions-light.png) |
-| **Data & downloads** | **Dark mode** |
+| ![Commodity](docs/screenshots/commodity-light.png) | <img src="docs/screenshots/home-mobile.png" alt="Home on a phone" width="260"> |
+| **Data catalogue** | **Dark mode** |
 | ![Downloads](docs/screenshots/downloads-light.png) | ![Dark](docs/screenshots/home-dark.png) |
 
 ## Project structure
