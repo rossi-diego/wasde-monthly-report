@@ -12,10 +12,10 @@ demo:               ## Fastest start: latest published data + local site (no pip
 	cd web && npm run dev
 
 backfill:           ## Download every WASDE report since 2010-07 into bronze
-	wasde backfill
+	usda-reports backfill
 
 pipeline:           ## silver → gold (dbt) → publish
-	wasde run
+	usda-reports run
 
 test:
 	pytest --cov

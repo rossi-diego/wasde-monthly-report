@@ -2539,8 +2539,8 @@ wheels = [
 ]
 
 [[package]]
-name = "wasde"
-version = "2.0.0"
+name = "usda-reports"
+version = "2.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "duckdb" },

@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "wasde"
-version = "2.0.0"
-description = "USDA WASDE data product: complete harmonized history since 2010, auto-updated on every release."
+name = "usda-reports"
+version = "2.1.0"
+description = "USDA reports data product (WASDE first): complete harmonized history, auto-updated on every release."
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Diego Rossi" }]
@@ -37,15 +37,20 @@ dev = [
 ]
 
 [project.scripts]
-wasde = "wasde.cli:app"
+usda-reports = "usda_reports.cli:main"
+# Deprecated alias, kept for one release.
+wasde = "usda_reports.cli:legacy_main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/wasde"]
+packages = ["src/usda_reports"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --tb=short"
-markers = ["network: hits real USDA endpoints (deselected by default in CI)"]
+markers = [
+    "network: hits real endpoints (skipped unless USDA_LIVE_TESTS=1)",
+    "slow: full rebuild from the real bronze store (skipped when bronze is absent)",
+]
 
 [tool.ruff]
 line-length = 100
@@ -68,7 +73,7 @@ module = "tests.*"
 disallow_untyped_defs = false
 
 [tool.coverage.run]
-source = ["wasde"]
+source = ["usda_reports"]
 omit = ["*/cli.py"]
 
 [tool.coverage.report]

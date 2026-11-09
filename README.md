@@ -79,7 +79,7 @@ not failures; a report missing 3 days after its scheduled date is.
 |---|---|
 | **XML layout learned from the CSV overlap** | The pre-2021 XML does not label commodities or units. Matching 227k cells against the 2021–2025 CSVs learned the layout: 97% of CSV values reproduced exactly (100% of grain/oilseed balance sheets). Older releases fall back to table-level mappings. |
 | **Canonical vocabulary, fail on new labels** | `"Ending Stocks, Total"`, `"Ending stocks"` → `ending_stocks`, in reviewable YAML. A label never seen before stops the run instead of silently creating a new series. |
-| **Full rebuild every run** | ~850k rows rebuild in under a minute; no incremental-state bugs. |
+| **Full rebuild every run** | ~850k rows: silver reparse ≈40 s, dbt ≈15 s; no incremental-state bugs. Bronze persists as append-only `bronze-store` shards, each manifest naming the shards it was built from. |
 | **dbt-duckdb for gold** | Lineage, documented models and data tests (balance-sheet identity, key uniqueness, plausible stocks-to-use, monotonic WASDE numbers). |
 | **Static site + GitHub Releases** | Data changes monthly: no server to run, no cold starts, free hosting, every month's data versioned and downloadable. |
 | **Positive success criteria** | A run succeeds only if the expected report, a plausible row count and the schema all check out — the failure mode that silently broke v1. |
@@ -94,6 +94,28 @@ not failures; a report missing 3 days after its scheduled date is.
 | `fct_balance_sheet` | report × table × commodity × region × MY | Wide balance sheet + stocks-to-use |
 | `fct_ending_stocks_drivers` | same | Exact decomposition of each ending-stocks revision |
 | `fct_changes` | series × MY × report | Seasonal materiality score + revision streaks |
+| `dim_release` *(core)* | report_id × release | Every release of every report: UTC release instant, edition, bronze sha256 |
+| `dim_calendar` *(core)* | report_id × scheduled date | Upcoming and past release dates, ingested or not |
+| `dim_unit`, `dim_commodity` *(seeds)* | unit / commodity | MT conversions (bu, short tons, lb; round-trip tested) and marketing-year start months |
+
+Models live in `dbt/models/{staging/wasde, marts/core, marts/wasde}` so every new USDA report
+adds its own folder. Every silver table starts with the same **envelope**: `report_id,
+release_key, release_ts_utc, edition, source, bronze_sha256, vintage_quality`.
+
+### Downloads (versioned catalogue)
+
+Each data release carries `<report_id>__<dataset>__v<major>` files in Parquet (zstd) and CSV,
+listed with rows, bytes and sha256 in `datasets.json`:
+
+| Dataset | Model |
+|---|---|
+| `wasde__values__v1` | `fct_wasde` (long format, every value) |
+| `wasde__balance_sheets__v1` | `fct_balance_sheet` |
+| `wasde__revisions__v1` | `fct_revisions` |
+| `wasde__changes__v1` | `fct_changes` |
+
+`wasde_full.parquet` / `wasde_full.csv.gz` remain as byte-identical aliases of
+`wasde__values__v1` for existing users.
 
 **Stocks-to-use:** World and World ex-China = ending stocks ÷ domestic use (trade nets out);
 U.S. and countries = ending stocks ÷ (domestic use + exports).
@@ -112,8 +134,8 @@ make demo            # downloads the latest data release, starts http://localhos
 
 ```bash
 python -m pip install -e ".[dev,dbt]"
-wasde backfill       # every report since 2010-07 (~10 min the first time)
-wasde run            # silver → gold (dbt) → web data + Excel files in data/publish
+usda-reports backfill   # every WASDE report since 2010-07 (~10 min the first time)
+usda-reports run        # silver → gold (dbt) → web data, Excel and the download catalogue
 cd web && npm ci && npm run dev
 ```
 
@@ -123,11 +145,16 @@ cd web && npm ci && npm run dev
 
 | Command | Does |
 |---|---|
-| `wasde backfill [--seed-dir DIR]` | Ingest every missing report into bronze |
-| `wasde detect` | Ingest the latest scheduled report if it's out (used by the scheduler) |
-| `wasde refresh-calendar` | Update `config/release_calendar.yaml` from usda.gov |
-| `wasde build-silver` / `build-gold` / `publish` | Run one layer; `wasde run` runs all three |
-| `wasde learn-xml-layout --seed-dir DIR` | Re-learn the XML layout from the CSV overlap |
+| `usda-reports backfill [--seed-dir DIR]` | Ingest every missing release of every enabled report into bronze |
+| `usda-reports detect` | Ingest the latest scheduled WASDE report if it's out (used by the scheduler) |
+| `usda-reports refresh-calendar` | Update `config/calendars/wasde.yaml` from usda.gov |
+| `usda-reports build-silver` / `build-gold` / `publish` | Run one layer; `usda-reports run` runs all three |
+| `usda-reports pack-shards` / `required-shards` / `unpack-shards DIR` | Persist and restore bronze as append-only `bronze-store` shards |
+| `usda-reports latest-key [REPORT]` · `migrate-manifest` | Newest release key · rewrite the manifest as schema v2 |
+| `usda-reports learn-xml-layout --seed-dir DIR` | Re-learn the WASDE XML layout from the CSV overlap |
+
+`wasde …` still works as a deprecated alias for one release, and so do `WASDE_*` environment
+variables (now `USDA_*`; see `.env.example`).
 
 ## Screenshots
 
@@ -141,24 +168,29 @@ cd web && npm ci && npm run dev
 
 ```
 .github/workflows/   ci.yml · release.yml (detect → build → release → deploy → verify) · keepalive.yml
-config/              mappings.yaml · focus.yaml (commodities, highlight rules) · release_calendar.yaml · xml_layout/
-src/wasde/
-  sources/           USDA CSV, ESMIS API, release calendar
-  bronze.py          raw store, manifest, backfill, archive
-  silver/            CSV + XML parsers, learned XML layout, harmonization, contracts
+config/              reports.yaml (registry) · calendars/ · contracts/ · vocab/
+                     reports/wasde/{mappings.yaml, focus.yaml, xml_layout/}
+src/usda_reports/
+  core/              settings, logging, HTTP, manifest v2, calendars, contracts, vocab, registry
+  reports/           ReportSpec base · wasde/ (sources, CSV + XML parsers, XML layout, silver)
+  bronze/            raw store + bronze-store delta shards
+  silver/            report-agnostic driver + common envelope
   gold.py            runs dbt
-  publish/           highlights, web JSON/Parquet, Excel workbooks
-  cli.py             `wasde` command
-dbt/                 staging + marts models, schema docs, data tests
+  publish/           highlights, web JSON/Parquet, Excel, versioned catalogue, release contract
+  cli.py             `usda-reports` command
+dbt/                 staging/wasde · marts/{core,wasde} · seeds (dim_unit, dim_commodity) · tests
 web/                 Next.js 16 static site (ECharts, hyparquet, SheetJS), Playwright tests
 tests/               unit + integration (dbt + publish on real fixture data)
-data/manifest.json   audit trail of every ingested report (data itself lives in releases)
+data/manifest.json   audit trail of every ingested release (schema v2; data lives in releases)
 ```
 
 ## Quality
 
-- **Python:** ruff, mypy, 83 pytest tests (90% coverage) including an end-to-end dbt + publish
-  run on real fixture data and XML-vs-CSV reconciliation.
+- **Python:** ruff, mypy, pytest (unit + integration) including an end-to-end dbt + publish
+  run on real fixture data, XML-vs-CSV reconciliation, the release/tag contract and Soy Outlook
+  compatibility checks. A **parity gate** (`tests/integration/test_parity_wasde.py`, runs when
+  the real bronze store is present) rebuilds everything from bronze and proves the result has the
+  same rows and sorted-content hash as the published `wasde_full.parquet`.
 - **dbt:** schema tests + singular tests (balance identity, unique keys, plausible stocks-to-use,
   monotonic WASDE numbers, complete latest report, no missing report months).
 - **Web:** ESLint, TypeScript, Playwright smoke tests (desktop + mobile), re-run against the live

@@ -1,0 +1,17 @@
+unit_id,commodity_id,label,from_mt,to_mt,bu_per_unit,note
+mt,,Metric ton,1,1,,
+k_mt,,Thousand metric tons,0.001,1000,,
+mmt,,Million metric tons,1e-06,1000000,,
+bu,corn,"Bushel (corn, 56 lb)",39.3679,0.0254014057138,1,39.3679 bu/t
+bu,soybeans,"Bushel (soybeans, 60 lb)",36.7437,0.0272155498766,1,36.7437 bu/t
+bu,wheat,"Bushel (wheat, 60 lb)",36.7437,0.0272155498766,1,36.7437 bu/t
+m_bu,corn,Million bushels (corn),3.93679e-05,25401.4057138,1e+06,39.3679 bu/t
+m_bu,soybeans,Million bushels (soybeans),3.67437e-05,27215.5498766,1e+06,36.7437 bu/t
+m_bu,wheat,Million bushels (wheat),3.67437e-05,27215.5498766,1e+06,36.7437 bu/t
+short_ton,,"Short ton (2,000 lb)",1.102310995,0.907185,,0.907185 t
+short_ton,soybeans,Short ton of soybeans (NASS crush),1.102310995,0.907185,33.3333,st -> bu x 33.3333 (60 lb/bu)
+k_short_tons,,Thousand short tons (WASDE soybean meal),0.001102310995,907.185,,907.185 t
+lb,,Pound,2204.62442018,0.000453592,,0.000453592 t
+klb,,Thousand pounds (NASS),2.20462442018,0.453592,,x1000 lb
+m_lbs,,Million pounds (WASDE soybean oil),0.00220462442018,453.592,,453.592 t
+b_lbs,,Billion pounds,2.20462442018e-06,453592,,"453,592 t"

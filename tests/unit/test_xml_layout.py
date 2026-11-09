@@ -1,6 +1,6 @@
 import pandas as pd
 
-from wasde.silver.xml_layout import XmlLayout, learn
+from usda_reports.reports.wasde.xml_layout import XmlLayout, learn
 
 
 def _xml(rows):

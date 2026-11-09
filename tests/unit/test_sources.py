@@ -4,18 +4,24 @@ import httpx
 import pytest
 import respx
 
-from wasde.bronze import BronzeStore, find_seed_files, ingest_month, looks_like_xml, month_range
-from wasde.manifest import Manifest
-from wasde.net import SourceBlockedError, make_client
-from wasde.sources.calendar import (
+from usda_reports.bronze.store import BronzeStore
+from usda_reports.core.calendar import (
     is_overdue,
     latest_due,
-    parse_calendar_html,
     release_datetime_utc,
     scheduled_for_month,
 )
-from wasde.sources.esmis import EsmisRelease, latest_per_month, parse_releases
-from wasde.sources.usda_csv import NotACsvError, csv_url, fetch_csv
+from usda_reports.core.manifest import Manifest
+from usda_reports.core.net import SourceBlockedError, make_client
+from usda_reports.reports.wasde.ingest import (
+    find_seed_files,
+    ingest_month,
+    looks_like_xml,
+    month_range,
+)
+from usda_reports.reports.wasde.sources.calendar_page import parse_calendar_html
+from usda_reports.reports.wasde.sources.esmis import EsmisRelease, latest_per_month, parse_releases
+from usda_reports.reports.wasde.sources.usda_csv import NotACsvError, csv_url, fetch_csv
 
 CAL_HTML = """
 <h5><strong>2026 WASDE Release Dates (12:00pm ET)</strong></h5>
@@ -141,7 +147,7 @@ def test_ingest_falls_back_to_esmis_xml_when_csv_missing(tmp_path):
     esmis = {"2026-05": EsmisRelease("795903", date(2026, 5, 12), xml_url)}
     with make_client() as c:
         entry = ingest_month(c, store, "2026-05", esmis)
-    assert entry is not None and entry.source == "esmis_xml" and entry.version == 2
+    assert entry is not None and entry.source == "esmis_xml" and entry.edition == 2
     assert (tmp_path / "esmis_xml" / "2026-05.xml").exists()
     assert store.verify() == []
     (tmp_path / "esmis_xml" / "2026-05.xml").write_bytes(b"tampered")
@@ -149,7 +155,10 @@ def test_ingest_falls_back_to_esmis_xml_when_csv_missing(tmp_path):
 
 
 def test_manifest_roundtrip(tmp_path):
-    m = Manifest(latest_report="2026-10")
+    m = Manifest()
+    m.report("wasde").latest_release_key = "2026-10"
     m.save(tmp_path / "manifest.json")
-    assert Manifest.load(tmp_path / "manifest.json").latest_report == "2026-10"
+    loaded = Manifest.load(tmp_path / "manifest.json")
+    assert loaded.report("wasde").latest_release_key == "2026-10"
+    assert loaded.schema_version == 2
     assert Manifest.load(tmp_path / "missing.json").reports == {}

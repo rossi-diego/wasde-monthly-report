@@ -8,10 +8,10 @@ RUN pip install ".[dbt]"
 COPY config ./config
 COPY dbt ./dbt
 # The package is installed non-editable, so point it at the project files explicitly.
-ENV WASDE_DATA_DIR=/app/data \
-    WASDE_WEB_DATA_DIR=/app/web/public/data \
-    WASDE_CONFIG_DIR=/app/config \
-    WASDE_DBT_DIR=/app/dbt \
-    WASDE_LOG_JSON=true
-ENTRYPOINT ["wasde"]
+ENV USDA_DATA_DIR=/app/data \
+    USDA_WEB_DATA_DIR=/app/web/public/data \
+    USDA_CONFIG_DIR=/app/config \
+    USDA_DBT_DIR=/app/dbt \
+    USDA_LOG_JSON=true
+ENTRYPOINT ["usda-reports"]
 CMD ["--help"]

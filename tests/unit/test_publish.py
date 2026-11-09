@@ -1,9 +1,9 @@
 import pytest
 
-from wasde.publish import fmt
-from wasde.publish.focus import Focus
-from wasde.publish.highlights import report_context
-from wasde.publish.web_json import _clean, cycle_month, month_label
+from usda_reports.publish import fmt
+from usda_reports.publish.focus import Focus
+from usda_reports.publish.highlights import report_context
+from usda_reports.publish.web_json import _clean, cycle_month, month_label
 
 
 @pytest.mark.parametrize(
@@ -47,7 +47,7 @@ def test_report_context():
 
 
 def test_focus_config_is_consistent(config_dir):
-    focus = Focus.load(config_dir / "focus.yaml")
+    focus = Focus.load(config_dir / "reports" / "wasde" / "focus.yaml")
     assert set(focus.commodities) == {
         "corn",
         "soybeans",

@@ -3,17 +3,17 @@ from datetime import date
 import pandas as pd
 import pytest
 
-from wasde.config import PROJECT_ROOT
-from wasde.silver import RAW_COLUMNS
-from wasde.silver.parse_csv import CsvSchemaError, parse_csv
-from wasde.silver.parse_xml import (
+from usda_reports.core.config import PROJECT_ROOT
+from usda_reports.reports.wasde import RAW_COLUMNS
+from usda_reports.reports.wasde.parse_csv import CsvSchemaError, parse_csv
+from usda_reports.reports.wasde.parse_xml import (
     cells_frame,
     flatten,
     is_current_column,
     parse_xml,
     wasde_number_from,
 )
-from wasde.silver.xml_layout import XmlLayout
+from usda_reports.reports.wasde.xml_layout import XmlLayout
 
 
 def test_parse_csv_schema_and_values(fixtures):
@@ -76,7 +76,7 @@ def test_namespaced_xml_is_parsed(fixtures):
 
 
 def test_xml_maps_to_csv_vocabulary_and_matches_csv(fixtures):
-    layout = XmlLayout.load(PROJECT_ROOT / "config" / "xml_layout")
+    layout = XmlLayout.load(PROJECT_ROOT / "config" / "reports" / "wasde" / "xml_layout")
     xml = parse_xml(fixtures / "wasde_2024-05_sr12.xml", "2024-05", date(2024, 5, 10), layout)
     csv = parse_csv(fixtures / "wasde_2024-05.csv", "2024-05")
     key = ["report_title", "commodity", "region", "attribute", "market_year"]
@@ -88,7 +88,7 @@ def test_xml_maps_to_csv_vocabulary_and_matches_csv(fixtures):
 
 
 def test_world_table_regions_map(fixtures):
-    layout = XmlLayout.load(PROJECT_ROOT / "config" / "xml_layout")
+    layout = XmlLayout.load(PROJECT_ROOT / "config" / "reports" / "wasde" / "xml_layout")
     xml = parse_xml(fixtures / "wasde_2024-05_sr22.xml", "2024-05", date(2024, 5, 10), layout)
     world = xml[
         (xml.region == "World") & (xml.attribute == "Production") & (xml.market_year == "2023/24")

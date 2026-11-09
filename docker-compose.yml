@@ -5,7 +5,7 @@
 services:
   pipeline:
     build: .
-    entrypoint: ["sh", "-c", "wasde backfill && wasde run"]
+    entrypoint: ["sh", "-c", "usda-reports backfill && usda-reports run"]
     volumes:
       - ./data:/app/data
       - ./web/public/data:/app/web/public/data

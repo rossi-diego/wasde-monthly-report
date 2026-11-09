@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from wasde.config import PROJECT_ROOT
+from usda_reports.core.config import PROJECT_ROOT
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
