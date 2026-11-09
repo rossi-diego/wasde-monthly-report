@@ -1,14 +1,15 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-11-09T17:42:11+00:00",
-  "data_release_tag": "weekly-2026-11-09.4",
+  "updated_at": "2026-11-09T23:09:32+00:00",
+  "data_release_tag": "weekly-2026-11-09.5",
   "reports": {
     "crop_progress": {
-      "latest_release_key": "2026-11-02",
+      "latest_release_key": "2026-11-09",
       "latest_number": null,
-      "total_rows": 9311,
+      "total_rows": 9320,
       "shards_written": [
-        "bronze__crop_progress__base.tar.gz"
+        "bronze__crop_progress__base.tar.gz",
+        "bronze__crop_progress__2026-11.tar.gz"
       ],
       "releases": {
         "2010-06-07": {
@@ -7550,6 +7551,19 @@
           "fetched_at": "2026-11-09T17:39:40+00:00",
           "status": "ok",
           "shard": "bronze__crop_progress__base.tar.gz"
+        },
+        "2026-11-09": {
+          "source": "esmis_zip",
+          "file": "crop_progress/2026-11-09.zip",
+          "url": "https://esmis.nal.usda.gov/sites/default/release-files/796141/prog4526.zip",
+          "sha256": "8338b9d5687ad977c66245f705de1456b82ae1df4e5b2a8ca393b79909280085",
+          "bytes": 16109,
+          "release_date": "2026-11-09",
+          "release_ts_utc": "2026-11-09T21:00:00+00:00",
+          "edition": 1,
+          "fetched_at": "2026-11-09T23:08:20+00:00",
+          "status": "ok",
+          "shard": "bronze__crop_progress__2026-11.tar.gz"
         }
       }
     },
