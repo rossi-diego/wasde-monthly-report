@@ -10,10 +10,9 @@ name: WASDE release
 #   none     nothing to do (most scheduled runs; they still run the watchdogs)
 
 on:
-  # Schedule paused until the first manual deploy under the new name is verified live.
-  # schedule:
-  #   # Every 30 min, 16:05–21:35 UTC. WASDE is out at 12:00 ET (16:00 UTC summer, 17:00 winter).
-  #   - cron: "5,35 16-21 * * *"
+  schedule:
+    # Every 30 min, 16:05–21:35 UTC. WASDE is out at 12:00 ET (16:00 UTC summer, 17:00 winter).
+    - cron: "5,35 16-21 * * *"
   workflow_dispatch:
     inputs:
       force_month:
