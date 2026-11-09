@@ -68,6 +68,19 @@ def test_registry_enables_wasde_export_sales_and_crush(config_dir):
         reg.spec("crop_progress", Settings(config_dir=config_dir))
 
 
+def test_every_non_wasde_report_is_date_keyed(config_dir):
+    """Regression: export_sales lacked ``release_key_format: date`` and fell back to the
+    WASDE month default, which made ``detect --report export_sales`` exit 2 and the ``due``
+    gate misreport it. Every enabled report other than WASDE (YYYY-MM) is keyed by date."""
+    reg = load_registry(config_dir)
+    for cfg in reg.enabled():
+        expected = "month" if cfg.id == "wasde" else "date"
+        assert cfg.release_key_format == expected, cfg.id
+        spec = reg.spec(cfg.id, Settings(config_dir=config_dir))
+        if expected == "date":
+            assert callable(getattr(spec, "ingest", None)), cfg.id
+
+
 # ── envelope + contract ─────────────────────────────────────────────────────
 
 
