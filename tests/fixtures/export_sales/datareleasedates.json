@@ -1,0 +1,310 @@
+[
+{
+"commodityCode": 101,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 102,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 103,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 104,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 105,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 106,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 107,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 201,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 301,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 401,
+"marketYearStart": "2026-09-01T00:00:00",
+"marketYearEnd": "2027-08-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 501,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 601,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 701,
+"marketYearStart": "2026-09-01T00:00:00",
+"marketYearEnd": "2027-08-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 801,
+"marketYearStart": "2026-09-01T00:00:00",
+"marketYearEnd": "2027-08-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 901,
+"marketYearStart": "2026-10-01T00:00:00",
+"marketYearEnd": "2027-09-30T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 902,
+"marketYearStart": "2026-10-01T00:00:00",
+"marketYearEnd": "2027-09-30T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1001,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1101,
+"marketYearStart": "2026-06-01T00:00:00",
+"marketYearEnd": "2027-05-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1110,
+"marketYearStart": "2026-10-01T00:00:00",
+"marketYearEnd": "2027-09-30T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1201,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1202,
+"marketYearStart": "2026-10-01T00:00:00",
+"marketYearEnd": "2027-09-30T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1203,
+"marketYearStart": "2026-10-01T00:00:00",
+"marketYearEnd": "2027-09-30T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1301,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1401,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1402,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1403,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1404,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1498,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1499,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1501,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1502,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1503,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1504,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1505,
+"marketYearStart": "2026-08-01T00:00:00",
+"marketYearEnd": "2027-07-31T00:00:00",
+"marketYear": 2027,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1601,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1602,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1603,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1604,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1605,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1606,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1607,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1608,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1701,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+},
+{
+"commodityCode": 1702,
+"marketYearStart": "2026-01-01T00:00:00",
+"marketYearEnd": "2026-12-31T00:00:00",
+"marketYear": 2026,
+"releaseTimeStamp": "2026-11-05T08:30:23.18"
+}
+]

@@ -17,6 +17,8 @@ if TYPE_CHECKING:
     from usda_reports.bronze.store import BronzeStore
     from usda_reports.core.config import Settings
     from usda_reports.core.manifest import Manifest
+    from usda_reports.detect import WeeklyDue
+    from usda_reports.reports.base import ReportSpec
 
 app = typer.Typer(add_completion=False, no_args_is_help=True, help="USDA reports data pipeline")
 log = get_logger("usda_reports.cli")
@@ -71,19 +73,32 @@ def backfill(
     from usda_reports.core.manifest import Manifest
     from usda_reports.core.net import make_client
     from usda_reports.core.registry import load_registry
+    from usda_reports.reports.export_sales.source import EsrError, MissingKeyError
 
     s = get_settings()
     manifest = Manifest.load(s.manifest_path)
     new: dict[str, int] = {}
+    failed: list[str] = []
     with make_client() as client:
         for spec in load_registry(s.config_dir).enabled_specs(s):
             store = BronzeStore(s.bronze_dir, manifest, spec.report_id, spec.config.release_time_et)
-            keys = spec.backfill(
-                client, store, end or _this_month(), seed_dir=seed_dir, start=start
-            )
+            try:
+                keys = spec.backfill(
+                    client, store, end or _this_month(), seed_dir=seed_dir, start=start
+                )
+            except MissingKeyError as exc:
+                # Per-report isolation: WASDE needs no key; Export Sales is skipped.
+                log.warning("backfill.skipped", report=spec.report_id, reason=str(exc))
+                continue
+            except EsrError as exc:
+                log.error("backfill.failed", report=spec.report_id, error=str(exc))
+                failed.append(spec.report_id)
+                continue
             new[spec.report_id] = len(keys)
     manifest.save(s.manifest_path)
-    log.info("backfill.done", new=new, **manifest.summary())
+    log.info("backfill.done", new=new, failed=failed, **manifest.summary())
+    if failed:
+        raise typer.Exit(1)
 
 
 @app.command("refresh-calendar")
@@ -109,13 +124,19 @@ def detect(
     force_month: Annotated[
         str | None, typer.Option(help="Ingest this YYYY-MM regardless of calendar")
     ] = None,
+    report: Annotated[str, typer.Option(help="Report to detect (wasde | export_sales)")] = WASDE,
+    force: Annotated[bool, typer.Option(help="Weekly reports: pull even if not due")] = False,
 ) -> None:
-    """Ingest the latest scheduled WASDE report (or a revised edition) if it is out.
+    """Ingest the latest scheduled release (or a revised edition) of one report if it is out.
 
-    Sets GitHub outputs ``new_report`` (true/false), ``report_month`` and ``problems``.
+    WASDE sets GitHub outputs ``new_report`` (true/false), ``report_month`` and ``problems``;
+    weekly reports set ``new_<report>``, ``<report>_release`` and ``<report>_problems``.
     Exit code 2 = a watchdog fired (overdue report, stale data, empty calendar);
-    exit code 1 = a forced month could not be found.
+    exit code 1 = a forced month could not be found / the source failed.
     """
+    if report != WASDE:
+        _detect_weekly(report, force)
+        return
     from usda_reports.core.calendar import load_calendar
     from usda_reports.core.net import make_client
     from usda_reports.detect import DetectError, run_detect
@@ -142,6 +163,162 @@ def detect(
         for p in result.problems:
             typer.echo(f"::error::{p}", err=True)
         raise typer.Exit(2)
+
+
+def _weekly_state(spec: ReportSpec, have: set[str], now: datetime) -> WeeklyDue:
+    from usda_reports.core.calendar import load_calendar
+    from usda_reports.detect import weekly_due
+
+    return weekly_due(
+        load_calendar(spec.calendar_path),
+        now,
+        have,
+        spec.config.release_time_et,
+        spec.config.grace_days,
+    )
+
+
+def _detect_weekly(report_id: str, force: bool) -> None:
+    """ET-clock guard first: no network at all unless a release is due and missing."""
+    from usda_reports.core.net import make_client
+    from usda_reports.core.registry import load_registry
+    from usda_reports.reports.export_sales.source import EsrError
+    from usda_reports.reports.export_sales.spec import ExportSalesSpec
+
+    s, manifest, store = _store(report_id)
+    spec = load_registry(s.config_dir).spec(report_id, s)
+    assert isinstance(spec, ExportSalesSpec)
+    now = datetime.now(UTC)
+    have = {k for k, e in store.entries.items() if e.status == "ok"}
+    state = _weekly_state(spec, have, now)
+    new: list[str] = []
+    note = "nothing due"
+    if force or not have or state.missing:
+        try:
+            with make_client() as client:
+                result = spec.ingest(client, store, now, force=force)
+        except EsrError as exc:
+            log.error("detect.failed", report=report_id, error=str(exc))
+            _gh_output(**{f"new_{report_id}": "false", f"{report_id}_problems": str(exc)})
+            raise typer.Exit(1) from exc
+        new = result.ingested
+        note = result.note or ("ingested" if new else "not yet available")
+        if new:
+            manifest.save(s.manifest_path)
+            have |= set(new)
+            state = _weekly_state(spec, have, now)
+    _gh_output(
+        **{
+            f"new_{report_id}": "true" if new else "false",
+            f"{report_id}_release": max(have) if have else "",
+            f"{report_id}_problems": "; ".join(state.problems),
+        }
+    )
+    log.info(
+        "detect.done",
+        report=report_id,
+        ingested=new,
+        due=str(state.due) if state.due else None,
+        note=note,
+        problems=state.problems,
+    )
+    if state.problems:
+        for p in state.problems:
+            typer.echo(f"::error::{report_id}: {p}", err=True)
+        raise typer.Exit(2)
+
+
+@app.command()
+def due(
+    json_out: Annotated[bool, typer.Option("--json", help="Print the state as JSON")] = False,
+) -> None:
+    """Which enabled reports have a release due and not yet ingested (no network).
+
+    Used by the workflow's fast gate. Sets GitHub output ``due`` (space-separated report ids,
+    empty when nothing is due).
+    """
+    import json as _json
+
+    from usda_reports.core.calendar import latest_due, load_calendar, parse_time_et
+    from usda_reports.core.manifest import Manifest
+    from usda_reports.core.registry import load_registry
+    from usda_reports.detect import weekly_due
+
+    s = get_settings()
+    manifest = Manifest.load(s.manifest_path)
+    now = datetime.now(UTC)
+    out: dict[str, dict[str, object]] = {}
+    for cfg in load_registry(s.config_dir).enabled():
+        dates = load_calendar(s.calendars_dir / f"{cfg.id}.yaml")
+        have = set(manifest.report(cfg.id).ok())
+        if cfg.cadence == "weekly":
+            st = weekly_due(dates, now, have, cfg.release_time_et, cfg.grace_days)
+            out[cfg.id] = {
+                "due": str(st.due) if st.due else None,
+                "latest": st.have_latest,
+                "missing": st.missing or not have,
+            }
+        else:
+            d = latest_due(dates, now, parse_time_et(cfg.release_time_et))
+            key = f"{d:%Y-%m}" if d else None
+            out[cfg.id] = {
+                "due": str(d) if d else None,
+                "latest": max(have) if have else None,
+                "missing": key is not None and key not in have,
+            }
+    ids = [rid for rid, st in out.items() if st["missing"]]
+    _gh_output(due=" ".join(ids))
+    log.info("due", reports=out)
+    if json_out:
+        typer.echo(_json.dumps(out, indent=2))
+
+
+@app.command("esr-verify")
+def esr_verify() -> None:
+    """Check the configured ESR commodity codes and unit against the live lookups."""
+    from usda_reports.core.net import make_client
+    from usda_reports.core.registry import load_registry
+    from usda_reports.reports.export_sales.ingest import check_codes, discover
+    from usda_reports.reports.export_sales.source import EsrClient, EsrError
+    from usda_reports.reports.export_sales.spec import ExportSalesSpec
+
+    s = get_settings()
+    spec = load_registry(s.config_dir).spec("export_sales", s)
+    assert isinstance(spec, ExportSalesSpec)
+    with make_client() as client:
+        esr = spec.esr_client(client)
+        assert isinstance(esr, EsrClient)
+        try:
+            check_codes(esr)
+            rel = discover(esr)
+        except EsrError as exc:
+            log.error("esr.verify_failed", error=str(exc))
+            raise typer.Exit(1) from exc
+    log.info("esr.verified", release=rel.release_key, market_years=rel.market_years)
+
+
+@app.command("esr-vocab")
+def esr_vocab() -> None:
+    """Regenerate config/vocab/countries.yaml from /api/esr/countries."""
+    import yaml
+
+    from usda_reports.core.net import make_client
+    from usda_reports.core.registry import load_registry
+    from usda_reports.reports.export_sales.source import EsrClient, countries_vocab
+    from usda_reports.reports.export_sales.spec import ExportSalesSpec
+
+    s = get_settings()
+    spec = load_registry(s.config_dir).spec("export_sales", s)
+    assert isinstance(spec, ExportSalesSpec)
+    with make_client() as client:
+        esr = spec.esr_client(client)
+        assert isinstance(esr, EsrClient)
+        rows = esr.get_json(esr.config.endpoints["countries"])
+    path = s.config_dir / "vocab" / "countries.yaml"
+    head = path.read_text(encoding="utf-8").split("kind:", 1)[0] if path.exists() else ""
+    body = yaml.safe_dump(countries_vocab(rows), sort_keys=False, allow_unicode=True)
+    path.write_text(head + body, encoding="utf-8")
+    log.info("esr.vocab_written", countries=len(rows), path=str(path))
 
 
 @app.command("learn-xml-layout")
@@ -183,11 +360,17 @@ def build_silver_cmd(
 ) -> None:
     """Full reparse of bronze into data/silver/<report_id>.parquet for every enabled report."""
     from usda_reports.core.manifest import Manifest
-    from usda_reports.silver.build import build_all
+    from usda_reports.silver.build import build_all, write_status
 
     s = get_settings()
     manifest = Manifest.load(s.manifest_path)
     result = build_all(s, manifest, only=report)
+    write_status(s, result)
+    # Isolated reports (Export Sales) that failed were rebuilt from their last good bronze
+    # state; the run carries on so WASDE still publishes, and build-info marks them failed.
+    _gh_output(silver_failed=" ".join(sorted(result.failed)))
+    for rid, err in result.failed.items():
+        typer.echo(f"::error::{rid}: silver fell back to the last good state: {err}", err=True)
     if result.alerts:
         for rid, labels in result.alerts.items():
             log.error("silver.new_labels", report=rid, labels=labels)
@@ -236,6 +419,109 @@ def run(
     build_silver_cmd(report=None)
     build_gold_cmd()
     publish(tag)
+
+
+@app.command("build-info")
+def build_info(
+    sha: Annotated[str, typer.Option(help="Commit SHA of this build")],
+    tag: Annotated[str, typer.Option(help="Data release tag the site is built from")],
+    out: Annotated[Path, typer.Option(help="Where to write build.json")] = Path(
+        "web/public/build.json"
+    ),
+    failed: Annotated[
+        str, typer.Option(help="Space-separated report ids whose ingest failed this run")
+    ] = "",
+) -> None:
+    """Write ``build.json``: commit, data tag and per-report freshness (from meta.json)."""
+    import json as _json
+
+    from usda_reports.core.registry import load_registry
+    from usda_reports.insights.gates import make_gates
+    from usda_reports.silver.build import failed_reports
+
+    s = get_settings()
+    meta = _json.loads((s.web_data_dir / "meta.json").read_text(encoding="utf-8"))
+    stale_after = make_gates(load_registry(s.config_dir)).stale_after_days
+    now = datetime.now(UTC)
+    bad = set(failed.split()) | failed_reports(s)
+    reports = {}
+    for rid, m in (meta.get("reports") or {}).items():
+        ts = datetime.fromisoformat(str(m["release_ts_utc"]).replace("Z", "+00:00"))
+        age = (now - ts).days
+        status = "failed" if rid in bad else ("stale" if age > stale_after.get(rid, 45) else "ok")
+        reports[rid] = {
+            "latest_release_key": m["latest_release_key"],
+            "release_ts_utc": m["release_ts_utc"],
+            "next_release": m.get("next_release"),
+            "age_days": age,
+            "status": status,
+        }
+    body = {
+        "sha": sha,
+        "tag": tag,
+        "data_tag": tag,
+        "built_at": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "reports": reports,
+    }
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(_json.dumps(body, indent=1) + "\n", encoding="utf-8")
+    log.info("build_info.written", path=str(out), tag=tag, reports=list(reports))
+
+
+@app.command("release-tag")
+def release_tag(
+    kind: Annotated[str, typer.Argument(help="data | weekly")],
+    existing: Annotated[
+        str, typer.Option(help="Space-separated tags that already exist (weekly suffixing)")
+    ] = "",
+) -> None:
+    """Print the release tag for this build: ``data-<latest WASDE month>`` or
+    ``weekly-<UTC date>`` (``.2``, ``.3``… when that weekly tag already exists)."""
+    from usda_reports.core.manifest import Manifest
+    from usda_reports.publish.contract import weekly_tag
+
+    if kind == "data":
+        keys = list(Manifest.load(get_settings().manifest_path).report(WASDE).ok())
+        if not keys:
+            raise typer.Exit(1)
+        typer.echo(f"data-{keys[-1]}")
+        return
+    if kind != "weekly":
+        raise typer.BadParameter("kind must be data or weekly")
+    typer.echo(weekly_tag(datetime.now(UTC).date(), set(existing.split())))
+
+
+@app.command("datasets-changed")
+def datasets_changed_cmd(
+    old: Annotated[Path, typer.Argument(help="datasets.json of the existing release")],
+    new: Annotated[Path, typer.Argument(help="datasets.json of this build")],
+) -> None:
+    """Print ``true`` when any dataset file was added, removed or changed bytes (sha256)."""
+    import json as _json
+
+    from usda_reports.publish.contract import datasets_changed
+
+    diff = datasets_changed(
+        _json.loads(old.read_text(encoding="utf-8")), _json.loads(new.read_text(encoding="utf-8"))
+    )
+    log.info("datasets.compared", changed=diff)
+    typer.echo("true" if diff else "false")
+
+
+@app.command("insights-schema")
+def insights_schema(
+    out: Annotated[Path, typer.Option(help="Where to write the JSON Schema")] = Path(
+        "docs/schemas/insights.schema.json"
+    ),
+) -> None:
+    """Write the JSON Schema of insights.json (generated from the pydantic models)."""
+    import json as _json
+
+    from usda_reports.insights.engine import json_schema
+
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(_json.dumps(json_schema(), indent=2) + "\n", encoding="utf-8")
+    log.info("insights.schema_written", path=str(out))
 
 
 @app.command("latest-key")

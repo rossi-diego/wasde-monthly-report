@@ -6,8 +6,13 @@ install:            ## Python package + dev tools, and web dependencies
 	$(PY) -m pip install -e ".[dev,dbt]" openpyxl
 	cd web && npm ci
 
-demo:               ## Fastest start: latest published data + local site (no pipeline run)
-	gh release download --repo rossi-diego/usda-reports-dashboard --pattern web-data.tar.gz --dir /tmp --clobber
+SITE_URL ?= https://usda-reports.vercel.app
+
+demo:               ## Fastest start: the live site's data (resolved via its catalog.json) + local site
+	@url=$$(curl -fsSL "$(SITE_URL)/data/catalog.json" 2>/dev/null | $(PY) -c "import json,sys;print(json.load(sys.stdin)['web_data']['release_url'] or '')" 2>/dev/null); \
+	if [ -n "$$url" ]; then echo "data from $$url"; curl -fsSL "$$url" -o /tmp/web-data.tar.gz; \
+	else echo "no live catalog.json yet: latest data release"; \
+	gh release download --repo rossi-diego/usda-reports-dashboard --pattern web-data.tar.gz --dir /tmp --clobber; fi
 	mkdir -p web/public && tar -xzf /tmp/web-data.tar.gz -C web/public
 	cd web && npm run dev
 

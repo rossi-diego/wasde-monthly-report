@@ -16,15 +16,21 @@ export default function Bar({
   ariaLabel,
   height = 230,
   format = (v) => String(v),
+  currentColor,
+  minTop = 0,
 }: {
   items: BarItem[];
   ariaLabel: string;
   height?: number;
   format?: (v: number) => string;
+  /** Colour of the highlighted bar (default: the WASDE blue). */
+  currentColor?: string;
+  /** Smallest axis maximum, so tiny values do not produce repeated rounded tick labels. */
+  minTop?: number;
 }) {
   const [ref, width] = useWidth<HTMLDivElement>();
   const m = { l: 40, r: 8, t: 12, b: 26 };
-  const max = Math.max(0, ...items.map((i) => i.value));
+  const max = Math.max(0, minTop, ...items.map((i) => i.value));
   const ticks = niceTicks(0, max || 1, 4);
   const top = ticks[ticks.length - 1];
   const x0 = m.l;
@@ -54,7 +60,7 @@ export default function Bar({
           const h = Math.max(0, y0 - y(it.value));
           const x = x0 + i * slot + (slot - bw) / 2;
           return (
-            <rect key={it.label} x={x} y={y0 - h} width={bw} height={h} rx={Math.min(3, bw / 3)} style={{ fill: FILL[it.kind] }}>
+            <rect key={it.label} x={x} y={y0 - h} width={bw} height={h} rx={Math.min(3, bw / 3)} style={{ fill: it.kind === "current" && currentColor ? currentColor : FILL[it.kind] }}>
               <title>{`${it.label}: ${format(it.value)}`}</title>
             </rect>
           );

@@ -26,6 +26,77 @@ models:
       - name: release_ts_utc
         data_tests: [not_null]
 
+  - name: int_wasde_asof
+    description: U.S. WASDE exports / production / ending stocks / crush per commodity × MY × WASDE vintage,
+      native and MT (dim_unit). Input of every point-in-time cross mart.
+    config:
+      contract:
+        enforced: true
+    columns:
+    - name: commodity_id
+      data_type: varchar
+      description: Canonical commodity id (config/vocab/commodities.yaml).
+    - name: market_year
+      data_type: varchar
+      description: Marketing year in WASDE notation, e.g. 2026/27.
+    - name: my_start
+      data_type: integer
+      description: First calendar year of the marketing year.
+    - name: wasde_release_key
+      data_type: varchar
+      description: WASDE report month (YYYY-MM) public at the ESR release (ASOF join).
+    - name: wasde_release_ts_utc
+      data_type: timestamp with time zone
+      description: Publication instant of that WASDE (12:00 ET in UTC); always <= release_ts_utc.
+    - name: proj_est_flag
+      data_type: varchar
+      description: WASDE projection/estimate flag of that vintage.
+    - name: unit_id
+      data_type: varchar
+      description: Unit of the *_mt columns (mt = metric tons).
+    - name: exports_native
+      data_type: double
+      description: U.S. exports, native WASDE unit.
+    - name: exports_mt
+      data_type: double
+      description: U.S. exports, metric tons.
+    - name: production_native
+      data_type: double
+      description: U.S. production, native WASDE unit.
+    - name: production_mt
+      data_type: double
+      description: U.S. production, metric tons.
+    - name: ending_stocks_native
+      data_type: double
+      description: U.S. ending stocks, native WASDE unit.
+    - name: ending_stocks_mt
+      data_type: double
+      description: U.S. ending stocks, metric tons.
+    - name: crush_native
+      data_type: double
+      description: U.S. soybean crush, native WASDE unit (soybeans only).
+    - name: crush_mt
+      data_type: double
+      description: U.S. soybean crush, metric tons.
+  - name: dim_country
+    description: Destination countries of FAS Export Sales.
+    config:
+      contract:
+        enforced: true
+    columns:
+    - name: country_id
+      data_type: varchar
+      description: Destination (config/vocab/countries.yaml); 'unknown' = unknown destinations.
+    - name: country_label
+      data_type: varchar
+      description: Destination name as published by FAS.
+    - name: esr_country_code
+      data_type: integer
+      description: FAS ESR countryCode.
+    - name: genc_code
+      data_type: varchar
+      description: GENC country code where FAS gives one.
+
 seeds:
   - name: dim_unit
     description: >
@@ -49,3 +120,8 @@ seeds:
         data_tests: [unique, not_null]
       - name: my_start_month
         data_tests: [not_null]
+  - name: esr_corrections
+    description: >
+      Known non-monotonic corrections in ESR accumulated exports (all destinations) that FAS
+      published; rows listed here are exempt from assert_esr_accumulated_monotonic. Empty as
+      of the 2026-11-09 backfill (no decrease found for MY 2010/11 to 2026/27).

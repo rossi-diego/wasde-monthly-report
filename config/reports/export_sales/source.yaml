@@ -1,0 +1,56 @@
+# FAS Export Sales Reporting (ESR) API: what to pull and how to read it.
+#
+# Spike 2026-11-09 against https://api.fas.usda.gov (X-Api-Key = the api.data.gov key):
+#   /api/esr/commodities      codes below, all unitId 1
+#   /api/esr/unitsOfMeasure   unitId 1 = "Metric Tons"
+#   /api/esr/countries        211 destinations (config/vocab/countries.yaml), 9990 = UNKNOWN
+#   /api/esr/datareleasedates one row per commodity: current marketYear, marketYearStart/End,
+#                             releaseTimeStamp of the latest release (ET, e.g. 2026-11-05T08:30:23)
+#   /api/esr/exports/commodityCode/{c}/allCountries/marketYear/{MY}
+#       one record per destination with activity per week:
+#       commodityCode, countryCode, weeklyExports, accumulatedExports, outstandingSales,
+#       grossNewSales, currentMYNetSales, currentMYTotalCommitment, nextMYOutstandingSales,
+#       nextMYNetSales, unitId, weekEndingDate (Thursday, "YYYY-MM-DDT00:00:00")
+#
+# ESR's marketYear is the year the marketing year ENDS: marketYear 2027 for corn is
+# 2026-09-01 → 2027-08-31, i.e. WASDE's "2026/27".
+api_base: https://api.fas.usda.gov
+key_env: [FAS_API_KEY, USDA_PSD_KEY]
+endpoints:
+  commodities: /api/esr/commodities
+  countries: /api/esr/countries
+  units: /api/esr/unitsOfMeasure
+  release_dates: /api/esr/datareleasedates
+  exports: /api/esr/exports/commodityCode/{code}/allCountries/marketYear/{market_year}
+# Calls are serialized; api.data.gov allows 1,000 requests/hour per key (shared with PSD).
+min_interval_s: 1.5
+# First ESR marketYear to backfill (marketYear 2011 = MY 2010/11).
+history_start_market_year: 2011
+# During the first weeks of a new marketing year the previous one is pulled too, so its
+# final weeks (and late corrections) are captured.
+previous_my_weeks: 8
+unit:
+  esr_unit_id: 1
+  esr_unit_name: Metric Tons
+  unit_id: mt
+# Verified codes: expected name must match /api/esr/commodities exactly (checked at every
+# backfill and by `usda-reports esr-verify`; a mismatch fails the report).
+commodities:
+  soybeans: {code: 801, esr_name: Soybeans}
+  corn: {code: 401, esr_name: Corn}
+  wheat: {code: 107, esr_name: All Wheat}
+  soybean_meal: {code: 901, esr_name: "Soybean cake & meal"}
+  soybean_oil: {code: 902, esr_name: Soybean Oil}
+# API field -> silver metric (plan §4). grossNewSales is not used.
+metrics:
+  weekly_exports: weeklyExports
+  accumulated_exports: accumulatedExports
+  outstanding_sales: outstandingSales
+  net_sales: currentMYNetSales
+  total_commitment: currentMYTotalCommitment
+  next_my_net_sales: nextMYNetSales
+  next_my_outstanding: nextMYOutstandingSales
+# Destination codes treated specially by insights.
+countries:
+  china: 5700
+  unknown: 9990

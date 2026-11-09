@@ -1,0 +1,379 @@
+{
+  "$defs": {
+    "Gates": {
+      "additionalProperties": false,
+      "properties": {
+        "min_n": {
+          "default": 5,
+          "title": "Min N",
+          "type": "integer"
+        },
+        "percentile_min_n": {
+          "default": 10,
+          "title": "Percentile Min N",
+          "type": "integer"
+        },
+        "small_sample_below": {
+          "default": 10,
+          "title": "Small Sample Below",
+          "type": "integer"
+        },
+        "e2_min_weeks_remaining": {
+          "default": 6,
+          "title": "E2 Min Weeks Remaining",
+          "type": "integer"
+        },
+        "stale_after_days": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Stale After Days",
+          "type": "object"
+        }
+      },
+      "title": "Gates",
+      "type": "object"
+    },
+    "Hero": {
+      "additionalProperties": false,
+      "description": "Hero sentence as typed parameters (plan \u00a76 'Home story selection').",
+      "properties": {
+        "kind": {
+          "enum": [
+            "story",
+            "fallback"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "clauses": {
+          "items": {
+            "$ref": "#/$defs/HeroClause"
+          },
+          "title": "Clauses",
+          "type": "array"
+        },
+        "n_reports": {
+          "title": "N Reports",
+          "type": "integer"
+        },
+        "since": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Since"
+        },
+        "reports": {
+          "items": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "title": "Reports",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "n_reports",
+        "since"
+      ],
+      "title": "Hero",
+      "type": "object"
+    },
+    "HeroClause": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "wasde_tightness",
+            "esr_pace"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "commodity_id": {
+          "title": "Commodity Id",
+          "type": "string"
+        },
+        "direction": {
+          "enum": [
+            "tighter",
+            "looser",
+            "lagging",
+            "ahead",
+            "in_line"
+          ],
+          "title": "Direction",
+          "type": "string"
+        },
+        "insight_ids": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Insight Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "kind",
+        "commodity_id",
+        "direction",
+        "insight_ids"
+      ],
+      "title": "HeroClause",
+      "type": "object"
+    },
+    "InputRef": {
+      "additionalProperties": false,
+      "properties": {
+        "report_id": {
+          "title": "Report Id",
+          "type": "string"
+        },
+        "release_key": {
+          "title": "Release Key",
+          "type": "string"
+        }
+      },
+      "required": [
+        "report_id",
+        "release_key"
+      ],
+      "title": "InputRef",
+      "type": "object"
+    },
+    "Insight": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "description": "Stable id, e.g. 'E1:soybeans' or 'W2:corn'.",
+          "title": "Id",
+          "type": "string"
+        },
+        "rule": {
+          "enum": [
+            "W1",
+            "W2",
+            "W3",
+            "W4",
+            "E1",
+            "E2",
+            "E3"
+          ],
+          "title": "Rule",
+          "type": "string"
+        },
+        "report_id": {
+          "enum": [
+            "wasde",
+            "export_sales",
+            "cross"
+          ],
+          "title": "Report Id",
+          "type": "string"
+        },
+        "commodity_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Commodity Id"
+        },
+        "kind": {
+          "enum": [
+            "change_vs_prev",
+            "stocks_to_use_rank",
+            "revision_rank",
+            "brazil_soy_export_share",
+            "commitment_pace",
+            "required_weekly_sales",
+            "china_share_soy"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "params": {
+          "additionalProperties": true,
+          "description": "Numbers and ids only; never prose.",
+          "title": "Params",
+          "type": "object"
+        },
+        "n": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Sample size behind the comparison (always shown).",
+          "title": "N"
+        },
+        "window": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Comparison window id, e.g. 'my_2010_11_to_current' or 'prior_5_my_same_week'.",
+          "title": "Window"
+        },
+        "robustness": {
+          "enum": [
+            "robust",
+            "fragile"
+          ],
+          "title": "Robustness",
+          "type": "string"
+        },
+        "caveats": {
+          "items": {
+            "enum": [
+              "small_sample",
+              "esr_not_census",
+              "unknown_may_hide_china",
+              "local_marketing_years",
+              "history_point_in_time",
+              "latest_only_history",
+              "partial_denominator"
+            ],
+            "type": "string"
+          },
+          "title": "Caveats",
+          "type": "array"
+        },
+        "inputs": {
+          "items": {
+            "$ref": "#/$defs/InputRef"
+          },
+          "title": "Inputs",
+          "type": "array"
+        },
+        "as_of": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Release instant (UTC ISO) of the newest input.",
+          "title": "As Of"
+        },
+        "suppressed_reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "n_below_min",
+                "stale_input",
+                "asof_missing",
+                "weeks_remaining_below_min",
+                "no_data",
+                "first_projection",
+                "gap_after_cancelled_report"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Suppressed Reason"
+        }
+      },
+      "required": [
+        "id",
+        "rule",
+        "report_id",
+        "commodity_id",
+        "kind",
+        "params",
+        "n",
+        "window",
+        "robustness",
+        "inputs",
+        "as_of"
+      ],
+      "title": "Insight",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "generated_at": {
+      "title": "Generated At",
+      "type": "string"
+    },
+    "data_tag": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Data Tag"
+    },
+    "gates": {
+      "$ref": "#/$defs/Gates"
+    },
+    "n_screened": {
+      "additionalProperties": {
+        "type": "integer"
+      },
+      "description": "Series screened per rule this run (multiple-comparisons note).",
+      "title": "N Screened",
+      "type": "object"
+    },
+    "insights": {
+      "items": {
+        "$ref": "#/$defs/Insight"
+      },
+      "title": "Insights",
+      "type": "array"
+    },
+    "home_cards": {
+      "description": "Insight ids for the home page, in order (\u2264 5).",
+      "items": {
+        "type": "string"
+      },
+      "title": "Home Cards",
+      "type": "array"
+    },
+    "hero": {
+      "$ref": "#/$defs/Hero"
+    }
+  },
+  "required": [
+    "generated_at",
+    "data_tag",
+    "gates",
+    "n_screened",
+    "insights",
+    "home_cards",
+    "hero"
+  ],
+  "title": "InsightsDoc",
+  "type": "object"
+}

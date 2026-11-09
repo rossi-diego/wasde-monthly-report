@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
-import { T } from "@/components/chrome/I18n";
+import { EnglishOnlyNote, T } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
 import { commodityPills, releaseInfo } from "@/lib/dashboard";
-import { getMeta } from "@/lib/data";
+import { getInsights, getMeta } from "@/lib/data";
 import { monthLabel, num } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Methodology · USDA Reports Dashboard" };
@@ -19,12 +19,15 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
 
 export default function Methodology() {
   const meta = getMeta();
+  const ins = getInsights();
   return (
     <>
       <TopBar title={<T k="nav.methodology" />} release={releaseInfo(meta)}>
         <CommodityPills pills={commodityPills()} />
       </TopBar>
-      {/* Long-form copy is English only for now: marked so screen readers keep EN pronunciation in PT mode. */}
+      {/* Long-form copy is English only (by design, see lib/i18n.ts): PT readers get a notice, and
+          the block is marked lang="en" so screen readers keep EN pronunciation. */}
+      <EnglishOnlyNote />
       <div lang="en" className="flex flex-col gap-5">
       <p className="m-0 max-w-3xl text-muted">
         How the numbers on this site are collected, harmonized and turned into insight. Everything is open source and
@@ -103,13 +106,70 @@ export default function Methodology() {
         </ol>
       </Block>
 
+      <Block title="Export Sales (USDA FAS)">
+        <p>
+          Weekly Export Sales Reporting (ESR) data from the FAS API (<code>api.fas.usda.gov</code>), published Thursdays at
+          8:30 ET for the week ending the previous Thursday. Quantities are metric tonnes for the current marketing year;
+          next-marketing-year sales are kept separate and never added to the current year. Commitments = accumulated
+          exports + outstanding sales. ESR commitments are not Census exports.
+        </p>
+        <p>
+          <strong className="text-ink">Pace vs USDA (E1)</strong>: commitments ÷ the U.S. export projection of the latest
+          WASDE released before that ESR (an as-of join on release timestamps, so no look-ahead), converted to metric
+          tonnes (bushels by commodity weight; soybean meal from thousand short tons; soybean oil from million pounds). Each
+          of the 5 previous marketing years is measured the same way, at the same week, against the WASDE public at the time.
+          Five years is a small sample: it is shown as a mean and a min–max range, never as a percentile.
+        </p>
+        <p>
+          <strong className="text-ink">Required weekly sales (E2)</strong>: (as-of target − commitments) ÷ weeks left in the
+          marketing year, compared with the 4-week average of net sales; not shown with fewer than 6 weeks left.{" "}
+          <strong className="text-ink">China share (E3)</strong>: China&apos;s commitments ÷ all commitments, always shown next
+          to the share of unknown destinations, which can hide China.
+        </p>
+        <p>
+          Vintages: the API serves only the latest revision of past weeks, so history before the first capture is
+          latest-only; every pull is stored as an immutable snapshot from then on (silver keeps every vintage, the
+          published datasets show the latest revision).
+        </p>
+        <p>
+          Release times: the newest week of each pull carries the API&apos;s own release timestamp. Backfilled history is
+          dated with the Thursday 8:30 ET rule (holidays move it to Friday), except for the weeks published late after the
+          2013, 2018–19 and 2025 government shutdowns, which are pinned to their actual FAS catch-up release dates. A week
+          is therefore always compared with the WASDE that was public when FAS actually released it.
+        </p>
+      </Block>
+
+      <Block title="Insight rules and honesty gates">
+        <ul className="list-disc space-y-2 pl-5">
+          <li>Insights are computed in Python as typed parameters (ranks, shares, n); the site only turns them into words, and a test checks that the page matches the JSON.</li>
+          <li>Ranks read &quot;k of n&quot;. A percentile appears only when n ≥ {ins?.gates.percentile_min_n ?? 10}. n is always shown, with a &quot;small sample&quot; chip below {ins?.gates.small_sample_below ?? 10}.</li>
+          <li>An insight is not shown when n &lt; {ins?.gates.min_n ?? 5}, when an input report is older than its cadence plus grace, or when no USDA projection was public at the time.</li>
+          {ins && (
+            <li>
+              Multiple comparisons: this build screened{" "}
+              {Object.entries(ins.n_screened)
+                .map(([k, v]) => `${k} ${num(v)}`)
+                .join(", ")}{" "}
+              series or candidates; the home page shows at most one card per report plus one cross-report card.
+            </li>
+          )}
+        </ul>
+      </Block>
+
       <Block title="Automation">
         <p>
-          A scheduled GitHub Actions workflow reads the official release calendar and polls USDA from 12:00 ET on
-          release day. When the new report appears it rebuilds bronze → silver → gold (dbt + DuckDB, with data tests such
-          as the U.S. balance-sheet identity), publishes a versioned GitHub release with all files, and redeploys this site.
-          An external heartbeat and an auto-updated GitHub issue alert the maintainer if a report is late or a check
-          fails.
+          A scheduled GitHub Actions workflow runs every 30 minutes on weekdays. A light gate checks the release
+          calendars first and stops in seconds when nothing is due. WASDE is polled from 12:00 ET on release day; Export
+          Sales from 8:30 ET every Thursday (Friday after a holiday week). When a new report appears it rebuilds bronze →
+          silver → gold (dbt + DuckDB, with data tests such as the U.S. balance-sheet identity and a no-look-ahead check),
+          redeploys this site, verifies it live and only then publishes the versioned GitHub release.
+        </p>
+        <p>
+          A new WASDE becomes the <code>data-YYYY-MM</code> release, always marked Latest. A week with only new Export
+          Sales data publishes an immutable prerelease <code>weekly-YYYY-MM-DD</code> that is never marked Latest. Export
+          Sales is isolated from WASDE: a failed or invalid ESR pull keeps the last good ESR data, is flagged on the
+          Reports page and never blocks the WASDE release. An external heartbeat and an auto-updated GitHub issue alert the
+          maintainer if a report is late or a check fails.
         </p>
       </Block>
       </div>

@@ -32,7 +32,7 @@ function GroupLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function Sidebar({ reports, rows }: { reports: number; rows: number }) {
+export default function Sidebar({ reports, rows, esrReleases = null }: { reports: number; rows: number; esrReleases?: number | null }) {
   const path = usePathname() ?? "/";
   const t = useT();
   const is = (p: string) => (p === "/" ? path === "/" : path.startsWith(p));
@@ -80,19 +80,31 @@ export default function Sidebar({ reports, rows }: { reports: number; rows: numb
               <span className="text-[11px] text-muted">{r.live ? t(r.cadence) : t("nav.soon")}</span>
             </>
           );
-          return r.live ? (
+          if (r.live && r.href) {
             // Commodity pages are WASDE views, so they keep the WASDE row active too.
-            <NavLink key={r.id} href="/reports/" active={is("/reports") || is("/commodity")}>
-              {inner}
-            </NavLink>
-          ) : (
-            // Not a link: the report page does not exist yet (no dead links). Hidden on phones,
-            // where the "Other USDA reports" cards already announce them, to keep the nav short.
+            const on = r.id === "wasde" ? is(r.href) || is("/commodity") : is(r.href);
+            return (
+              <NavLink key={r.id} href={r.href} active={on}>
+                {inner}
+              </NavLink>
+            );
+          }
+          // Not a link: the report page does not exist yet (no dead links). Hidden on phones,
+          // where the "Other USDA reports" cards already announce them, to keep the nav short.
+          return (
             <span key={r.id} className={`${itemBase} max-[780px]:hidden`} aria-disabled="true">
               {inner}
             </span>
           );
         })}
+
+        <NavLink href="/reports/" active={path === "/reports/" || path === "/reports"}>
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="3" y="5" width="18" height="16" rx="2" />
+            <path d="M3 10h18M8 3v4M16 3v4" />
+          </svg>
+          <T k="nav.allReports" />
+        </NavLink>
 
         <GroupLabel>
           <T k="nav.data" />
@@ -121,6 +133,11 @@ export default function Sidebar({ reports, rows }: { reports: number; rows: numb
         <div>
           <T k="pipeline.counts" v={{ reports: num(reports), rows: num(rows) }} />
         </div>
+        {esrReleases ? (
+          <div>
+            <T k="pipeline.esr" v={{ releases: num(esrReleases) }} />
+          </div>
+        ) : null}
         <div>
           <T k="pipeline.auto" />
         </div>

@@ -57,6 +57,17 @@ export function T({ k, v, months }: { k: Key; v?: Vars; months?: Record<string, 
   return <>{translate(lang, k, v || months ? vars : undefined)}</>;
 }
 
+/** A notice shown only when the active language is not English (for EN-only long-form copy). */
+export function EnglishOnlyNote() {
+  const { lang } = useLang();
+  if (lang === "en") return null;
+  return (
+    <p className="m-0 max-w-3xl rounded-xl bg-bg px-3 py-2 text-[13px] text-muted" data-testid="en-only">
+      {translate(lang, "method.enOnly")}
+    </p>
+  );
+}
+
 /** "2026-10" -> "October 2026" / "outubro de 2026", usable from server components. */
 export function MonthYear({ m }: { m: string | null | undefined }) {
   const { lang } = useLang();

@@ -112,6 +112,42 @@ export function ordinal(n: number): string {
   return `${n}${s}`;
 }
 
+/** "9th" / "9º" */
+export const ordinalIn = (n: number, lang: Lang = "en") => (lang === "pt" ? `${n}º` : ordinal(n));
+
+/** A share (0.6554) as a percentage: "65.5%". */
+export function share(v: number | null | undefined, d = 1): string {
+  if (v === null || v === undefined || Number.isNaN(v)) return "—";
+  return `${(v * 100).toFixed(d)}%`;
+}
+
+/** Metric tonnes, scaled with at least 3 significant digits: "30.23 MMT", "361 thou. t",
+ *  "15.2 thou. t", "1,523 t" (whole tonnes below 10,000, so values match USDA's tables).
+ *  PT: "30.23 mi t", "361 mil t". */
+export function tonnes(mt: number | null | undefined, lang: Lang = "en"): string {
+  if (mt === null || mt === undefined || Number.isNaN(mt)) return "—";
+  const a = Math.abs(mt);
+  if (a >= 1e6) return `${num(mt / 1e6, 2)} ${lang === "pt" ? "mi t" : "MMT"}`;
+  if (a >= 1e5) return `${num(mt / 1e3, 0)} ${lang === "pt" ? "mil t" : "thou. t"}`;
+  if (a >= 1e4) return `${num(mt / 1e3, 1)} ${lang === "pt" ? "mil t" : "thou. t"}`;
+  return `${num(mt, 0)} t`;
+}
+
+/** Axis tick for tonnes, in the same units as {@link tonnes}: "1.5 MMT", "250 thou. t", "0". */
+export function tonnesAxis(mt: number, lang: Lang = "en"): string {
+  const a = Math.abs(mt);
+  if (a === 0) return "0";
+  if (a >= 1e6) return `${num(mt / 1e6, a >= 1e7 || Number.isInteger(mt / 1e6) ? 0 : 1)} ${lang === "pt" ? "mi t" : "MMT"}`;
+  if (a >= 1e3) return `${num(mt / 1e3, Number.isInteger(mt / 1e3) ? 0 : 1)} ${lang === "pt" ? "mil t" : "thou. t"}`;
+  return `${num(mt, 0)} t`;
+}
+
+/** Signed native-unit change: "+282", "−5". */
+export function signedQty(v: number | null | undefined, unit?: string | null, lang: Lang = "en"): string {
+  if (v === null || v === undefined) return "—";
+  return `${signed(v, decimals(unit, v))} ${unitShort(unit, lang)}`.trim();
+}
+
 export function bytes(n: number): string {
   if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
   return `${(n / 1024 / 1024).toFixed(1)} MB`;

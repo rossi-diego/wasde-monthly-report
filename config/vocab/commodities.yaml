@@ -13,7 +13,7 @@ items:
     aliases: [WHEAT, "All Wheat", "Wheat - All Classes"]
   soybean_meal:
     label: Soybean Meal
-    aliases: ["CAKE & MEAL, SOYBEAN", "Soybean Cake & Meal"]
+    aliases: ["CAKE & MEAL, SOYBEAN", "Soybean Cake & Meal", "Soybean cake & meal (ESR 901)"]
   soybean_oil:
     label: Soybean Oil
     aliases: ["OIL, SOYBEAN", "Soybean Oil, Crude"]

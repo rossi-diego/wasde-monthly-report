@@ -1,29 +1,44 @@
-name: WASDE release
+name: Data release
 
-# Release day: detect a new WASDE report, rebuild bronze → silver → gold, deploy the site,
-# verify it live, and only then publish the versioned data release (the commit point).
-# Anything that fails before that point is retried automatically by the next scheduled run.
+# Release days (WASDE monthly 12:00 ET, Export Sales weekly Thursday 08:30 ET): detect what is
+# new, rebuild bronze → silver → gold, deploy the site, verify it live, and only then publish
+# the versioned data release (the commit point). Anything that fails before that point is
+# retried automatically by the next scheduled run.
 #
-# Modes
-#   new      a new report (or a revised edition) was ingested
-#   rebuild  code/config changed, or the live site is behind main / the latest data release
-#   none     nothing to do (most scheduled runs; they still run the watchdogs)
+# A light `gate` job runs first and exits in well under a minute when nothing is due (no
+# bronze restore, no source calls), so the Actions history stays readable.
+#
+# Modes (release job)
+#   new      a new WASDE report (or a revised edition)  → data-YYYY-MM, marked Latest
+#   weekly   new Export Sales content only               → immutable prerelease weekly-YYYY-MM-DD
+#                                                          (--latest=false; data-* stays Latest)
+#   rebuild  code/config changed, or the live site is behind main / the newest data release
+#   none     nothing to do (watchdogs still ran)
+#
+# Release/tag contract (plan §7, protects Soy Outlook): releases/latest is always a data-* tag
+# carrying meta.json (data_release_tag, next_release, latest, reports…) and wasde_full.parquet.
 
 on:
   schedule:
-    # Every 30 min, 16:05–21:35 UTC. WASDE is out at 12:00 ET (16:00 UTC summer, 17:00 winter).
-    - cron: "5,35 16-21 * * *"
+    # Every 30 min, 12:05–23:35 UTC on weekdays: covers ESR (08:30 ET = 12:30/13:30 UTC) and
+    # WASDE (12:00 ET = 16:00/17:00 UTC) in both DST offsets. ET-clock guards live in
+    # `usda-reports due` / `detect`.
+    - cron: "5,35 12-23 * * 1-5"
   workflow_dispatch:
     inputs:
       force_month:
-        description: "Re-ingest this report month (YYYY-MM)"
+        description: "Re-ingest this WASDE report month (YYYY-MM)"
         required: false
+      force_export_sales:
+        description: "Re-pull the newest Export Sales release even if it is already ingested"
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths: ["web/**", "src/**", "dbt/**", "config/**", ".github/workflows/release.yml"]
 
 concurrency:
-  group: wasde-release
+  group: data-release
   cancel-in-progress: false
 
 permissions:
@@ -37,9 +52,72 @@ env:
   SITE_URL: ${{ vars.SITE_URL || 'https://usda-reports.vercel.app' }}
 
 jobs:
+  gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      run: ${{ steps.decide.outputs.run }}
+      prev_tag: ${{ steps.prev.outputs.tag }}
+      behind: ${{ steps.live.outputs.behind }}
+      due: ${{ steps.due.outputs.due }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          activate-environment: true
+      - run: uv pip install -e .
+
+      - name: Newest data release (data-* or weekly-*) and its manifest
+        id: prev
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh release list --exclude-drafts --limit 50 --json tagName -q '[.[] | select(.tagName | test("^(data|weekly)-"))][0].tagName')
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if [ -n "$tag" ]; then
+            gh release download "$tag" --pattern manifest.json --dir /tmp/prev --clobber
+            cp /tmp/prev/manifest.json data/manifest.json
+          fi
+
+      - name: What is due (calendar only, no source calls)
+        id: due
+        run: usda-reports due --json
+
+      - name: Is the live site current? (code commit and data tag)
+        id: live
+        if: github.event_name == 'schedule'
+        run: |
+          live=$(curl -fsS -m 20 "$SITE_URL/build.json" || echo '{}')
+          sha=$(echo "$live" | python -c "import json,sys;print(json.load(sys.stdin).get('sha',''))")
+          tag=$(echo "$live" | python -c "import json,sys;print(json.load(sys.stdin).get('tag',''))")
+          if [ "$sha" != "$GITHUB_SHA" ] || [ "$tag" != "${{ steps.prev.outputs.tag }}" ]; then
+            echo "behind=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Decide
+        id: decide
+        run: |
+          run=false
+          if [ "${{ github.event_name }}" != "schedule" ]; then run=true
+          elif [ -n "${{ steps.due.outputs.due }}" ]; then run=true
+          elif [ "${{ steps.live.outputs.behind }}" = "true" ]; then run=true
+          # Daily full check (revised WASDE editions, watchdogs) on the 16:05 UTC run.
+          elif [ "$(date -u +%H%M)" \> "1559" ] && [ "$(date -u +%H%M)" \< "1630" ]; then run=true
+          fi
+          echo "run=$run" >> "$GITHUB_OUTPUT"
+          echo "Gate: run=$run due='${{ steps.due.outputs.due }}' behind='${{ steps.live.outputs.behind }}'" >> "$GITHUB_STEP_SUMMARY"
+
   release:
+    needs: gate
+    if: needs.gate.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      # api.data.gov key for the FAS Export Sales API (code reads FAS_API_KEY, then this).
+      USDA_PSD_KEY: ${{ secrets.USDA_PSD_KEY }}
     steps:
       - uses: actions/checkout@v4
 
@@ -50,15 +128,15 @@ jobs:
           activate-environment: true
       - run: uv pip install -e ".[dbt]"
 
-      - name: Restore manifest + bronze (manifest from the latest data release; bronze from bronze-store shards)
+      - name: Restore manifest + bronze (manifest from the newest data release; bronze from bronze-store shards)
         id: prev
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag=$(gh release list --exclude-drafts --limit 50 --json tagName -q '[.[] | select(.tagName | startswith("data-"))][0].tagName')
+          tag="${{ needs.gate.outputs.prev_tag }}"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           if [ -z "$tag" ]; then
-            echo "No data release yet: full backfill from USDA/ESMIS"
+            echo "No data release yet: full backfill from USDA/ESMIS/FAS"
             usda-reports backfill
             exit 0
           fi
@@ -107,46 +185,80 @@ jobs:
         continue-on-error: true
         run: usda-reports refresh-calendar
 
-      - name: Detect (new report, revised edition, watchdogs)
+      - name: Detect WASDE (new report, revised edition, watchdogs)
         id: detect
         if: github.event_name != 'push'
         run: usda-reports detect ${{ inputs.force_month && format('--force-month {0}', inputs.force_month) || '' }}
 
-      - name: Is the live site current? (code commit and data tag)
-        id: live
-        if: always() && github.event_name == 'schedule'
-        run: |
-          live=$(curl -fsS -m 20 "$SITE_URL/build.json" || echo '{}')
-          echo "Live build: $live"
-          sha=$(echo "$live" | python -c "import json,sys;print(json.load(sys.stdin).get('sha',''))")
-          tag=$(echo "$live" | python -c "import json,sys;print(json.load(sys.stdin).get('tag',''))")
-          if [ "$sha" != "$GITHUB_SHA" ] || [ "$tag" != "${{ steps.prev.outputs.tag }}" ]; then
-            echo "behind=true" >> "$GITHUB_OUTPUT"
-          fi
+      - name: Detect Export Sales (ET-clock guard; backfill on first run)
+        id: detect_esr
+        # Per-report isolation: an ESR failure keeps the last good ESR data (restored bronze)
+        # and must not block WASDE; it is flagged in build.json and opens the alert issue.
+        # The pull is parsed and contract-checked before it reaches bronze, and the silver
+        # build falls back to the last good ESR snapshot if bronze still holds a bad one.
+        # On push it runs only when the gate says Export Sales is due (e.g. the first merge,
+        # whose restored manifest has no ESR yet): the backfill then ships with that deploy
+        # (mode weekly) instead of waiting for the next scheduled weekday run.
+        if: >-
+          always() && steps.prev.outcome == 'success' &&
+          (github.event_name != 'push' || contains(needs.gate.outputs.due, 'export_sales'))
+        continue-on-error: true
+        run: usda-reports detect --report export_sales ${{ inputs.force_export_sales && '--force' || '' }}
 
       - name: Decide
         id: plan
         if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           if [ "${{ steps.detect.outputs.new_report }}" = "true" ]; then mode=new
-          elif [ "${{ github.event_name }}" != "schedule" ] || [ "${{ steps.live.outputs.behind }}" = "true" ]; then mode=rebuild
+          elif [ "${{ steps.detect_esr.outputs.new_export_sales }}" = "true" ]; then mode=weekly
+          elif [ "${{ github.event_name }}" != "schedule" ] || [ "${{ needs.gate.outputs.behind }}" = "true" ]; then mode=rebuild
           else mode=none; fi
+          case "$mode" in
+            new) tag=$(usda-reports release-tag data) ;;
+            weekly) tag=$(usda-reports release-tag weekly --existing "$(gh release list --limit 100 --json tagName -q '.[].tagName' | tr '\n' ' ')") ;;
+            rebuild) tag="${{ steps.prev.outputs.tag }}"; [ -n "$tag" ] || tag=$(usda-reports release-tag data) ;;
+            *) tag="" ;;
+          esac
+          failed=""
+          [ "${{ steps.detect_esr.outcome }}" = "failure" ] && failed="export_sales"
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
-          echo "Mode: $mode" >> "$GITHUB_STEP_SUMMARY"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "failed=$failed" >> "$GITHUB_OUTPUT"
+          echo "Mode: $mode · tag: ${tag:-none} · failed reports: ${failed:-none}" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build silver → gold → publish
         id: build
         if: always() && steps.plan.outputs.mode != 'none' && steps.prev.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          month=$(usda-reports latest-key wasde)
-          echo "tag=data-$month" >> "$GITHUB_OUTPUT"
-          echo "month=$month" >> "$GITHUB_OUTPUT"
-          usda-reports run --tag "data-$month"
-          # New/changed bronze files → one new append-only shard (sets output `shards`);
-          # the manifest copied into the release records which shard holds each file.
+          tag="${{ steps.plan.outputs.tag }}"
+          echo "month=$(usda-reports latest-key wasde)" >> "$GITHUB_OUTPUT"
+          echo "esr=$(usda-reports latest-key export_sales || true)" >> "$GITHUB_OUTPUT"
+          # Sets output `silver_failed` (isolated reports rebuilt from their last good state).
+          usda-reports run --tag "$tag"
+          # Weekly releases are immutable. A code-only rebuild on top of weekly-X must not
+          # point the catalogue at weekly-X assets whose bytes differ from this build's: when
+          # any dataset hash differs (or weekly-X has no datasets.json), cut a new weekly tag.
+          if [ "${{ steps.plan.outputs.mode }}" = "rebuild" ] && [[ "$tag" == weekly-* ]]; then
+            rm -rf /tmp/rel && mkdir -p /tmp/rel
+            if gh release download "$tag" --pattern datasets.json --dir /tmp/rel --clobber \
+              && [ "$(usda-reports datasets-changed /tmp/rel/datasets.json data/publish/datasets.json)" = "false" ]; then
+              echo "Datasets identical to $tag: the catalogue keeps pointing at it." >> "$GITHUB_STEP_SUMMARY"
+            else
+              tag=$(usda-reports release-tag weekly --existing "$(gh release list --limit 100 --json tagName -q '.[].tagName' | tr '\n' ' ')")
+              echo "Datasets differ from the immutable ${{ steps.plan.outputs.tag }}: publishing $tag." >> "$GITHUB_STEP_SUMMARY"
+              usda-reports publish --tag "$tag"
+            fi
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          # New/changed bronze files → one new append-only shard per report (sets output
+          # `shards`); the manifest copied into the release records which shard holds each file.
           usda-reports pack-shards --out-dir data/shards
           cp data/manifest.json data/publish/manifest.json
-          echo "{\"sha\":\"$GITHUB_SHA\",\"tag\":\"data-$month\",\"built_at\":\"$(date -u +%FT%TZ)\"}" > web/public/build.json
+          usda-reports build-info --sha "$GITHUB_SHA" --tag "$tag" --failed "${{ steps.plan.outputs.failed }}" --out web/public/build.json
           tar -czf data/publish/web-data.tar.gz -C web/public data
 
       - uses: actions/setup-node@v4
@@ -181,10 +293,11 @@ jobs:
         run: |
           for i in 1 2 3 4 5 6; do
             live=$(curl -fsS -m 20 "$SITE_URL/build.json" || true)
-            echo "$live" | grep -q "$GITHUB_SHA" && echo "$live" | grep -q "${{ steps.build.outputs.tag }}" && break
+            echo "$live" | grep -q "$GITHUB_SHA" && echo "$live" | grep -q "\"${{ steps.build.outputs.tag }}\"" && break
             echo "waiting for the new deployment to be served ($i)"; sleep 20
           done
           echo "$live" | grep -q "$GITHUB_SHA" || { echo "::error::live site does not serve this build"; exit 1; }
+          echo "$live" | grep -q "\"${{ steps.build.outputs.tag }}\"" || { echo "::error::live build.json tag is not ${{ steps.build.outputs.tag }}"; exit 1; }
           export EXPECTED_REPORT_LABEL=$(python -c "import json;print(json.load(open('public/data/meta.json'))['latest']['label'])")
           npx playwright install --with-deps chromium
           npx playwright test --project=desktop
@@ -195,12 +308,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           tag="${{ steps.build.outputs.tag }}"
-          label=$(python -c "import json;print(json.load(open('web/public/data/meta.json'))['latest']['label'])")
-          python - > /tmp/notes.md <<'PY'
-          import json
-          o = json.load(open("web/public/data/overview.json", encoding="utf-8"))
-          print("Automated WASDE data release.\n\n### Headlines\n" + "\n".join(f"- {h['sentence']}" for h in o["highlights"]))
-          PY
+          mode="${{ steps.plan.outputs.mode }}"
           # Bronze shards first: the manifest in the data release points at them.
           shards="${{ steps.build.outputs.shards }}"
           if [ -n "$shards" ]; then
@@ -210,22 +318,46 @@ jobs:
             fi
             for s in $shards; do gh release upload "$BRONZE_STORE" "data/shards/$s" --clobber; done
           fi
-          if gh release view "$tag" >/dev/null 2>&1; then
-            gh release upload "$tag" data/publish/* --clobber
-            gh release edit "$tag" --notes-file /tmp/notes.md
-          else
-            gh release create "$tag" --draft --title "WASDE $label" --notes-file /tmp/notes.md
-            gh release upload "$tag" data/publish/*
-            gh release edit "$tag" --draft=false --latest
-          fi
+          case "$tag" in
+            data-*)
+              label=$(python -c "import json;print(json.load(open('web/public/data/meta.json'))['latest']['label'])")
+              python - > /tmp/notes.md <<'PY'
+          import json
+          o = json.load(open("web/public/data/overview.json", encoding="utf-8"))
+          print("Automated WASDE data release.\n\n### Headlines\n" + "\n".join(f"- {h['sentence']}" for h in o["highlights"]))
+          PY
+              if gh release view "$tag" >/dev/null 2>&1; then
+                gh release upload "$tag" data/publish/* --clobber
+                gh release edit "$tag" --notes-file /tmp/notes.md
+              else
+                gh release create "$tag" --draft --title "WASDE $label" --notes-file /tmp/notes.md
+                gh release upload "$tag" data/publish/*
+                gh release edit "$tag" --draft=false --latest
+              fi
+              ;;
+            weekly-*)
+              if gh release view "$tag" >/dev/null 2>&1; then
+                # Weekly releases are immutable: a rebuild redeploys the site but never edits them.
+                echo "Weekly release $tag already exists; left unchanged (immutable)." >> "$GITHUB_STEP_SUMMARY"
+                exit 0
+              fi
+              esr="${{ steps.build.outputs.esr }}"
+              printf 'Automated weekly build: U.S. Export Sales release %s (FAS ESR).\n\nPrerelease, never marked Latest: the latest data-* release stays the monthly WASDE release.\n' "$esr" > /tmp/notes.md
+              gh release create "$tag" --draft --prerelease --latest=false --title "Export Sales $esr" --notes-file /tmp/notes.md
+              gh release upload "$tag" data/publish/*
+              gh release edit "$tag" --draft=false --prerelease --latest=false
+              ;;
+            *) echo "::error::unexpected release tag '$tag'"; exit 1 ;;
+          esac
 
       - name: Record manifest and calendar in git (audit trail + repository activity)
-        if: always() && steps.plan.outputs.mode == 'new' && steps.verify.outcome == 'success'
+        if: always() && (steps.plan.outputs.mode == 'new' || steps.plan.outputs.mode == 'weekly') && steps.verify.outcome == 'success'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/manifest.json config/calendars/wasde.yaml
-          git diff --staged --quiet || git commit -m "data: WASDE ${{ steps.build.outputs.month }}"
+          git add data/manifest.json config/calendars/
+          if [ "${{ steps.plan.outputs.mode }}" = "new" ]; then msg="data: WASDE ${{ steps.build.outputs.month }}"; else msg="data: Export Sales ${{ steps.build.outputs.esr }}"; fi
+          git diff --staged --quiet || git commit -m "$msg"
           git pull --rebase --autostash origin main && git push || echo "::warning::audit commit not pushed"
 
       - name: Heartbeat
@@ -237,15 +369,15 @@ jobs:
           if [ "${{ job.status }}" = "success" ]; then curl -fsS -m 10 "$HC" >/dev/null; else curl -fsS -m 10 "$HC/fail" >/dev/null; fi
 
       - name: Open the pipeline-alert issue (once; scheduled retries stay quiet)
-        if: failure()
+        if: failure() || steps.detect_esr.outcome == 'failure' || steps.build.outputs.silver_failed != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          body="Run ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} failed (event: ${{ github.event_name }}). Watchdogs: ${{ steps.detect.outputs.problems || 'none' }}."
+          body="Run ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} needs attention (event: ${{ github.event_name }}). WASDE watchdogs: ${{ steps.detect.outputs.problems || 'none' }}. Export Sales: ${{ steps.detect_esr.outcome }} ${{ steps.detect_esr.outputs.export_sales_problems }}. Silver fell back to the last good state for: ${{ steps.build.outputs.silver_failed || 'none' }}."
           gh label create pipeline-alert --color B60205 --force >/dev/null
           num=$(gh issue list --label pipeline-alert --state open --json number -q '.[0].number')
           if [ -z "$num" ]; then
-            gh issue create --title "WASDE pipeline needs attention" --label pipeline-alert --body "$body"
+            gh issue create --title "Data pipeline needs attention" --label pipeline-alert --body "$body"
           elif [ "${{ github.event_name }}" != "schedule" ]; then
             gh issue comment "$num" --body "$body"
           fi

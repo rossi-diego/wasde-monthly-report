@@ -10,12 +10,17 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass, field
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 
 import httpx
 
 from usda_reports.bronze.store import BronzeStore
-from usda_reports.core.calendar import is_overdue, latest_due
+from usda_reports.core.calendar import (
+    is_overdue,
+    latest_due,
+    parse_time_et,
+    release_datetime_utc,
+)
 from usda_reports.core.logs import get_logger
 from usda_reports.reports.wasde.ingest import ingest_month
 from usda_reports.reports.wasde.sources.esmis import EsmisRelease, list_releases
@@ -104,3 +109,47 @@ def run_detect(
     latest = max(releases) if releases else None
     result.problems = watchdogs(dates, now, set(releases), latest)
     return result
+
+
+# ── weekly reports (Export Sales) ────────────────────────────────────────────
+
+
+@dataclass
+class WeeklyDue:
+    """Calendar state of a weekly report at ``now`` (no network needed)."""
+
+    due: date | None  # latest scheduled release whose ET publication time has passed
+    have_latest: str | None  # newest ingested release key (YYYY-MM-DD)
+    missing: bool  # the due release is not in bronze yet
+    problems: list[str] = field(default_factory=list)
+
+
+def weekly_due(
+    dates: list[date],
+    now: datetime,
+    have: set[str],
+    release_time_et: str,
+    grace_days: int = 10,
+    overdue_days: int = 2,
+) -> WeeklyDue:
+    """Is a weekly release due and missing? Plus the watchdogs (calendar, overdue, stale).
+
+    A release counts as ingested when bronze holds a key within 3 days before the scheduled
+    date or any time after it: the API's own release date can differ from the rule by a day
+    (holiday shifts the rule did not model), and a newer key implies the older week too.
+    """
+    at = parse_time_et(release_time_et)
+    due = latest_due(dates, now, at)
+    latest = max(have) if have else None
+    missing = False
+    problems: list[str] = []
+    if not any(d > now.date() for d in dates):
+        problems.append("weekly release calendar has no future date")
+    if due is not None:
+        floor = (due - timedelta(days=3)).isoformat()
+        missing = latest is None or latest < floor
+        if missing and now - release_datetime_utc(due, at) > timedelta(days=overdue_days):
+            problems.append(f"release scheduled for {due} is still missing")
+    if latest and (now.date() - date.fromisoformat(latest)).days > 7 + grace_days:
+        problems.append(f"newest release is {latest}: data is going stale")
+    return WeeklyDue(due=due, have_latest=latest, missing=missing, problems=problems)

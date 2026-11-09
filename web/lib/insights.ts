@@ -45,6 +45,9 @@ export type StuView = {
   n: number;
   from: string;
   to: string;
+  /** Window of the final seasons the rank is computed over (labelled next to every rank). */
+  finalFrom: string;
+  finalTo: string;
 };
 
 /** Rank of the current projection among the final values of completed seasons:
@@ -80,6 +83,8 @@ export function stuView(s: Series, lang: Lang = "en"): StuView {
     n: finals.length,
     from: hist[0]?.market_year ?? "",
     to: hist[hist.length - 1]?.market_year ?? "",
+    finalFrom: finals[0]?.market_year ?? "",
+    finalTo: finals[finals.length - 1]?.market_year ?? "",
   };
 }
 

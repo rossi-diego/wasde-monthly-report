@@ -2,7 +2,7 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 // axe on every route, in light and dark: no serious or critical violations.
-const ROUTES = ["/", "/reports/", "/commodity/corn/", "/commodity/soybeans/", "/data/", "/methodology/"];
+const ROUTES = ["/", "/reports/", "/reports/wasde/", "/reports/export-sales/", "/commodity/corn/", "/commodity/soybeans/", "/data/", "/methodology/"];
 
 for (const scheme of ["light", "dark"] as const) {
   for (const url of ROUTES) {

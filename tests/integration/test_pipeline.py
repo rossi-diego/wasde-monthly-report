@@ -57,7 +57,7 @@ def test_publish_outputs(built: Settings):
     assert [c["market_year"] for c in corn["balance_sheet"]["columns"]][-1] == "2024/25"
     assert corn["revisions"]["ending_stocks"]
 
-    catalog = json.loads((web / "catalog.json").read_text(encoding="utf-8"))
+    catalog = json.loads((web / "wasde_tables.json").read_text(encoding="utf-8"))
     assert {c["id"] for c in catalog} == {"us_feed_grains_corn", "world_corn"}
     full = pd.read_parquet(web / "downloads" / "wasde_full.parquet")
     assert full.report_month.nunique() == 2

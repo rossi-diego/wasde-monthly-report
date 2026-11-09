@@ -9,6 +9,7 @@ from usda_reports.core.config import PROJECT_ROOT, Settings, apply_legacy_env
 from usda_reports.core.contracts import ContractError
 from usda_reports.core.registry import load_registry
 from usda_reports.core.vocab import UnseenLabelError, Vocab
+from usda_reports.reports.export_sales.spec import ExportSalesSpec
 from usda_reports.reports.wasde.silver import load_contract
 from usda_reports.reports.wasde.spec import WasdeSpec
 from usda_reports.silver.envelope import ENVELOPE_COLUMNS, add_envelope
@@ -49,9 +50,9 @@ def test_usda_prefix_and_fas_key_fallback(monkeypatch):
 # ── registry / spec ─────────────────────────────────────────────────────────
 
 
-def test_registry_has_only_wasde_enabled(config_dir):
+def test_registry_enables_wasde_and_export_sales(config_dir):
     reg = load_registry(config_dir)
-    assert [r.id for r in reg.enabled()] == ["wasde"]
+    assert [r.id for r in reg.enabled()] == ["wasde", "export_sales"]
     assert {"export_sales", "oilseed_crush", "crop_progress", "grain_stocks"} <= set(reg.reports)
     spec = reg.spec("wasde", Settings(config_dir=config_dir))
     assert isinstance(spec, WasdeSpec)
@@ -60,8 +61,11 @@ def test_registry_has_only_wasde_enabled(config_dir):
     assert (spec.config_dir / "mappings.yaml").exists()
     assert (spec.config_dir / "xml_layout" / "positions.csv").exists()
     assert spec.calendar(), "config/calendars/wasde.yaml has release dates"
+    esr = reg.spec("export_sales", Settings(config_dir=config_dir))
+    assert isinstance(esr, ExportSalesSpec)
+    assert esr.config.release_time_et == "08:30" and esr.config.cadence == "weekly"
     with pytest.raises(ValueError, match="no spec"):
-        reg.spec("export_sales", Settings(config_dir=config_dir))
+        reg.spec("oilseed_crush", Settings(config_dir=config_dir))
 
 
 # ── envelope + contract ─────────────────────────────────────────────────────
