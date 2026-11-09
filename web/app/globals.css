@@ -1,123 +1,220 @@
 @import "tailwindcss";
 
-/* Design tokens. Chart roles follow the validated reference palette (dataviz skill):
-   dark mode is its own selected steps, not an automatic inversion. */
+/* Design tokens of the approved card-grid dashboard (docs: PR S2b).
+   Every text/background pair below was checked for WCAG AA (>= 4.5:1):
+   muted on card/bg/side in both themes, white on each KPI tile colour,
+   report colours used as eyebrow text on the card background. */
 :root {
   color-scheme: light;
-  --page: #f9f9f7;
-  --surface: #fcfcfb;
-  --surface-2: #f3f2ee;
-  --ink: #0b0b0b;
-  --ink-2: #52514e;
-  --muted: #898781;
-  --grid: #e1e0d9;
-  --axis: #c3c2b7;
-  --border: rgba(11, 11, 11, 0.1);
-  --accent: #2a78d6;
-  --accent-soft: #cde2fb;
-  --series-1: #2a78d6; /* current marketing year */
-  --series-2: #eb6834; /* previous marketing year */
-  --context: #c3c2b7; /* older marketing years (de-emphasis) */
-  --up: #2a78d6; /* diverging pole: increase */
-  --down: #e34948; /* diverging pole: decrease */
-  --neutral: #c3c2b7;
-  --up-text: #1c5cab;
-  --down-text: #b42d2c;
-  --bar-muted: #86b6ef;
-  --brand: #14532d;
+  --bg: #f3f5f8;
+  --side: #ffffff;
+  --card: #ffffff;
+  --text: #142030;
+  --muted: #5a6573; /* 5.9:1 on card, 5.4:1 on bg */
+  --line: #e3e7ed;
+  --grid: #e9edf2;
+  --nav-active: #e8effe;
+  --link: #1d4ed8;
+  --wasde: #2563eb; /* 5.2:1 on white */
+  --pill-active: #2563eb;
+  --bar-past: #c9d3e1;
+  --bar-est: #8fa3c2;
+  --data-bg: #1e3a8a;
+  --data-ink: #1e3a8a;
+  --up: #0f766e;
+  --down: #c2410c;
+  --neutral: #8fa3c2;
+  /* report colours (sidebar dots, placeholder borders, eyebrows) */
+  --r-wasde: #2563eb;
+  --r-esr: #0f766e;
+  --r-crush: #b45309;
+  --r-progress: #15803d;
+  --r-stocks: #6d28d9;
+  /* KPI tiles: white text >= 5:1 on each */
+  --tile-1: #2563eb;
+  --tile-2: #0f766e;
+  --tile-3: #6d28d9;
+  --tile-4: #b45309;
+  --shadow: 0 1px 2px rgba(20, 32, 48, 0.04);
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:where(:not([data-theme="light"])) {
+  :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --page: #0d0d0d;
-    --surface: #1a1a19;
-    --surface-2: #232321;
-    --ink: #f0efec;
-    --ink-2: #c3c2b7;
-    --muted: #898781;
-    --grid: #2c2c2a;
-    --axis: #383835;
-    --border: rgba(255, 255, 255, 0.1);
-    --accent: #3987e5;
-    --accent-soft: #104281;
-    --series-1: #3987e5;
-    --series-2: #d95926;
-    --context: #52514e;
-    --up: #3987e5;
-    --down: #e66767;
-    --neutral: #52514e;
-    --up-text: #86b6ef;
-    --down-text: #f19b9b;
-    --bar-muted: #1c5cab;
-    --brand: #4ade80;
+    --bg: #0b1220;
+    --side: #0f182a;
+    --card: #131d31;
+    --text: #e7ecf3;
+    --muted: #9aa7b8; /* 6.9:1 on card */
+    --line: #22304a;
+    --grid: #1e2a40;
+    --nav-active: #1c2a48;
+    --link: #8ab4ff;
+    --wasde: #5b8def;
+    --pill-active: #1d4ed8;
+    --bar-past: #33435f;
+    --bar-est: #52668a;
+    --data-bg: #1d3b8f;
+    --data-ink: #1e3a8a;
+    --up: #3fb6a8;
+    --down: #f0a35e;
+    --neutral: #52668a;
+    --r-wasde: #5b8def;
+    --r-esr: #2dd4bf;
+    --r-crush: #f59e0b;
+    --r-progress: #4ade80;
+    --r-stocks: #a78bfa;
+    --tile-1: #1d4ed8;
+    --tile-2: #0f766e;
+    --tile-3: #6d28d9;
+    --tile-4: #b45309;
+    --shadow: none;
   }
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --page: #0d0d0d;
-  --surface: #1a1a19;
-  --surface-2: #232321;
-  --ink: #f0efec;
-  --ink-2: #c3c2b7;
-  --muted: #898781;
-  --grid: #2c2c2a;
-  --axis: #383835;
-  --border: rgba(255, 255, 255, 0.1);
-  --accent: #3987e5;
-  --accent-soft: #104281;
-  --series-1: #3987e5;
-  --series-2: #d95926;
-  --context: #52514e;
-  --up: #3987e5;
-  --down: #e66767;
-  --neutral: #52514e;
-  --up-text: #86b6ef;
-  --down-text: #f19b9b;
-  --bar-muted: #1c5cab;
-  --brand: #4ade80;
+  --bg: #0b1220;
+  --side: #0f182a;
+  --card: #131d31;
+  --text: #e7ecf3;
+  --muted: #9aa7b8;
+  --line: #22304a;
+  --grid: #1e2a40;
+  --nav-active: #1c2a48;
+  --link: #8ab4ff;
+  --wasde: #5b8def;
+  --pill-active: #1d4ed8;
+  --bar-past: #33435f;
+  --bar-est: #52668a;
+  --data-bg: #1d3b8f;
+  --data-ink: #1e3a8a;
+  --up: #3fb6a8;
+  --down: #f0a35e;
+  --neutral: #52668a;
+  --r-wasde: #5b8def;
+  --r-esr: #2dd4bf;
+  --r-crush: #f59e0b;
+  --r-progress: #4ade80;
+  --r-stocks: #a78bfa;
+  --tile-1: #1d4ed8;
+  --tile-2: #0f766e;
+  --tile-3: #6d28d9;
+  --tile-4: #b45309;
+  --shadow: none;
 }
 
 @theme inline {
-  --color-page: var(--page);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-ink: var(--ink);
-  --color-ink-2: var(--ink-2);
+  --color-bg: var(--bg);
+  --color-side: var(--side);
+  --color-card: var(--card);
+  --color-ink: var(--text);
   --color-muted: var(--muted);
+  --color-line: var(--line);
   --color-grid: var(--grid);
-  --color-line: var(--border);
-  --color-accent: var(--accent);
-  --color-accent-soft: var(--accent-soft);
-  --color-up: var(--up-text);
-  --color-down: var(--down-text);
-  --color-brand: var(--brand);
-  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-nav-active: var(--nav-active);
+  --color-link: var(--link);
+  --color-wasde: var(--wasde);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --font-sans: var(--font-plex-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SFMono-Regular", monospace;
 }
 
+@layer base {
 html,
 body {
-  background: var(--page);
-  color: var(--ink);
+  background: var(--bg);
+  color: var(--text);
 }
 
 body {
+  margin: 0;
   font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
 }
 
+a {
+  color: inherit;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+}
+
+details > summary {
+  cursor: pointer;
+}
+}
+
+/* Layered so Tailwind utilities on the same element still win. */
+@layer components {
 .tabular {
   font-variant-numeric: tabular-nums;
 }
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--wasde);
+}
+
+/* Auto-fit grids that never overflow a 360px screen. */
+.grid-fit-380 {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
+}
+.grid-fit-240 {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+}
+.grid-fit-220 {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.data-table th,
+.data-table td {
+  padding: 4px 6px;
+  border-top: 1px solid var(--line);
+  text-align: right;
+}
+.data-table th:first-child,
+.data-table td:first-child {
+  text-align: left;
+}
+.data-table thead th {
+  color: var(--muted);
+  font-weight: 500;
+  border-top: 0;
+}
 }

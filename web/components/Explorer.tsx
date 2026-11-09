@@ -38,7 +38,7 @@ function Select({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-lg border border-line bg-surface px-2.5 py-2 text-sm text-ink"
+        className="w-full rounded-lg border border-line bg-card px-2.5 min-h-11 text-sm text-ink"
       >
         <option value={ALL}>All</option>
         {options.map((o) => (
@@ -165,13 +165,13 @@ export default function Explorer({ catalog, defaultTable }: { catalog: CatalogEn
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="flex flex-col gap-1 text-xs text-muted sm:col-span-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <label className="flex min-w-0 flex-col gap-1 text-xs text-muted sm:col-span-2">
           WASDE table
           <select
             value={tableId}
             onChange={(e) => selectTable(e.target.value)}
-            className="rounded-lg border border-line bg-surface px-2.5 py-2 text-sm text-ink"
+            className="w-full min-w-0 rounded-lg border border-line bg-card px-2.5 min-h-11 text-sm text-ink"
           >
             {catalog.map((c) => (
               <option key={c.id} value={c.id}>
@@ -184,9 +184,9 @@ export default function Explorer({ catalog, defaultTable }: { catalog: CatalogEn
         <Select label="Region" value={region} onChange={setRegion} options={table.regions} />
         <Select label="Line" value={attribute} onChange={setAttribute} options={table.attributes} />
         <Select label="Marketing year" value={my} onChange={setMy} options={[...table.market_years].reverse()} />
-        <label className="flex flex-col gap-1 text-xs text-muted">
+        <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
           Reports from
-          <select value={from} onChange={(e) => setFrom(e.target.value)} className="rounded-lg border border-line bg-surface px-2.5 py-2 text-sm text-ink">
+          <select value={from} onChange={(e) => setFrom(e.target.value)} className="w-full min-w-0 rounded-lg border border-line bg-card px-2.5 min-h-11 text-sm text-ink">
             {months.map((m) => (
               <option key={m} value={m}>
                 {monthLabel(m, "short")}
@@ -194,9 +194,9 @@ export default function Explorer({ catalog, defaultTable }: { catalog: CatalogEn
             ))}
           </select>
         </label>
-        <label className="flex flex-col gap-1 text-xs text-muted">
+        <label className="flex min-w-0 flex-col gap-1 text-xs text-muted">
           to
-          <select value={to} onChange={(e) => setTo(e.target.value)} className="rounded-lg border border-line bg-surface px-2.5 py-2 text-sm text-ink">
+          <select value={to} onChange={(e) => setTo(e.target.value)} className="w-full min-w-0 rounded-lg border border-line bg-card px-2.5 min-h-11 text-sm text-ink">
             {months.map((m) => (
               <option key={m} value={m}>
                 {monthLabel(m, "short")}
@@ -207,7 +207,7 @@ export default function Explorer({ catalog, defaultTable }: { catalog: CatalogEn
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-ink-2" aria-live="polite">
+        <p className="text-sm text-muted" aria-live="polite">
           {status || `${num(filtered.length)} values match`}
           {filtered.length > EXCEL_MAX_ROWS && " — Excel export is capped at 1,048,575 rows; use CSV or Parquet."}
         </p>
@@ -216,7 +216,7 @@ export default function Explorer({ catalog, defaultTable }: { catalog: CatalogEn
             type="button"
             disabled={!filtered.length || busy}
             onClick={downloadXlsx}
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
+            className="min-h-11 rounded-lg bg-[var(--pill-active)] px-4 text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
           >
             {busy ? "Preparing…" : "Download Excel"}
           </button>
@@ -224,16 +224,16 @@ export default function Explorer({ catalog, defaultTable }: { catalog: CatalogEn
             type="button"
             disabled={!filtered.length}
             onClick={downloadCsv}
-            className="rounded-lg border border-line px-4 py-2 text-sm hover:bg-surface-2 disabled:opacity-40"
+            className="min-h-11 rounded-lg border border-line px-4 text-sm hover:bg-bg disabled:opacity-40"
           >
             CSV
           </button>
         </div>
       </div>
 
-      <div className="max-h-[480px] overflow-auto rounded-lg border border-line">
+      <div tabIndex={0} role="region" aria-label="Data preview" className="max-h-[480px] overflow-auto rounded-lg border border-line">
         <table className="w-full min-w-[720px] text-sm">
-          <thead className="sticky top-0 bg-surface-2 text-xs text-muted">
+          <thead className="sticky top-0 bg-bg text-xs text-muted">
             <tr>
               {["Report", "Commodity", "Region", "Line", "MY", "Flag", "Value", "Unit"].map((h) => (
                 <th key={h} scope="col" className={`px-3 py-2 font-normal ${h === "Value" ? "text-right" : "text-left"}`}>

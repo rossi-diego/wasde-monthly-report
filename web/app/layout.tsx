@@ -1,103 +1,79 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
+import { IBM_Plex_Mono, IBM_Plex_Sans } from "next/font/google";
 
-import ThemeToggle, { themeBootScript } from "@/components/ThemeToggle";
-import { getIndex, getMeta } from "@/lib/data";
-import { monthLabel } from "@/lib/format";
+import { I18nProvider, T } from "@/components/chrome/I18n";
+import Sidebar from "@/components/chrome/Sidebar";
+import { themeBootScript } from "@/components/chrome/ThemeToggle";
+import { getMeta } from "@/lib/data";
 
 import "./globals.css";
+
+const plexSans = IBM_Plex_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-plex-sans",
+  display: "swap",
+});
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-plex-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "USDA Reports Dashboard",
   description:
-    "Every USDA WASDE report since 2010, harmonized and updated automatically on release day — revisions, drivers and stocks-to-use for corn, soybeans, wheat and cotton.",
+    "Every USDA WASDE report since 2010, harmonized and updated automatically on release day: revisions, drivers and stocks-to-use for corn, soybeans, wheat and cotton.",
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const meta = getMeta();
-  const commodities = getIndex();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${plexSans.variable} ${plexMono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
       </head>
-      <body className="min-h-screen">
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-surface focus:px-3 focus:py-2"
-        >
-          Skip to content
-        </a>
-        <header className="sticky top-0 z-20 border-b border-line bg-page/90 backdrop-blur">
-          <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3">
-            <Link href="/" className="flex items-center gap-2 font-semibold tracking-tight">
-              <span aria-hidden className="grid h-7 w-7 place-items-center rounded-md bg-brand text-sm text-page">
-                W
-              </span>
-              USDA Reports Dashboard
-            </Link>
-            <nav
-              className="-mx-4 order-last flex w-[calc(100%+2rem)] items-center gap-1 overflow-x-auto whitespace-nowrap px-4 text-sm lg:order-none lg:mx-0 lg:w-auto lg:overflow-visible lg:px-0"
-              aria-label="Main"
+      <body>
+        <I18nProvider>
+          <a
+            href="#main"
+            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-3 focus:py-2"
+          >
+            <T k="skip" />
+          </a>
+          <div className="flex min-h-screen flex-wrap">
+            <Sidebar reports={meta.history.reports} rows={meta.history.rows} />
+            <main
+              id="main"
+              className="box-border flex min-w-0 flex-[999_1_560px] flex-col gap-5 px-4 pb-10 pt-6 sm:px-7"
             >
-              <Link className="rounded-md px-2.5 py-1.5 text-ink-2 hover:bg-surface-2 hover:text-ink" href="/">
-                This report
-              </Link>
-              {commodities.map((c) => (
-                <Link
-                  key={c.id}
-                  className="rounded-md px-2.5 py-1.5 text-ink-2 hover:bg-surface-2 hover:text-ink"
-                  href={`/commodity/${c.id}/`}
-                >
-                  {c.label}
-                </Link>
-              ))}
-              <Link className="rounded-md px-2.5 py-1.5 text-ink-2 hover:bg-surface-2 hover:text-ink" href="/downloads/">
-                Data &amp; downloads
-              </Link>
-              <Link
-                className="rounded-md px-2.5 py-1.5 text-ink-2 hover:bg-surface-2 hover:text-ink"
-                href="/methodology/"
-              >
-                Methodology
-              </Link>
-            </nav>
-            <div className="ml-auto flex items-center gap-3 text-xs text-muted">
-              <span className="hidden sm:inline">
-                Latest <strong className="text-ink">{meta.latest.label}</strong>
-                {meta.next_release && (
-                  <>
-                    {" · "}next{" "}
-                    {new Date(meta.next_release + "T12:00:00").toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </>
-                )}
-              </span>
-              <ThemeToggle />
-            </div>
+              {children}
+              <footer className="mt-auto flex flex-wrap gap-x-5 gap-y-2 pt-4 text-xs text-muted">
+                <span>
+                  <T k="footer.built" /> ·{" "}
+                  <a className="inline-flex min-h-11 items-center underline" href="https://github.com/rossi-diego/usda-reports-dashboard">
+                    <T k="footer.code" />
+                  </a>
+                </span>
+                <span className="inline-flex items-center">
+                  <T k="footer.source" />
+                </span>
+                <span className="inline-flex items-center">
+                  <T
+                    k="footer.data"
+                    v={{
+                      tag: meta.data_release_tag ?? "local build",
+                      at: new Date(meta.generated_at).toISOString().slice(0, 16).replace("T", " "),
+                    }}
+                  />
+                </span>
+              </footer>
+            </main>
           </div>
-        </header>
-        <main id="main" className="mx-auto max-w-7xl px-4 py-8">{children}</main>
-        <footer className="border-t border-line">
-          <div className="mx-auto flex max-w-7xl flex-wrap gap-x-6 gap-y-1 px-4 py-6 text-xs text-muted">
-            <span>
-              Source: USDA World Agricultural Supply and Demand Estimates. {meta.history.reports} reports,{" "}
-              {monthLabel(meta.history.first_report)} – {meta.latest.label}.
-            </span>
-            <span>
-              Data {meta.data_release_tag ?? "local build"} · generated{" "}
-              {new Date(meta.generated_at).toISOString().slice(0, 16).replace("T", " ")} UTC · updated automatically
-              on every release
-            </span>
-            <a className="underline hover:text-ink" href="https://github.com/rossi-diego/usda-reports-dashboard">
-              Source code
-            </a>
-          </div>
-        </footer>
+        </I18nProvider>
       </body>
     </html>
   );

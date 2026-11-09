@@ -1,3 +1,6 @@
+"use client";
+
+import { useT } from "@/components/chrome/I18n";
 import { signed } from "@/lib/format";
 
 /** Signed change with an arrow; direction carried by glyph + sign, color only reinforces. */
@@ -12,6 +15,7 @@ export default function Delta({
   suffix?: string;
   className?: string;
 }) {
+  const t = useT();
   if (value === null || value === undefined || Number.isNaN(value)) {
     return <span className={`text-muted ${className}`}>—</span>;
   }
@@ -25,7 +29,7 @@ export default function Delta({
           {arrow}
         </span>
       )}
-      {signed(value, digits)}
+      {value === 0 ? t("delta.unch") : signed(value, digits)}
       {value !== 0 && suffix}
     </span>
   );
