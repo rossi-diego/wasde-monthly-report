@@ -3,16 +3,25 @@ import "server-only";
 import fs from "node:fs";
 import path from "node:path";
 
+import type { EsrCommodity, EsrIndex, InsightsDoc, MetaReports, ReleaseCatalog } from "./data-contract";
 import type { CatalogEntry, CommodityIndex, Meta, Overview, Series } from "./types";
 
 // Build-time loaders: the static export embeds the latest data in every page.
-const DATA = path.join(process.cwd(), "public", "data");
+const PUBLIC = path.join(process.cwd(), "public");
+const DATA = path.join(PUBLIC, "data");
 
 function read<T>(rel: string): T {
   return JSON.parse(fs.readFileSync(path.join(DATA, rel), "utf-8")) as T;
 }
 
+/** Optional cut-A files: a data release built before them simply has no such page content. */
+function readOptional<T>(rel: string): T | null {
+  const p = path.join(DATA, rel);
+  return fs.existsSync(p) ? (JSON.parse(fs.readFileSync(p, "utf-8")) as T) : null;
+}
+
 export const getMeta = () => read<Meta>("meta.json");
+export const getMetaReports = (): MetaReports => (read<Meta & { reports?: MetaReports }>("meta.json").reports ?? {});
 export const getOverview = () => read<Overview>("overview.json");
 export const getIndex = () => read<CommodityIndex>("commodities/index.json");
 // WASDE table index for the explorer. Since cut A it is `wasde_tables.json` and
@@ -25,3 +34,31 @@ export const getCatalog = (): CatalogEntry[] => {
 };
 export const getSeries = (commodity: string, region: string) =>
   read<Series>(`commodities/${commodity}/${region}.json`);
+
+export const getInsights = () => {
+  const d = readOptional<InsightsDoc>("insights.json");
+  return d && d.schema_version === 1 ? d : null;
+};
+
+/** The release catalogue (null for a pre-cut-A build, where catalog.json is the table index). */
+export const getReleaseCatalog = (): ReleaseCatalog | null => {
+  const d = readOptional<unknown>("catalog.json");
+  return d && !Array.isArray(d) && (d as ReleaseCatalog).schema_version === 1 ? (d as ReleaseCatalog) : null;
+};
+
+export const getEsrIndex = () => readOptional<EsrIndex>("reports/export_sales/index.json");
+
+export function getEsrCommodities(): EsrCommodity[] {
+  const idx = getEsrIndex();
+  if (!idx) return [];
+  return idx.commodities
+    .map((c) => readOptional<EsrCommodity>(c.file))
+    .filter((c): c is EsrCommodity => c !== null);
+}
+
+/** Site path ("/data/downloads/x.parquet") of a catalogue file when the build serves it, else null. */
+export function servedPath(siteUrl: string | null | undefined): string | null {
+  if (!siteUrl) return null;
+  const rel = siteUrl.replace(/^\/+/, "");
+  return fs.existsSync(path.join(PUBLIC, rel)) ? `/${rel}` : null;
+}

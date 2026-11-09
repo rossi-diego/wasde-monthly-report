@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { T } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
 import { commodityPills, releaseInfo } from "@/lib/dashboard";
-import { getMeta } from "@/lib/data";
+import { getInsights, getMeta } from "@/lib/data";
 import { monthLabel, num } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Methodology · USDA Reports Dashboard" };
@@ -19,6 +19,7 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
 
 export default function Methodology() {
   const meta = getMeta();
+  const ins = getInsights();
   return (
     <>
       <TopBar title={<T k="nav.methodology" />} release={releaseInfo(meta)}>
@@ -101,6 +102,49 @@ export default function Methodology() {
           <li>Score = half &quot;size&quot; (percent change) and half &quot;surprise&quot; (change ÷ the median change of the same line in the same calendar month of past years), weighted towards ending stocks and the U.S./World aggregates.</li>
           <li>One headline per commodity, region and marketing year, at most two per commodity, six in total. Ending-stocks headlines carry their drivers and the change in stocks-to-use.</li>
         </ol>
+      </Block>
+
+      <Block title="Export Sales (USDA FAS)">
+        <p>
+          Weekly Export Sales Reporting (ESR) data from the FAS API (<code>api.fas.usda.gov</code>), published Thursdays at
+          8:30 ET for the week ending the previous Thursday. Quantities are metric tonnes for the current marketing year;
+          next-marketing-year sales are kept separate and never added to the current year. Commitments = accumulated
+          exports + outstanding sales. ESR commitments are not Census exports.
+        </p>
+        <p>
+          <strong className="text-ink">Pace vs USDA (E1)</strong>: commitments ÷ the U.S. export projection of the latest
+          WASDE released before that ESR (an as-of join on release timestamps, so no look-ahead), converted to metric
+          tonnes (bushels by commodity weight; soybean meal from thousand short tons; soybean oil from million pounds). Each
+          of the 5 previous marketing years is measured the same way, at the same week, against the WASDE public at the time.
+          Five years is a small sample: it is shown as a mean and a min–max range, never as a percentile.
+        </p>
+        <p>
+          <strong className="text-ink">Required weekly sales (E2)</strong>: (as-of target − commitments) ÷ weeks left in the
+          marketing year, compared with the 4-week average of net sales; not shown with fewer than 6 weeks left.{" "}
+          <strong className="text-ink">China share (E3)</strong>: China&apos;s commitments ÷ all commitments, always shown next
+          to the share of unknown destinations, which can hide China.
+        </p>
+        <p>
+          Vintages: the API serves only the latest revision of past weeks, so history before the first capture is
+          latest-only; every pull is stored as an immutable snapshot from then on.
+        </p>
+      </Block>
+
+      <Block title="Insight rules and honesty gates">
+        <ul className="list-disc space-y-2 pl-5">
+          <li>Insights are computed in Python as typed parameters (ranks, shares, n); the site only turns them into words, and a test checks that the page matches the JSON.</li>
+          <li>Ranks read &quot;k of n&quot;. A percentile appears only when n ≥ {ins?.gates.percentile_min_n ?? 10}. n is always shown, with a &quot;small sample&quot; chip below {ins?.gates.small_sample_below ?? 10}.</li>
+          <li>An insight is not shown when n &lt; {ins?.gates.min_n ?? 5}, when an input report is older than its cadence plus grace, or when no USDA projection was public at the time.</li>
+          {ins && (
+            <li>
+              Multiple comparisons: this build screened{" "}
+              {Object.entries(ins.n_screened)
+                .map(([k, v]) => `${k} ${num(v)}`)
+                .join(", ")}{" "}
+              series or candidates; the home page shows at most one card per report plus one cross-report card.
+            </li>
+          )}
+        </ul>
       </Block>
 
       <Block title="Automation">

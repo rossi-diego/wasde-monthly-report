@@ -1,7 +1,7 @@
 import type { Key } from "./i18n";
 
-// The v1 report set (plan §3). Only WASDE has data today; the others are announced
-// placeholders that never show numbers until their pipeline stage ships.
+// The v1 report set (plan §3). WASDE and Export Sales have data (cut A); the others are
+// announced placeholders that never show numbers until their pipeline stage ships.
 export type ReportDef = {
   id: "wasde" | "export_sales" | "crush" | "crop_progress" | "grain_stocks";
   name: Key;
@@ -9,21 +9,21 @@ export type ReportDef = {
   cadenceDetail: Key;
   color: string; // CSS variable
   live: boolean;
+  href?: string; // report page (live reports only)
   insight?: Key;
   arrives?: Key;
 };
 
 export const REPORTS: ReportDef[] = [
-  { id: "wasde", name: "report.wasde", cadence: "cadence.monthly", cadenceDetail: "cadence.monthly", color: "var(--r-wasde)", live: true },
+  { id: "wasde", name: "report.wasde", cadence: "cadence.monthly", cadenceDetail: "cadence.monthly", color: "var(--r-wasde)", live: true, href: "/reports/wasde/" },
   {
     id: "export_sales",
     name: "report.export_sales",
     cadence: "cadence.weekly",
     cadenceDetail: "cadence.d.weeklyThu",
     color: "var(--r-esr)",
-    live: false,
-    insight: "up.esr",
-    arrives: "up.cutA",
+    live: true,
+    href: "/reports/export-sales/",
   },
   {
     id: "crush",

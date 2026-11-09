@@ -57,6 +57,15 @@ jobs:
           echo "Using $tag"
           gh release download "$tag" --pattern web-data.tar.gz --dir /tmp
           mkdir -p web/public && tar -xzf /tmp/web-data.tar.gz -C web/public
+      - name: Overlay cut-A fixtures when the data release predates them
+        # Until the first data release with insights.json / Export Sales exists, the e2e
+        # contract tests run on a recorded cut-A set (web/e2e/fixtures/cut-a). Once a release
+        # carries them, this step is a no-op and CI tests the real published files.
+        run: |
+          if [ ! -f web/public/data/insights.json ]; then
+            echo "data release has no insights.json: overlaying web/e2e/fixtures/cut-a"
+            cp -r web/e2e/fixtures/cut-a/. web/public/data/
+          fi
       - run: npm run build && npm run typecheck
         working-directory: web
       - run: npx playwright install --with-deps chromium

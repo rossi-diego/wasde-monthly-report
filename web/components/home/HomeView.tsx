@@ -11,8 +11,10 @@ import Waterfall from "@/components/charts/Waterfall";
 import { T, useLang, useT } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills, type ReleaseInfo } from "@/components/chrome/TopBar";
 import DataStrip from "@/components/home/DataStrip";
+import InsightCards, { HeroLine } from "@/components/home/InsightCards";
 import Upcoming from "@/components/home/Upcoming";
 import type { CommodityPanel, HomeData } from "@/lib/dashboard";
+import type { InsightsDoc } from "@/lib/data-contract";
 import { num } from "@/lib/format";
 import type { Lang } from "@/lib/i18n";
 
@@ -132,11 +134,14 @@ export default function HomeView({
   data: all,
   release,
   pills,
+  insights,
 }: {
   /** Every derived string in each language (computed at build time). */
   data: Record<Lang, HomeData>;
   release: ReleaseInfo;
   pills: { id: string; label: string }[];
+  /** insights.json (null in a build without it: the home then shows WASDE only). */
+  insights: InsightsDoc | null;
 }) {
   const t = useT();
   const { lang } = useLang();
@@ -151,6 +156,8 @@ export default function HomeView({
       <TopBar title={<T k="home.title" v={{ month: data.month }} />} release={release}>
         <CommodityPills pills={panelPills} active={panel?.id} onPick={setSel} />
       </TopBar>
+
+      {insights && <HeroLine doc={insights} />}
 
       <section aria-label={t("home.kpis")} className="grid-fit-220">
         {data.kpis.map((k) => (
@@ -184,6 +191,8 @@ export default function HomeView({
           </article>
         ))}
       </section>
+
+      {insights && <InsightCards doc={insights} />}
 
       {panel && (
         <div className="grid-fit-380">

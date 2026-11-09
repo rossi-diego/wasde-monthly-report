@@ -112,6 +112,38 @@ export function ordinal(n: number): string {
   return `${n}${s}`;
 }
 
+/** "9th" / "9º" */
+export const ordinalIn = (n: number, lang: Lang = "en") => (lang === "pt" ? `${n}º` : ordinal(n));
+
+/** A share (0.6554) as a percentage: "65.5%". */
+export function share(v: number | null | undefined, d = 1): string {
+  if (v === null || v === undefined || Number.isNaN(v)) return "—";
+  return `${(v * 100).toFixed(d)}%`;
+}
+
+/** Metric tonnes, scaled: "30.23 MMT", "361 thou. t", "950 t" (PT: "30.23 mi t", "361 mil t"). */
+export function tonnes(mt: number | null | undefined, lang: Lang = "en"): string {
+  if (mt === null || mt === undefined || Number.isNaN(mt)) return "—";
+  const a = Math.abs(mt);
+  if (a >= 1e6) return `${num(mt / 1e6, 2)} ${lang === "pt" ? "mi t" : "MMT"}`;
+  if (a >= 1e3) return `${num(mt / 1e3, 0)} ${lang === "pt" ? "mil t" : "thou. t"}`;
+  return `${num(mt, 0)} t`;
+}
+
+/** Axis label for tonnes: "1.5M", "250k", "0". */
+export function tonnesAxis(mt: number): string {
+  const a = Math.abs(mt);
+  if (a >= 1e6) return `${(mt / 1e6).toFixed(a >= 1e7 ? 0 : 1)}M`;
+  if (a >= 1e3) return `${Math.round(mt / 1e3)}k`;
+  return String(Math.round(mt));
+}
+
+/** Signed native-unit change: "+282", "−5". */
+export function signedQty(v: number | null | undefined, unit?: string | null, lang: Lang = "en"): string {
+  if (v === null || v === undefined) return "—";
+  return `${signed(v, decimals(unit, v))} ${unitShort(unit, lang)}`.trim();
+}
+
 export function bytes(n: number): string {
   if (n < 1024 * 1024) return `${Math.round(n / 1024)} KB`;
   return `${(n / 1024 / 1024).toFixed(1)} MB`;

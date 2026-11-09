@@ -44,11 +44,37 @@ error-prone. This project does it end to end:
 
 ### Reports
 
-| Report | Agency | Cadence (ET) | Source | History | Status |
-|---|---|---|---|---|---|
-| WASDE | USDA OCE/WAOB | monthly, 12:00 | OCE CSV (2021+) + ESMIS XML | 2010-07 → | live |
-| Export Sales (ESR) | USDA FAS | weekly, Thu 08:30 | FAS ESR API (`api.fas.usda.gov`, api.data.gov key) | MY 2010/11 → | live |
-| NASS crush · Crop Progress · Grain Stocks | USDA NASS | monthly · weekly · quarterly | ESMIS zip CSV | — | planned |
+| Report | Agency | Cadence (ET) | Source | History | On the site | Status |
+|---|---|---|---|---|---|---|
+| WASDE | USDA OCE/WAOB | monthly, 12:00 | OCE CSV (2021+) + ESMIS XML | 2010-07 → | [/reports/wasde](https://usda-reports.vercel.app/reports/wasde/) · [commodity pages](https://usda-reports.vercel.app/commodity/soybeans/) | live |
+| Export Sales (ESR) | USDA FAS | weekly, Thu 08:30 | FAS ESR API (`api.fas.usda.gov`, api.data.gov key) | MY 2010/11 → | [/reports/export-sales](https://usda-reports.vercel.app/reports/export-sales/) | live |
+| NASS crush · Crop Progress · Grain Stocks | USDA NASS | monthly · weekly · quarterly | ESMIS zip CSV | — | placeholder cards | planned |
+
+Release dates, next releases and freshness of every report: [/reports](https://usda-reports.vercel.app/reports/)
+(a stale banner appears when a report is older than its cadence plus grace).
+
+### Export Sales on the site
+
+![Export Sales](docs/screenshots/export-sales-light.png)
+
+`/reports/export-sales/` has a commodity switcher (soybeans, corn, wheat, soybean meal, soybean
+oil), the header numbers (commitments, USDA's export target **as of the release**, next ESR date)
+and three chapters:
+
+1. **Pace vs USDA and 5 years**: commitments as % of the WASDE projection that was public each
+   week, with the 5 prior marketing years as thin lines, their min–max band and mean. Legend:
+   *history = % of the USDA projection at the time*.
+2. **Who is buying**: China's share of commitments vs the same week of the 5 prior years,
+   always next to the unknown-destinations share, plus the top destinations.
+3. **What is still needed**: weekly sales required to reach USDA's projection vs the last
+   4-week average (suppressed with fewer than 6 weeks left).
+
+A collapsed *Explore* section holds every week and destination; *Take this report* links the
+Parquet/CSV files. The home page adds a **hero line** built from `insights.json` rules
+("This week: soybean sales ahead of USDA's pace", neutral fallback otherwise) and one card per
+report plus the cross-report E1 card, each with n, a *small sample* chip for 5-year windows and
+its source release. Every number on these cards is checked against the JSON by a Playwright
+contract test (`web/e2e/contract.spec.ts`), in English and Portuguese.
 
 ## Architecture
 
@@ -149,6 +175,12 @@ latest release, licence and a Table Schema whose descriptions are generated from
 manifest) and **`catalog.json`** (the data tag the site was built from and the release URL of
 every file). Field-level contracts of the site JSON: [`docs/DATA_CONTRACT.md`](docs/DATA_CONTRACT.md).
 
+The site's [/data](https://usda-reports.vercel.app/data/) page renders `catalog.json`: grouped
+by report (or by commodity), one row per dataset with rows, coverage, latest release, CSV /
+Parquet links (site copy when served, otherwise the release asset), schema version and a
+copyable sha256, the Excel workbooks, the `datapackage.json` link, the licence and the ESR
+vintage note (latest-only before the first capture, captured as published after it).
+
 `wasde_full.parquet` / `wasde_full.csv.gz` remain as byte-identical aliases of
 `wasde__values__v1` for existing users.
 
@@ -200,8 +232,10 @@ variables (now `USDA_*`; see `.env.example`).
 | Commodity page | Phone (360–390px) |
 |---|---|
 | ![Commodity](docs/screenshots/commodity-light.png) | <img src="docs/screenshots/home-mobile.png" alt="Home on a phone" width="260"> |
-| **Data catalogue** | **Dark mode** |
+| **Data catalogue** (by report or commodity; sha256, schema version, `datapackage.json`) | **Dark mode** |
 | ![Downloads](docs/screenshots/downloads-light.png) | ![Dark](docs/screenshots/home-dark.png) |
+| **Export Sales, dark** | |
+| ![Export Sales dark](docs/screenshots/export-sales-dark.png) | |
 
 ## Project structure
 
@@ -240,8 +274,11 @@ data/manifest.json   audit trail of every ingested release (schema v2; data live
   non-decreasing ESR accumulated exports (`esr_corrections` seed) and an ESR ↔ WASDE
   reconciliation warning (±10% on completed marketing years).
 - **ESR without a key or network in CI:** recorded, trimmed API responses (`tests/fixtures/export_sales/`).
-- **Web:** ESLint, TypeScript, Playwright smoke tests (desktop + mobile), re-run against the live
-  site after every deploy.
+- **Web:** ESLint, TypeScript, Playwright (desktop + mobile): smoke, axe in light and dark on
+  every route, 360px no-horizontal-scroll, and a copy-vs-JSON contract test for the hero, the
+  home cards and the Export Sales header; re-run against the live site after every deploy.
+  Until the first data release that carries `insights.json`, CI overlays a recorded cut-A set
+  (`web/e2e/fixtures/cut-a/`) on the downloaded release; afterwards it tests the real files.
 - **Charts:** colour palette validated for colour-vision deficiency and contrast in light and dark mode.
 
 ## Known limitations

@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 // Runs against the static export locally, and against the live URL after each deploy
 // (E2E_BASE_URL), where it also proves the site shows the latest ingested report.
 
-const ROUTES = ["/", "/reports/", "/commodity/corn/", "/commodity/soybeans/", "/data/", "/downloads/", "/methodology/"];
+const ROUTES = ["/", "/reports/", "/reports/wasde/", "/reports/export-sales/", "/commodity/corn/", "/commodity/soybeans/", "/data/", "/downloads/", "/methodology/"];
 
 type Hist = { market_year: string; stocks_to_use_pct: number | null; status: "final" | "current" };
 

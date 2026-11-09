@@ -16,11 +16,14 @@ export default function Bar({
   ariaLabel,
   height = 230,
   format = (v) => String(v),
+  currentColor,
 }: {
   items: BarItem[];
   ariaLabel: string;
   height?: number;
   format?: (v: number) => string;
+  /** Colour of the highlighted bar (default: the WASDE blue). */
+  currentColor?: string;
 }) {
   const [ref, width] = useWidth<HTMLDivElement>();
   const m = { l: 40, r: 8, t: 12, b: 26 };
@@ -54,7 +57,7 @@ export default function Bar({
           const h = Math.max(0, y0 - y(it.value));
           const x = x0 + i * slot + (slot - bw) / 2;
           return (
-            <rect key={it.label} x={x} y={y0 - h} width={bw} height={h} rx={Math.min(3, bw / 3)} style={{ fill: FILL[it.kind] }}>
+            <rect key={it.label} x={x} y={y0 - h} width={bw} height={h} rx={Math.min(3, bw / 3)} style={{ fill: it.kind === "current" && currentColor ? currentColor : FILL[it.kind] }}>
               <title>{`${it.label}: ${format(it.value)}`}</title>
             </rect>
           );

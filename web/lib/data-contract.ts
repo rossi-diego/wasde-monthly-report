@@ -1,5 +1,5 @@
 // Shapes of the cut-A JSON written by the Python publisher (see docs/DATA_CONTRACT.md).
-// Types only: the pages that consume them live with the web half of cut A.
+// Consumed by lib/data.ts (loaders), lib/insight-text.ts (insight copy) and the report pages.
 //   insights.json                       src/usda_reports/insights/schema.py (JSON Schema: docs/schemas/insights.schema.json)
 //   catalog.json                        src/usda_reports/publish/catalog.py
 //   reports/export_sales/*.json         src/usda_reports/publish/web_export_sales.py
