@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 
+import { T } from "@/components/chrome/I18n";
+import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
+import { commodityPills, releaseInfo } from "@/lib/dashboard";
 import { getMeta } from "@/lib/data";
 import { monthLabel, num } from "@/lib/format";
 
@@ -7,9 +10,9 @@ export const metadata: Metadata = { title: "Methodology · USDA Reports Dashboar
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="card space-y-3 p-5 sm:p-6">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      <div className="space-y-3 text-sm leading-relaxed text-ink-2">{children}</div>
+    <section className="card max-w-3xl space-y-3 p-5 sm:p-6">
+      <h2 className="m-0 text-[17px] font-bold">{title}</h2>
+      <div className="space-y-3 leading-relaxed">{children}</div>
     </section>
   );
 }
@@ -17,9 +20,13 @@ function Block({ title, children }: { title: string; children: React.ReactNode }
 export default function Methodology() {
   const meta = getMeta();
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      <h1 className="text-3xl font-semibold tracking-tight">Methodology</h1>
-      <p className="text-ink-2">
+    <>
+      <TopBar title={<T k="nav.methodology" />} release={releaseInfo(meta)}>
+        <CommodityPills pills={commodityPills()} />
+      </TopBar>
+      {/* Long-form copy is English only for now: marked so screen readers keep EN pronunciation in PT mode. */}
+      <div lang="en" className="flex flex-col gap-5">
+      <p className="m-0 max-w-3xl text-muted">
         How the numbers on this site are collected, harmonized and turned into insight. Everything is open source and
         rebuilt from the raw USDA files on every run.
       </p>
@@ -105,6 +112,7 @@ export default function Methodology() {
           fails.
         </p>
       </Block>
-    </div>
+      </div>
+    </>
   );
 }
