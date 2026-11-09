@@ -1,0 +1,181 @@
+version: 2
+models:
+- name: fct_export_pace
+  description: 'Export pace vs. USDA, point in time (plan §6 E1/E2): every ESR week ASOF-joined to the
+    latest WASDE public at the ESR release, plus the same week of the 5 prior MYs against their own as-of
+    WASDE. Published as cross__export_pace__v1.'
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: commodity_id
+    data_type: varchar
+    description: Canonical commodity id (config/vocab/commodities.yaml).
+    data_tests:
+    - not_null
+  - name: market_year
+    data_type: varchar
+    description: Marketing year in WASDE notation, e.g. 2026/27.
+  - name: esr_market_year
+    data_type: integer
+    description: 'FAS ESR marketYear: the year the marketing year ends (2027 = 2026/27).'
+  - name: my_start
+    data_type: integer
+    description: First calendar year of the marketing year.
+  - name: week_ending
+    data_type: date
+    description: Thursday that ends the reporting week (ISO date).
+    data_tests:
+    - not_null
+  - name: week_of_my
+    data_type: integer
+    description: 'Week index within the marketing year: floor((week_ending − MY start)/7) + 1.'
+  - name: release_key
+    data_type: varchar
+    description: ESR release (YYYY-MM-DD) that first published this week.
+    data_tests:
+    - not_null
+  - name: release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that ESR release (08:30 ET, stored in UTC).
+    data_tests:
+    - not_null
+  - name: release_ts_source
+    data_type: varchar
+    description: api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history
+      (never earlier than the real publication).
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - api
+          - calendar_rule
+  - name: vintage_quality
+    data_type: varchar
+    description: captured = first seen by a weekly pull (as published); latest_only = backfilled with
+      values as revised by the backfill day.
+    data_tests:
+    - accepted_values:
+        arguments:
+          values:
+          - captured
+          - latest_only
+  - name: unit_id
+    data_type: varchar
+    description: Unit of the *_mt columns (mt = metric tons).
+  - name: weekly_exports_mt
+    data_type: double
+    description: Exports shipped during the week (MT).
+  - name: accumulated_exports_mt
+    data_type: double
+    description: Exports shipped since the start of the marketing year (MT).
+  - name: outstanding_sales_mt
+    data_type: double
+    description: Sales not yet shipped for the current marketing year (MT).
+  - name: total_commitment_mt
+    data_type: double
+    description: Accumulated exports + outstanding sales (MT).
+  - name: net_sales_mt
+    data_type: double
+    description: Net new sales for the current marketing year during the week (MT; can be negative).
+  - name: net_sales_4wk_avg_mt
+    data_type: double
+    description: Mean of the last 4 weekly net sales in this MY (null before week 4).
+  - name: next_my_net_sales_mt
+    data_type: double
+    description: Net sales for the next marketing year during the week (MT). Never added to the current
+      MY.
+  - name: next_my_outstanding_mt
+    data_type: double
+    description: Outstanding sales for the next marketing year (MT).
+  - name: china_commitment_mt
+    data_type: double
+    description: Total commitment to China (MT).
+  - name: unknown_commitment_mt
+    data_type: double
+    description: Total commitment to unknown destinations (MT); can later be reassigned, e.g. to China.
+  - name: wasde_release_key
+    data_type: varchar
+    description: WASDE report month (YYYY-MM) public at the ESR release (ASOF join).
+  - name: wasde_release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that WASDE (12:00 ET in UTC); always <= release_ts_utc.
+  - name: wasde_proj_est_flag
+    data_type: varchar
+    description: WASDE flag of the target (proj / est / blank for final).
+  - name: wasde_unit_id
+    data_type: varchar
+    description: Native WASDE unit of the target (m_bu, k_short_tons, m_lbs).
+  - name: wasde_exports_native
+    data_type: double
+    description: WASDE U.S. exports for this MY in native units, as of the ESR release.
+  - name: wasde_exports_mt
+    data_type: double
+    description: The same target converted to metric tons with dim_unit.
+  - name: pct_of_target
+    data_type: double
+    description: total_commitment_mt / wasde_exports_mt (E1).
+  - name: pct_shipped
+    data_type: double
+    description: accumulated_exports_mt / wasde_exports_mt.
+  - name: weeks_remaining
+    data_type: integer
+    description: ESR weeks still to report in this marketing year.
+  - name: required_weekly_sales_mt
+    data_type: double
+    description: (target − commitments) / weeks_remaining (E2).
+  - name: n_5yr
+    data_type: integer
+    description: Prior marketing years (of the last 5) with an as-of target at the same week_of_my.
+  - name: pct_5yr_mean
+    data_type: double
+    description: Mean pct_of_target of those prior MYs at the same week (small sample, n <= 5).
+  - name: pct_5yr_min
+    data_type: double
+    description: Minimum of the same.
+  - name: pct_5yr_max
+    data_type: double
+    description: Maximum of the same.
+  - name: is_latest_week_of_my
+    data_type: boolean
+    description: True on the newest week published for this marketing year.
+  data_tests:
+  - assert_no_lookahead:
+      arguments:
+        left_ts: release_ts_utc
+        right_ts: wasde_release_ts_utc
+
+unit_tests:
+  # Same-timestamp boundary of the ASOF join (plan §5): a WASDE released at exactly the ESR
+  # release instant counts as public; one released a second later must not be used, and an
+  # ESR released a second earlier still sees only the previous WASDE.
+  - name: export_pace_asof_same_timestamp_boundary
+    model: fct_export_pace
+    given:
+      - input: ref('fct_export_sales_totals')
+        rows:
+          - {commodity_id: soybeans, market_year: 2026/27, esr_market_year: 2027, my_start: 2026,
+             week_ending: 2026-11-05, week_of_my: 10, release_key: 2026-11-12,
+             release_ts_utc: "2026-11-12 17:00:00+00", total_commitment_mt: 1000,
+             accumulated_exports_mt: 400, outstanding_sales_mt: 600}
+          - {commodity_id: soybeans, market_year: 2026/27, esr_market_year: 2027, my_start: 2026,
+             week_ending: 2026-10-29, week_of_my: 9, release_key: 2026-11-05,
+             release_ts_utc: "2026-11-12 16:59:59+00", total_commitment_mt: 900,
+             accumulated_exports_mt: 300, outstanding_sales_mt: 600}
+      - input: ref('dim_commodity')
+        rows:
+          - {commodity_id: soybeans, my_start_month: 9}
+      - input: ref('int_wasde_asof')
+        rows:
+          - {commodity_id: soybeans, market_year: 2026/27, wasde_release_key: 2026-10,
+             wasde_release_ts_utc: "2026-10-09 16:00:00+00", exports_mt: 4000}
+          - {commodity_id: soybeans, market_year: 2026/27, wasde_release_key: 2026-11,
+             wasde_release_ts_utc: "2026-11-12 17:00:00+00", exports_mt: 2000}
+          - {commodity_id: soybeans, market_year: 2026/27, wasde_release_key: 2026-12,
+             wasde_release_ts_utc: "2026-11-12 17:00:01+00", exports_mt: 8000}
+    expect:
+      rows:
+        - {release_key: 2026-11-12, wasde_release_key: 2026-11, wasde_exports_mt: 2000,
+           pct_of_target: 0.5}
+        - {release_key: 2026-11-05, wasde_release_key: 2026-10, wasde_exports_mt: 4000,
+           pct_of_target: 0.225}

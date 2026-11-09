@@ -43,3 +43,9 @@ seeds:
         nass_commodity_desc: varchar
         my_start_month: integer
         bushel_lb: double
+    esr_corrections:
+      +column_types:
+        commodity_id: varchar
+        market_year: varchar
+        week_ending: date
+        note: varchar

@@ -21,13 +21,49 @@ models:
       - name: series_key
         description: table|commodity|region|attribute — one estimate line across reports.
         data_tests: [not_null]
-      - name: value
-        data_tests: [not_null]
+      - name: report_month
+        description: WASDE report month (YYYY-MM); the release key of the report.
+      - name: wasde_number
+        description: WASDE running report number (e.g. 676).
+      - name: release_date
+        description: Publication date of the report (12:00 ET).
       - name: source
+        description: "Bronze source: usda_csv (OCE CSV, 2021+) or esmis_xml (ESMIS XML, 2010-07 to 2020)."
         data_tests:
           - accepted_values:
               arguments:
                 values: [usda_csv, esmis_xml]
+      - name: table_id
+        description: Harmonized WASDE table id (config/reports/wasde/mappings.yaml).
+      - name: table_label
+        description: WASDE table title as published.
+      - name: commodity_id
+        description: Canonical commodity id (config/vocab/commodities.yaml).
+      - name: commodity_label
+        description: Commodity name as published.
+      - name: region_id
+        description: Harmonized region id (united_states, world, brazil, …).
+      - name: region
+        description: Region name as published.
+      - name: attribute_id
+        description: Harmonized balance-sheet line (production, exports, ending_stocks, …).
+      - name: attribute_label
+        description: Line name as published.
+      - name: reliability_stat
+        description: Reliability-table statistic; empty for regular estimates.
+      - name: market_year
+        description: Marketing year (e.g. 2026/27) or calendar period as published.
+      - name: proj_est_flag
+        description: "USDA flag: proj (projection), est (estimate) or empty (final)."
+      - name: period
+        description: annual, or the sub-period for quarterly/monthly lines.
+      - name: value
+        description: Published value in unit_id.
+        data_tests: [not_null]
+      - name: unit_id
+        description: Unit id (dim_unit), e.g. m_bu, mmt, k_short_tons, m_lbs.
+      - name: unit_label
+        description: Unit as published.
 
   - name: fct_revisions
     description: >

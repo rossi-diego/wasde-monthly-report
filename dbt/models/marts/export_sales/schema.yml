@@ -1,0 +1,192 @@
+version: 2
+models:
+- name: fct_export_sales_weekly
+  description: U.S. export sales per commodity × marketing year × week × destination (MT), latest known
+    value of each metric. Published as export_sales__by_country__v1.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: commodity_id
+    data_type: varchar
+    description: Canonical commodity id (config/vocab/commodities.yaml).
+    data_tests: &id001
+    - not_null
+  - name: market_year
+    data_type: varchar
+    description: Marketing year in WASDE notation, e.g. 2026/27.
+  - name: esr_market_year
+    data_type: integer
+    description: 'FAS ESR marketYear: the year the marketing year ends (2027 = 2026/27).'
+  - name: my_start
+    data_type: integer
+    description: First calendar year of the marketing year.
+  - name: week_ending
+    data_type: date
+    description: Thursday that ends the reporting week (ISO date).
+    data_tests: &id002
+    - not_null
+  - name: week_of_my
+    data_type: integer
+    description: 'Week index within the marketing year: floor((week_ending − MY start)/7) + 1.'
+  - name: country_id
+    data_type: varchar
+    description: Destination (config/vocab/countries.yaml); 'unknown' = unknown destinations.
+  - name: country_label
+    data_type: varchar
+    description: Destination name as published by FAS.
+  - name: esr_country_code
+    data_type: integer
+    description: FAS ESR countryCode.
+  - name: release_key
+    data_type: varchar
+    description: ESR release (YYYY-MM-DD) that first published this week.
+    data_tests: &id003
+    - not_null
+  - name: release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that ESR release (08:30 ET, stored in UTC).
+    data_tests: &id004
+    - not_null
+  - name: release_ts_source
+    data_type: varchar
+    description: api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history
+      (never earlier than the real publication).
+    data_tests: &id005
+    - accepted_values:
+        arguments:
+          values:
+          - api
+          - calendar_rule
+  - name: vintage_quality
+    data_type: varchar
+    description: captured = first seen by a weekly pull (as published); latest_only = backfilled with
+      values as revised by the backfill day.
+    data_tests: &id006
+    - accepted_values:
+        arguments:
+          values:
+          - captured
+          - latest_only
+  - name: n_vintages
+    data_type: integer
+    description: Number of distinct values seen for this row across API snapshots.
+  - name: latest_snapshot_key
+    data_type: varchar
+    description: Bronze snapshot (pull) the latest value comes from.
+  - name: unit_id
+    data_type: varchar
+    description: Unit of the *_mt columns (mt = metric tons).
+  - name: weekly_exports_mt
+    data_type: double
+    description: Exports shipped during the week (MT).
+  - name: accumulated_exports_mt
+    data_type: double
+    description: Exports shipped since the start of the marketing year (MT).
+  - name: outstanding_sales_mt
+    data_type: double
+    description: Sales not yet shipped for the current marketing year (MT).
+  - name: net_sales_mt
+    data_type: double
+    description: Net new sales for the current marketing year during the week (MT; can be negative).
+  - name: total_commitment_mt
+    data_type: double
+    description: Accumulated exports + outstanding sales (MT).
+  - name: next_my_net_sales_mt
+    data_type: double
+    description: Net sales for the next marketing year during the week (MT). Never added to the current
+      MY.
+  - name: next_my_outstanding_mt
+    data_type: double
+    description: Outstanding sales for the next marketing year (MT).
+  - name: source_url
+    data_type: varchar
+    description: FAS ESR API endpoint the values come from (an api.data.gov key is required).
+- name: fct_export_sales_totals
+  description: U.S. export sales to all destinations per commodity × marketing year × week (MT), with
+    China and unknown-destination commitments. Published as export_sales__weekly__v1.
+  config:
+    contract:
+      enforced: true
+  columns:
+  - name: commodity_id
+    data_type: varchar
+    description: Canonical commodity id (config/vocab/commodities.yaml).
+    data_tests: *id001
+  - name: market_year
+    data_type: varchar
+    description: Marketing year in WASDE notation, e.g. 2026/27.
+  - name: esr_market_year
+    data_type: integer
+    description: 'FAS ESR marketYear: the year the marketing year ends (2027 = 2026/27).'
+  - name: my_start
+    data_type: integer
+    description: First calendar year of the marketing year.
+  - name: week_ending
+    data_type: date
+    description: Thursday that ends the reporting week (ISO date).
+    data_tests: *id002
+  - name: week_of_my
+    data_type: integer
+    description: 'Week index within the marketing year: floor((week_ending − MY start)/7) + 1.'
+  - name: release_key
+    data_type: varchar
+    description: ESR release (YYYY-MM-DD) that first published this week.
+    data_tests: *id003
+  - name: release_ts_utc
+    data_type: timestamp with time zone
+    description: Publication instant of that ESR release (08:30 ET, stored in UTC).
+    data_tests: *id004
+  - name: release_ts_source
+    data_type: varchar
+    description: api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history
+      (never earlier than the real publication).
+    data_tests: *id005
+  - name: vintage_quality
+    data_type: varchar
+    description: captured = first seen by a weekly pull (as published); latest_only = backfilled with
+      values as revised by the backfill day.
+    data_tests: *id006
+  - name: n_destinations
+    data_type: integer
+    description: Destinations with activity in the week.
+  - name: weekly_exports_mt
+    data_type: double
+    description: Exports shipped during the week (MT).
+  - name: accumulated_exports_mt
+    data_type: double
+    description: Exports shipped since the start of the marketing year (MT).
+  - name: outstanding_sales_mt
+    data_type: double
+    description: Sales not yet shipped for the current marketing year (MT).
+  - name: net_sales_mt
+    data_type: double
+    description: Net new sales for the current marketing year during the week (MT; can be negative).
+  - name: total_commitment_mt
+    data_type: double
+    description: Accumulated exports + outstanding sales (MT).
+  - name: next_my_net_sales_mt
+    data_type: double
+    description: Net sales for the next marketing year during the week (MT). Never added to the current
+      MY.
+  - name: next_my_outstanding_mt
+    data_type: double
+    description: Outstanding sales for the next marketing year (MT).
+  - name: china_commitment_mt
+    data_type: double
+    description: Total commitment to China (MT).
+  - name: unknown_commitment_mt
+    data_type: double
+    description: Total commitment to unknown destinations (MT); can later be reassigned, e.g. to China.
+  - name: source_url
+    data_type: varchar
+    description: FAS ESR API endpoint the values come from (an api.data.gov key is required).
+  - name: unit_id
+    data_type: varchar
+    description: Unit of the *_mt columns (mt = metric tons).
+  - name: net_sales_4wk_avg_mt
+    data_type: double
+    description: Mean of the last 4 weekly net sales in this MY (null before week 4).
+  - name: is_latest_week_of_my
+    data_type: boolean
+    description: True on the newest week published for this marketing year.

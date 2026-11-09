@@ -38,18 +38,48 @@ def write_calendar(settings: Settings) -> Path:
     return out
 
 
-def run_dbt(settings: Settings, command: str = "build") -> int:
+def write_countries(settings: Settings) -> Path:
+    """``config/vocab/countries.yaml`` → ``silver/countries.parquet`` (dim_country)."""
+    import yaml
+
+    raw = yaml.safe_load((settings.config_dir / "vocab" / "countries.yaml").read_text("utf-8"))
+    rows = [
+        {
+            "country_id": cid,
+            "label": spec["label"],
+            "esr_country_code": spec.get("code"),
+            "genc_code": spec.get("genc"),
+        }
+        for cid, spec in raw["items"].items()
+    ]
+    df = pd.DataFrame(rows, columns=["country_id", "label", "esr_country_code", "genc_code"])
+    settings.silver_dir.mkdir(parents=True, exist_ok=True)
+    out = settings.silver_dir / "countries.parquet"
+    df.to_parquet(out, index=False)
+    return out
+
+
+def dbt_target_dir(settings: Settings) -> Path:
+    return settings.gold_dir / "dbt_target"
+
+
+def run_dbt(
+    settings: Settings, command: str = "build", select: str | None = None, fresh: bool = True
+) -> int:
     """Invoke dbt in-process. Returns 0 on success.
 
     ``run`` (used by the fast integration test) seeds first, so models that join seeds work.
+    ``fresh=False`` keeps the existing warehouse (e.g. ``test`` on an already built gold);
+    ``select`` is passed to ``--select``.
     """
     from dbt.cli.main import dbtRunner
 
     settings.gold_dir.mkdir(parents=True, exist_ok=True)
-    if settings.duckdb_path.exists():
+    if fresh and settings.duckdb_path.exists():
         settings.duckdb_path.unlink()  # full deterministic rebuild
     os.environ["USDA_DUCKDB_PATH"] = str(settings.duckdb_path)
     write_calendar(settings)
+    write_countries(settings)
     silver_dir = settings.silver_dir.resolve().as_posix()
     common = [
         "--project-dir",
@@ -58,8 +88,13 @@ def run_dbt(settings: Settings, command: str = "build") -> int:
         str(settings.dbt_dir),
         "--vars",
         json.dumps({"silver_dir": silver_dir}),
+        # manifest.json (the source of the published data dictionary) lands next to gold.
+        "--target-path",
+        str(dbt_target_dir(settings).resolve()),
     ]
-    steps = [["seed", *common, "--quiet"]] if command == "run" else []
+    if select:
+        common += ["--select", select]
+    steps = [["seed", *common, "--quiet"]] if command == "run" and fresh else []
     steps.append([command, *common, "--quiet" if command == "build" else "--no-quiet"])
     ok = True
     runner = dbtRunner()
