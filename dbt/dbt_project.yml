@@ -1,0 +1,22 @@
+name: wasde
+version: "2.0.0"
+config-version: 2
+profile: wasde
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "../data/gold/dbt_target"
+log-path: "../data/gold/dbt_logs"
+clean-targets: ["../data/gold/dbt_target"]
+
+vars:
+  silver_path: "../data/silver/wasde.parquet"
+
+models:
+  wasde:
+    +persist_docs: {relation: true, columns: true}
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

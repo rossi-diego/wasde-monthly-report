@@ -1,0 +1,120 @@
+# What the dashboard and the monthly highlights focus on.
+
+commodities:
+  corn:
+    label: Corn
+    us: {table: us_feed_grains_corn, commodity: corn}
+    world: {table: world_corn, commodity: corn}
+  soybeans:
+    label: Soybeans
+    us: {table: us_soybeans_products, commodity: soybeans}
+    world: {table: world_soybeans, commodity: soybeans}
+  soybean_meal:
+    label: Soybean Meal
+    us: {table: us_soybeans_products, commodity: soybean_meal}
+    world: {table: world_soybean_meal, commodity: soybean_meal}
+  soybean_oil:
+    label: Soybean Oil
+    us: {table: us_soybeans_products, commodity: soybean_oil}
+    world: {table: world_soybean_oil, commodity: soybean_oil}
+  wheat:
+    label: Wheat
+    us: {table: us_wheat, commodity: wheat}
+    world: {table: world_wheat, commodity: wheat}
+  cotton:
+    label: Cotton
+    us: {table: us_cotton, commodity: cotton}
+    world: {table: world_cotton, commodity: cotton}
+
+# Regions offered on commodity pages (when present in that world table), in this order.
+regions:
+  - united_states
+  - world
+  - world_less_china
+  - brazil
+  - argentina
+  - china
+  - european_union
+  - russia
+  - ukraine
+  - canada
+  - australia
+  - india
+  - mexico
+  - japan
+  - major_exporters
+  - major_importers
+
+# Balance-sheet lines shown on commodity pages, in display order.
+balance_lines:
+  - {id: area_planted, label: Area planted}
+  - {id: area_harvested, label: Area harvested}
+  - {id: yield, label: Yield}
+  - {id: beginning_stocks, label: Beginning stocks}
+  - {id: production, label: Production}
+  - {id: imports, label: Imports}
+  - {id: total_supply, label: Total supply}
+  - {id: crush, label: Crush}
+  - {id: domestic_feed, label: Feed}
+  - {id: feed_residual, label: Feed & residual}
+  - {id: food_seed_industrial, label: "Food, seed & industrial"}
+  - {id: ethanol, label: "  of which ethanol"}
+  - {id: domestic_total, label: Domestic use}
+  - {id: exports, label: Exports}
+  - {id: total_use, label: Total use}
+  - {id: ending_stocks, label: Ending stocks}
+  - {id: stocks_to_use_pct, label: Stocks-to-use (%)}
+  - {id: farm_price, label: Season-average farm price}
+
+highlights:
+  max_items: 6
+  max_per_commodity: 2
+  # Lines that can be a headline. Secondary lines (feed, ethanol, imports…) appear as context.
+  attributes: [ending_stocks, production, yield, area_harvested, exports, crush, farm_price]
+  # Regions a trading desk reads first get extra weight.
+  primary_regions: [united_states, world, world_less_china]
+  # Absolute materiality floors (native units). Changes below the floor are never headlines.
+  # Keyed "<commodity>.<attribute>"; scope "us" = U.S. table units, "world" = MMT/bales.
+  floors:
+    us:
+      corn.ending_stocks: 50
+      corn.production: 50
+      corn.exports: 25
+      corn.ethanol: 25
+      corn.feed_residual: 25
+      corn.yield: 1.0
+      corn.area_harvested: 0.5
+      corn.farm_price: 0.05
+      soybeans.ending_stocks: 15
+      soybeans.production: 15
+      soybeans.exports: 15
+      soybeans.crush: 10
+      soybeans.yield: 0.3
+      soybeans.area_harvested: 0.3
+      soybeans.farm_price: 0.05
+      wheat.ending_stocks: 20
+      wheat.production: 20
+      wheat.exports: 15
+      wheat.farm_price: 0.05
+      cotton.ending_stocks: 0.2
+      cotton.production: 0.2
+      cotton.exports: 0.2
+      soybean_meal.ending_stocks: 50
+      soybean_meal.exports: 200
+      soybean_oil.ending_stocks: 100
+      soybean_oil.exports: 200
+    world:
+      default.ending_stocks: 2.0
+      default.production: 1.0
+      default.exports: 1.0
+      default.imports: 1.0
+      default.domestic_feed: 1.0
+      default.crush: 1.0
+      cotton.ending_stocks: 1.0
+      cotton.production: 0.5
+      cotton.exports: 0.5
+      soybean_meal.ending_stocks: 0.5
+      soybean_oil.ending_stocks: 0.3
+      soybean_oil.production: 0.3
+      soybean_oil.exports: 0.3
+  regions: [united_states, world, world_less_china, brazil, argentina, china, european_union, russia, ukraine, australia, canada, india]

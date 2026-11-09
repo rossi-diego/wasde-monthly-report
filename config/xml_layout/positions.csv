@@ -1,0 +1,450 @@
+xtitle,matrix,xcom,xreg,report_title,commodity,region,votes,share
+Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption,matrix1,,,U.S. Sugar Supply and Use,Sugar,United States,3428,1.0
+Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption,matrix2,,,Mexico Sugar Supply and Use and High Fructose Corn Syrup Consumption,Sugar,Mexico,626,1.0
+U.S. Cotton Supply and Use,matrix1,,,U.S. Cotton Supply and Use,Cotton,United States,1272,1.0
+U.S. Dairy Prices,matrix1,,,U.S. Dairy Prices,"Milk, Class III",United States,212,0.296
+U.S. Feed Grain and Corn Supply and Use,matrix1,,,U.S. Feed Grain and Corn Supply and Use,Feed Grains,United States,1971,1.0
+U.S. Feed Grain and Corn Supply and Use,matrix2,,,U.S. Feed Grain and Corn Supply and Use,Corn,United States,2278,1.0
+U.S. Meats Supply and Use,matrix1,Beef,,U.S. Meats Supply and Use,Beef,United States,1272,1.0
+U.S. Meats Supply and Use,matrix1,Broiler,,U.S. Meats Supply and Use,Broiler,United States,1272,1.0
+U.S. Meats Supply and Use,matrix1,Pork,,U.S. Meats Supply and Use,Pork,United States,1272,1.0
+U.S. Meats Supply and Use,matrix1,Red Meat & Poultry,,U.S. Meats Supply and Use,Red Meat & Poultry,United States,1272,1.0
+U.S. Meats Supply and Use,matrix1,Total Poultry,,U.S. Meats Supply and Use,Total Poultry,United States,1272,1.0
+U.S. Meats Supply and Use,matrix1,Total Red Meat,,U.S. Meats Supply and Use,Total Red Meat,United States,1272,1.0
+U.S. Meats Supply and Use,matrix1,Turkey,,U.S. Meats Supply and Use,Turkey,United States,1113,1.0
+U.S. Milk Supply and Use,matrix1,,,U.S. Egg Supply and Use,Eggs,United States,1833,1.0
+U.S. Milk Supply and Use,matrix2,,,U.S. Milk Supply and Use,"Milk, Skim-Soild Basis",United States,1276,0.454
+U.S. Quarterly Prices for Animal Products,matrix1,Beef,,U.S. Quarterly Animal Product Production,Beef,United States,322,1.0
+U.S. Quarterly Prices for Animal Products,matrix1,Broiler,,U.S. Quarterly Animal Product Production,Broiler,United States,323,1.0
+U.S. Quarterly Prices for Animal Products,matrix1,Egg,,U.S. Quarterly Animal Product Production,Eggs,United States,264,1.0
+U.S. Quarterly Prices for Animal Products,matrix1,Milk,,U.S. Quarterly Animal Product Production,Milk,United States,217,1.0
+U.S. Quarterly Prices for Animal Products,matrix1,Pork,,U.S. Quarterly Animal Product Production,Pork,United States,322,1.0
+U.S. Quarterly Prices for Animal Products,matrix1,Red Meat,,U.S. Quarterly Animal Product Production,Red Meat,United States,323,1.0
+U.S. Quarterly Prices for Animal Products,matrix1,Red Meat & Poultry,,U.S. Quarterly Animal Product Production,Red Meat & Poultry,United States,323,1.0
+U.S. Quarterly Prices for Animal Products,matrix1,Total Poultry,,U.S. Quarterly Animal Product Production,Total Poultry,United States,323,1.0
+U.S. Quarterly Prices for Animal Products,matrix1,Turkey,,U.S. Quarterly Animal Product Production,Turkey,United States,217,1.0
+U.S. Quarterly Prices for Animal Products,matrix2,Barrows and gilts,,U.S. Quarterly Prices for Animal Products,Barrows and gilts,United States,323,1.0
+U.S. Quarterly Prices for Animal Products,matrix2,Broilers,,U.S. Quarterly Prices for Animal Products,Broiler,United States,319,1.0
+U.S. Quarterly Prices for Animal Products,matrix2,Eggs,,U.S. Quarterly Prices for Animal Products,Eggs,United States,318,1.0
+U.S. Quarterly Prices for Animal Products,matrix2,Milk,,U.S. Quarterly Prices for Animal Products,Milk,United States,217,1.0
+U.S. Quarterly Prices for Animal Products,matrix2,Steers,,U.S. Quarterly Prices for Animal Products,Steers,United States,320,1.0
+U.S. Quarterly Prices for Animal Products,matrix2,Turkeys,,U.S. Quarterly Prices for Animal Products,Turkey,United States,319,1.0
+U.S. Rice Supply and Use,matrix1,,,U.S. Rice Supply and Use,"Rice, Rough",United States,2296,1.0
+U.S. Rice Supply and Use,matrix2,,,U.S. Rice Supply and Use,"Rice, Long",United States,1529,1.0
+U.S. Rice Supply and Use,matrix3,,,U.S. Rice Supply and Use,"Rice, Med and Short",United States,1804,1.0
+"U.S. Sorghum, Barley, and Oats Supply and Use",matrix1,,,"U.S. Sorghum, Barley, and Oats Supply and Use",Sorghum,United States,1788,1.0
+"U.S. Sorghum, Barley, and Oats Supply and Use",matrix2,,,"U.S. Sorghum, Barley, and Oats Supply and Use",Barley,United States,1862,1.0
+"U.S. Sorghum, Barley, and Oats Supply and Use",matrix3,,,"U.S. Sorghum, Barley, and Oats Supply and Use",Oats,United States,1758,1.0
+U.S. Soybeans and Products Supply and Use (Domestic Measure),matrix1,,,U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oilseed, Soybean",United States,2154,1.0
+U.S. Soybeans and Products Supply and Use (Domestic Measure),matrix2,,,U.S. Soybeans and Products Supply and Use (Domestic Measure),"Oil, Soybean",United States,1709,1.0
+U.S. Soybeans and Products Supply and Use (Domestic Measure),matrix3,,,U.S. Soybeans and Products Supply and Use (Domestic Measure),"Meal, Soybean",United States,1411,1.0
+U.S. Wheat by Class: Supply and Use,matrix1,,,U.S. Wheat Supply and Use,Wheat,United States,1656,1.0
+U.S. Wheat by Class: Supply and Use,matrix2,Durum,,U.S. Wheat by Class: Supply and Use,"Wheat, Durum",United States,811,1.0
+U.S. Wheat by Class: Supply and Use,matrix2,Hard Red Spring,,U.S. Wheat by Class: Supply and Use,Hard Red Spring,United States,834,1.0
+U.S. Wheat by Class: Supply and Use,matrix2,Hard Red Winter,,U.S. Wheat by Class: Supply and Use,Hard Red Winter,United States,824,1.0
+U.S. Wheat by Class: Supply and Use,matrix2,Soft Red Winter,,U.S. Wheat by Class: Supply and Use,Soft Red Winter,United States,819,1.0
+U.S. Wheat by Class: Supply and Use,matrix2,Total,,U.S. Wheat by Class: Supply and Use,Total,United States,194,1.0
+U.S. Wheat by Class: Supply and Use,matrix2,White,,U.S. Wheat by Class: Supply and Use,"Wheat, White",United States,798,1.0
+World Coarse Grain Supply and Use,matrix1,,Argentina,World Coarse Grain Supply and Use,Coarse Grain,Argentina,610,1.0
+World Coarse Grain Supply and Use,matrix1,,Australia,World Coarse Grain Supply and Use,Coarse Grain,Australia,601,1.0
+World Coarse Grain Supply and Use,matrix1,,Brazil,World Coarse Grain Supply and Use,Coarse Grain,Brazil,692,1.0
+World Coarse Grain Supply and Use,matrix1,,Canada,World Coarse Grain Supply and Use,Coarse Grain,Canada,709,1.0
+World Coarse Grain Supply and Use,matrix1,,China,World Coarse Grain Supply and Use,Coarse Grain,China,654,1.0
+World Coarse Grain Supply and Use,matrix1,,EU-27+UK,World Coarse Grain Supply and Use,Coarse Grain,EU-27+UK,56,1.0
+World Coarse Grain Supply and Use,matrix1,,European Union,World Coarse Grain Supply and Use,Coarse Grain,European Union,683,1.0
+World Coarse Grain Supply and Use,matrix1,,Japan,World Coarse Grain Supply and Use,Coarse Grain,Japan,594,1.0
+World Coarse Grain Supply and Use,matrix1,,Major Exporters,World Coarse Grain Supply and Use,Coarse Grain,Major Exporters,742,1.0
+World Coarse Grain Supply and Use,matrix1,,Major Importers,World Coarse Grain Supply and Use,Coarse Grain,Major Importers,737,1.0
+World Coarse Grain Supply and Use,matrix1,,Mexico,World Coarse Grain Supply and Use,Coarse Grain,Mexico,635,1.0
+World Coarse Grain Supply and Use,matrix1,,N. Afr & Mideast,World Coarse Grain Supply and Use,Coarse Grain,N. Afr & Mideast,734,1.0
+World Coarse Grain Supply and Use,matrix1,,Russia,World Coarse Grain Supply and Use,Coarse Grain,Russia,585,1.0
+World Coarse Grain Supply and Use,matrix1,,Saudi Arabia,World Coarse Grain Supply and Use,Coarse Grain,Saudi Arabia,561,1.0
+World Coarse Grain Supply and Use,matrix1,,South Korea,World Coarse Grain Supply and Use,Coarse Grain,South Korea,583,1.0
+World Coarse Grain Supply and Use,matrix1,,Southeast Asia,World Coarse Grain Supply and Use,Coarse Grain,Southeast Asia,597,1.0
+World Coarse Grain Supply and Use,matrix1,,Total Foreign,World Coarse Grain Supply and Use,Coarse Grain,Total Foreign,637,1.0
+World Coarse Grain Supply and Use,matrix1,,Ukraine,World Coarse Grain Supply and Use,Coarse Grain,Ukraine,618,1.0
+World Coarse Grain Supply and Use,matrix1,,United States,World Coarse Grain Supply and Use,Coarse Grain,United States,619,1.0
+World Coarse Grain Supply and Use,matrix1,,World,World Coarse Grain Supply and Use,Coarse Grain,World,630,1.0
+World Coarse Grain Supply and Use,matrix1,,World Less China,World Coarse Grain Supply and Use,Coarse Grain,World Less China,735,1.0
+World Coarse Grain Supply and Use,matrix2,,Argentina,World Coarse Grain Supply and Use,Coarse Grain,Argentina,305,1.0
+World Coarse Grain Supply and Use,matrix2,,Australia,World Coarse Grain Supply and Use,Coarse Grain,Australia,302,1.0
+World Coarse Grain Supply and Use,matrix2,,Brazil,World Coarse Grain Supply and Use,Coarse Grain,Brazil,365,1.0
+World Coarse Grain Supply and Use,matrix2,,Canada,World Coarse Grain Supply and Use,Coarse Grain,Canada,341,1.0
+World Coarse Grain Supply and Use,matrix2,,China,World Coarse Grain Supply and Use,Coarse Grain,China,323,1.0
+World Coarse Grain Supply and Use,matrix2,,EU-27+UK,World Coarse Grain Supply and Use,Coarse Grain,EU-27+UK,28,1.0
+World Coarse Grain Supply and Use,matrix2,,European Union,World Coarse Grain Supply and Use,Coarse Grain,European Union,340,1.0
+World Coarse Grain Supply and Use,matrix2,,Japan,World Coarse Grain Supply and Use,Coarse Grain,Japan,300,1.0
+World Coarse Grain Supply and Use,matrix2,,Major Exporters,World Coarse Grain Supply and Use,Coarse Grain,Major Exporters,369,1.0
+World Coarse Grain Supply and Use,matrix2,,Major Importers,World Coarse Grain Supply and Use,Coarse Grain,Major Importers,370,1.0
+World Coarse Grain Supply and Use,matrix2,,Mexico,World Coarse Grain Supply and Use,Coarse Grain,Mexico,324,1.0
+World Coarse Grain Supply and Use,matrix2,,N. Afr & Mideast,World Coarse Grain Supply and Use,Coarse Grain,N. Afr & Mideast,363,1.0
+World Coarse Grain Supply and Use,matrix2,,Russia,World Coarse Grain Supply and Use,Coarse Grain,Russia,308,1.0
+World Coarse Grain Supply and Use,matrix2,,Saudi Arabia,World Coarse Grain Supply and Use,Coarse Grain,Saudi Arabia,285,1.0
+World Coarse Grain Supply and Use,matrix2,,South Korea,World Coarse Grain Supply and Use,Coarse Grain,South Korea,294,1.0
+World Coarse Grain Supply and Use,matrix2,,Southeast Asia,World Coarse Grain Supply and Use,Coarse Grain,Southeast Asia,312,1.0
+World Coarse Grain Supply and Use,matrix2,,Total Foreign,World Coarse Grain Supply and Use,Coarse Grain,Total Foreign,318,1.0
+World Coarse Grain Supply and Use,matrix2,,Ukraine,World Coarse Grain Supply and Use,Coarse Grain,Ukraine,314,1.0
+World Coarse Grain Supply and Use,matrix2,,United States,World Coarse Grain Supply and Use,Coarse Grain,United States,308,1.0
+World Coarse Grain Supply and Use,matrix2,,World,World Coarse Grain Supply and Use,Coarse Grain,World,313,1.0
+World Coarse Grain Supply and Use,matrix2,,World Less China,World Coarse Grain Supply and Use,Coarse Grain,World Less China,366,1.0
+World Corn Supply and Use,matrix1,,Argentina,World Corn Supply and Use,Corn,Argentina,561,1.0
+World Corn Supply and Use,matrix1,,Brazil,World Corn Supply and Use,Corn,Brazil,697,1.0
+World Corn Supply and Use,matrix1,,Canada,World Corn Supply and Use,Corn,Canada,649,1.0
+World Corn Supply and Use,matrix1,,China,World Corn Supply and Use,Corn,China,622,1.0
+World Corn Supply and Use,matrix1,,EU-27+UK,World Corn Supply and Use,Corn,EU-27+UK,50,1.0
+World Corn Supply and Use,matrix1,,Egypt,World Corn Supply and Use,Corn,Egypt,566,1.0
+World Corn Supply and Use,matrix1,,European Union,World Corn Supply and Use,Corn,European Union,654,1.0
+World Corn Supply and Use,matrix1,,Japan,World Corn Supply and Use,Corn,Japan,524,1.0
+World Corn Supply and Use,matrix1,,Major Exporters,World Corn Supply and Use,Corn,Major Exporters,739,1.0
+World Corn Supply and Use,matrix1,,Major Importers,World Corn Supply and Use,Corn,Major Importers,739,1.0
+World Corn Supply and Use,matrix1,,Mexico,World Corn Supply and Use,Corn,Mexico,616,1.0
+World Corn Supply and Use,matrix1,,Russia,World Corn Supply and Use,Corn,Russia,564,1.0
+World Corn Supply and Use,matrix1,,Selected Other,World Soybean Meal Supply and Use,Soybean Meal,China,12,1.0
+World Corn Supply and Use,matrix1,,South Africa,World Corn Supply and Use,Corn,South Africa,575,1.0
+World Corn Supply and Use,matrix1,,South Korea,World Corn Supply and Use,Corn,South Korea,590,1.0
+World Corn Supply and Use,matrix1,,Southeast Asia,World Corn Supply and Use,Corn,Southeast Asia,588,1.0
+World Corn Supply and Use,matrix1,,Total Foreign,World Corn Supply and Use,Corn,Total Foreign,742,1.0
+World Corn Supply and Use,matrix1,,Ukraine,World Corn Supply and Use,Corn,Ukraine,553,1.0
+World Corn Supply and Use,matrix1,,United States,World Corn Supply and Use,Corn,United States,739,1.0
+World Corn Supply and Use,matrix1,,World,World Corn Supply and Use,Corn,World,723,1.0
+World Corn Supply and Use,matrix1,,World Less China,World Corn Supply and Use,Corn,World Less China,723,1.0
+World Corn Supply and Use,matrix2,,Argentina,World Corn Supply and Use,Corn,Argentina,255,1.0
+World Corn Supply and Use,matrix2,,Brazil,World Corn Supply and Use,Corn,Brazil,350,1.0
+World Corn Supply and Use,matrix2,,Canada,World Corn Supply and Use,Corn,Canada,326,1.0
+World Corn Supply and Use,matrix2,,China,World Corn Supply and Use,Corn,China,314,1.0
+World Corn Supply and Use,matrix2,,EU-27+UK,World Corn Supply and Use,Corn,EU-27+UK,28,1.0
+World Corn Supply and Use,matrix2,,Egypt,World Corn Supply and Use,Corn,Egypt,281,1.0
+World Corn Supply and Use,matrix2,,European Union,World Corn Supply and Use,Corn,European Union,337,1.0
+World Corn Supply and Use,matrix2,,Japan,World Corn Supply and Use,Corn,Japan,249,1.0
+World Corn Supply and Use,matrix2,,Major Exporters,World Corn Supply and Use,Corn,Major Exporters,369,1.0
+World Corn Supply and Use,matrix2,,Major Importers,World Corn Supply and Use,Corn,Major Importers,368,1.0
+World Corn Supply and Use,matrix2,,Mexico,World Corn Supply and Use,Corn,Mexico,316,1.0
+World Corn Supply and Use,matrix2,,Russia,World Corn Supply and Use,Corn,Russia,298,1.0
+World Corn Supply and Use,matrix2,,Selected Other,World Soybean Meal Supply and Use,Soybean Meal,China,12,1.0
+World Corn Supply and Use,matrix2,,South Africa,World Corn Supply and Use,Corn,South Africa,286,1.0
+World Corn Supply and Use,matrix2,,South Korea,World Corn Supply and Use,Corn,South Korea,304,1.0
+World Corn Supply and Use,matrix2,,Southeast Asia,World Corn Supply and Use,Corn,Southeast Asia,312,1.0
+World Corn Supply and Use,matrix2,,Total Foreign,World Corn Supply and Use,Corn,Total Foreign,371,1.0
+World Corn Supply and Use,matrix2,,Ukraine,World Corn Supply and Use,Corn,Ukraine,301,1.0
+World Corn Supply and Use,matrix2,,United States,World Corn Supply and Use,Corn,United States,364,1.0
+World Corn Supply and Use,matrix2,,World,World Corn Supply and Use,Corn,World,357,1.0
+World Corn Supply and Use,matrix2,,World Less China,World Corn Supply and Use,Corn,World Less China,357,1.0
+World Cotton Supply and Use,matrix2,,Afr. Fr. Zone,World Cotton Supply and Use,Cotton,Afr. Fr. Zone,245,1.0
+World Cotton Supply and Use,matrix2,,Australia,World Cotton Supply and Use,Cotton,Australia,264,1.0
+World Cotton Supply and Use,matrix2,,Bangladesh,World Cotton Supply and Use,Cotton,Bangladesh,208,1.0
+World Cotton Supply and Use,matrix2,,Brazil,World Cotton Supply and Use,Cotton,Brazil,252,1.0
+World Cotton Supply and Use,matrix2,,Central Asia,World Cotton Supply and Use,Cotton,Central Asia,259,1.0
+World Cotton Supply and Use,matrix2,,China,World Cotton Supply and Use,Cotton,China,247,1.0
+World Cotton Supply and Use,matrix2,,EU-27+UK,World Cotton Supply and Use,Cotton,EU-27+UK,18,1.0
+World Cotton Supply and Use,matrix2,,European Union,World Cotton Supply and Use,Cotton,European Union,246,1.0
+World Cotton Supply and Use,matrix2,,India,World Cotton Supply and Use,Cotton,India,258,1.0
+World Cotton Supply and Use,matrix2,,Indonesia,World Cotton Supply and Use,Cotton,Indonesia,124,1.0
+World Cotton Supply and Use,matrix2,,Major Exporters,World Cotton Supply and Use,Cotton,Major Exporters,336,1.0
+World Cotton Supply and Use,matrix2,,Major Importers,World Cotton Supply and Use,Cotton,Major Importers,340,1.0
+World Cotton Supply and Use,matrix2,,Mexico,World Cotton Supply and Use,Cotton,Mexico,240,1.0
+World Cotton Supply and Use,matrix2,,Pakistan,World Cotton Supply and Use,Cotton,Pakistan,254,1.0
+World Cotton Supply and Use,matrix2,,S. Hemis.,World Cotton Supply and Use,Cotton,S. Hemis.,304,1.0
+World Cotton Supply and Use,matrix2,,Thailand,World Cotton Supply and Use,Cotton,Thailand,176,1.0
+World Cotton Supply and Use,matrix2,,Total Foreign,World Cotton Supply and Use,Cotton,Total Foreign,255,1.0
+World Cotton Supply and Use,matrix2,,Turkey,World Cotton Supply and Use,Cotton,Turkey,264,1.0
+World Cotton Supply and Use,matrix2,,United States,World Cotton Supply and Use,Cotton,United States,90,1.0
+World Cotton Supply and Use,matrix2,,Vietnam,World Cotton Supply and Use,Cotton,Vietnam,172,1.0
+World Cotton Supply and Use,matrix2,,World,World Cotton Supply and Use,Cotton,World,232,1.0
+World Cotton Supply and Use,matrix2,,World Less China,World Cotton Supply and Use,Cotton,World Less China,317,1.0
+World Cotton Supply and Use,matrix3,,Afr. Fr. Zone,World Cotton Supply and Use,Cotton,Afr. Fr. Zone,251,1.0
+World Cotton Supply and Use,matrix3,,Australia,World Cotton Supply and Use,Cotton,Australia,263,1.0
+World Cotton Supply and Use,matrix3,,Bangladesh,World Cotton Supply and Use,Cotton,Bangladesh,230,1.0
+World Cotton Supply and Use,matrix3,,Brazil,World Cotton Supply and Use,Cotton,Brazil,246,1.0
+World Cotton Supply and Use,matrix3,,Central Asia,World Cotton Supply and Use,Cotton,Central Asia,251,1.0
+World Cotton Supply and Use,matrix3,,China,World Cotton Supply and Use,Cotton,China,269,1.0
+World Cotton Supply and Use,matrix3,,EU-27+UK,World Cotton Supply and Use,Cotton,EU-27+UK,24,1.0
+World Cotton Supply and Use,matrix3,,European Union,World Cotton Supply and Use,Cotton,European Union,247,1.0
+World Cotton Supply and Use,matrix3,,India,World Cotton Supply and Use,Cotton,India,318,1.0
+World Cotton Supply and Use,matrix3,,Indonesia,World Cotton Supply and Use,Cotton,Indonesia,201,1.0
+World Cotton Supply and Use,matrix3,,Major Exporters,World Cotton Supply and Use,Cotton,Major Exporters,325,1.0
+World Cotton Supply and Use,matrix3,,Major Importers,World Cotton Supply and Use,Cotton,Major Importers,344,1.0
+World Cotton Supply and Use,matrix3,,Mexico,World Cotton Supply and Use,Cotton,Mexico,295,1.0
+World Cotton Supply and Use,matrix3,,Pakistan,World Cotton Supply and Use,Cotton,Pakistan,261,1.0
+World Cotton Supply and Use,matrix3,,S. Hemis.,World Cotton Supply and Use,Cotton,S. Hemis.,314,1.0
+World Cotton Supply and Use,matrix3,,Thailand,World Cotton Supply and Use,Cotton,Thailand,145,1.0
+World Cotton Supply and Use,matrix3,,Total Foreign,World Cotton Supply and Use,Cotton,Total Foreign,256,1.0
+World Cotton Supply and Use,matrix3,,Turkey,World Cotton Supply and Use,Cotton,Turkey,300,1.0
+World Cotton Supply and Use,matrix3,,United States,World Cotton Supply and Use,Cotton,United States,106,1.0
+World Cotton Supply and Use,matrix3,,Vietnam,World Cotton Supply and Use,Cotton,Vietnam,187,1.0
+World Cotton Supply and Use,matrix3,,World,World Cotton Supply and Use,Cotton,World,216,1.0
+World Cotton Supply and Use,matrix3,,World Less China,World Cotton Supply and Use,Cotton,World Less China,317,1.0
+World Cotton Supply and Use,matrix4,,Afr. Fr. Zone,World Cotton Supply and Use,Cotton,Afr. Fr. Zone,255,1.0
+World Cotton Supply and Use,matrix4,,Australia,World Cotton Supply and Use,Cotton,Australia,265,1.0
+World Cotton Supply and Use,matrix4,,Bangladesh,World Cotton Supply and Use,Cotton,Bangladesh,229,1.0
+World Cotton Supply and Use,matrix4,,Brazil,World Cotton Supply and Use,Cotton,Brazil,255,1.0
+World Cotton Supply and Use,matrix4,,Central Asia,World Cotton Supply and Use,Cotton,Central Asia,261,1.0
+World Cotton Supply and Use,matrix4,,China,World Cotton Supply and Use,Cotton,China,278,1.0
+World Cotton Supply and Use,matrix4,,EU-27+UK,World Cotton Supply and Use,Cotton,EU-27+UK,18,1.0
+World Cotton Supply and Use,matrix4,,European Union,World Cotton Supply and Use,Cotton,European Union,265,1.0
+World Cotton Supply and Use,matrix4,,India,World Cotton Supply and Use,Cotton,India,301,1.0
+World Cotton Supply and Use,matrix4,,Indonesia,World Cotton Supply and Use,Cotton,Indonesia,156,1.0
+World Cotton Supply and Use,matrix4,,Major Exporters,World Cotton Supply and Use,Cotton,Major Exporters,326,1.0
+World Cotton Supply and Use,matrix4,,Major Importers,World Cotton Supply and Use,Cotton,Major Importers,345,1.0
+World Cotton Supply and Use,matrix4,,Mexico,World Cotton Supply and Use,Cotton,Mexico,259,1.0
+World Cotton Supply and Use,matrix4,,Pakistan,World Cotton Supply and Use,Cotton,Pakistan,246,1.0
+World Cotton Supply and Use,matrix4,,S. Hemis.,World Cotton Supply and Use,Cotton,S. Hemis.,303,1.0
+World Cotton Supply and Use,matrix4,,Thailand,World Cotton Supply and Use,Cotton,Thailand,148,1.0
+World Cotton Supply and Use,matrix4,,Total Foreign,World Cotton Supply and Use,Cotton,Total Foreign,280,1.0
+World Cotton Supply and Use,matrix4,,Turkey,World Cotton Supply and Use,Cotton,Turkey,285,1.0
+World Cotton Supply and Use,matrix4,,United States,World Cotton Supply and Use,Cotton,United States,97,1.0
+World Cotton Supply and Use,matrix4,,Vietnam,World Cotton Supply and Use,Cotton,Vietnam,187,1.0
+World Cotton Supply and Use,matrix4,,World,World Cotton Supply and Use,Cotton,World,239,1.0
+World Cotton Supply and Use,matrix4,,World Less China,World Cotton Supply and Use,Cotton,World Less China,318,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Brazil,World Rice Supply and Use (Milled Basis),Rice,Brazil,525,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Burma,World Rice Supply and Use (Milled Basis),Rice,Burma,457,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,C. Amer & Carib,World Rice Supply and Use (Milled Basis),Rice,C. Amer & Carib,479,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,China,World Rice Supply and Use (Milled Basis),Rice,China,582,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,EU-27+UK,World Rice Supply and Use (Milled Basis),Rice,EU-27+UK,36,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Egypt,World Rice Supply and Use (Milled Basis),Rice,Egypt,434,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,European Union,World Rice Supply and Use (Milled Basis),Rice,European Union,470,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,India,World Rice Supply and Use (Milled Basis),Rice,India,495,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Indonesia,World Rice Supply and Use (Milled Basis),Rice,Indonesia,454,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Japan,World Rice Supply and Use (Milled Basis),Rice,Japan,555,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Major Exporters,World Rice Supply and Use (Milled Basis),Rice,Major Exporters,628,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Major Importers,World Rice Supply and Use (Milled Basis),Rice,Major Importers,621,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Mexico,World Rice Supply and Use (Milled Basis),Rice,Mexico,443,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Nigeria,World Rice Supply and Use (Milled Basis),Rice,Nigeria,442,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Pakistan,World Rice Supply and Use (Milled Basis),Rice,Pakistan,459,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Philippines,World Rice Supply and Use (Milled Basis),Rice,Philippines,492,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Sel. Mideast,World Rice Supply and Use (Milled Basis),Rice,Sel. Mideast,474,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Selected Other,World Soybean Meal Supply and Use,Soybean Meal,China,12,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,South Korea,World Rice Supply and Use (Milled Basis),Rice,South Korea,547,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Thailand,World Rice Supply and Use (Milled Basis),Rice,Thailand,502,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Total Foreign,World Rice Supply and Use (Milled Basis),Rice,Total Foreign,530,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,United States,World Rice Supply and Use (Milled Basis),Rice,United States,500,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,Vietnam,World Rice Supply and Use (Milled Basis),Rice,Vietnam,534,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,World,World Rice Supply and Use (Milled Basis),Rice,World,530,1.0
+World Rice Supply and Use (Milled Basis),matrix1,,World Less China,World Rice Supply and Use (Milled Basis),Rice,World Less China,635,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Brazil,World Rice Supply and Use (Milled Basis),Rice,Brazil,264,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Burma,World Rice Supply and Use (Milled Basis),Rice,Burma,233,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,C. Amer & Carib,World Rice Supply and Use (Milled Basis),Rice,C. Amer & Carib,243,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,China,World Rice Supply and Use (Milled Basis),Rice,China,306,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,EU-27+UK,World Rice Supply and Use (Milled Basis),Rice,EU-27+UK,22,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Egypt,World Rice Supply and Use (Milled Basis),Rice,Egypt,212,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,European Union,World Rice Supply and Use (Milled Basis),Rice,European Union,237,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,India,World Rice Supply and Use (Milled Basis),Rice,India,241,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Indonesia,World Rice Supply and Use (Milled Basis),Rice,Indonesia,225,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Japan,World Rice Supply and Use (Milled Basis),Rice,Japan,268,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Major Exporters,World Rice Supply and Use (Milled Basis),Rice,Major Exporters,316,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Major Importers,World Rice Supply and Use (Milled Basis),Rice,Major Importers,315,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Mexico,World Rice Supply and Use (Milled Basis),Rice,Mexico,218,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Nigeria,World Rice Supply and Use (Milled Basis),Rice,Nigeria,245,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Pakistan,World Rice Supply and Use (Milled Basis),Rice,Pakistan,231,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Philippines,World Rice Supply and Use (Milled Basis),Rice,Philippines,255,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Sel. Mideast,World Rice Supply and Use (Milled Basis),Rice,Sel. Mideast,240,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Selected Other,World Soybean Meal Supply and Use,Soybean Meal,China,12,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,South Korea,World Rice Supply and Use (Milled Basis),Rice,South Korea,282,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Thailand,World Rice Supply and Use (Milled Basis),Rice,Thailand,254,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Total Foreign,World Rice Supply and Use (Milled Basis),Rice,Total Foreign,265,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,United States,World Rice Supply and Use (Milled Basis),Rice,United States,250,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,Vietnam,World Rice Supply and Use (Milled Basis),Rice,Vietnam,285,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,World,World Rice Supply and Use (Milled Basis),Rice,World,265,1.0
+World Rice Supply and Use (Milled Basis),matrix2,,World Less China,World Rice Supply and Use (Milled Basis),Rice,World Less China,317,1.0
+World Soybean Meal Supply and Use,matrix4,,Argentina,World Soybean Meal Supply and Use,Soybean Meal,Argentina,275,1.0
+World Soybean Meal Supply and Use,matrix4,,Brazil,World Soybean Meal Supply and Use,Soybean Meal,Brazil,251,1.0
+World Soybean Meal Supply and Use,matrix4,,China,World Soybean Meal Supply and Use,Soybean Meal,China,242,1.0
+World Soybean Meal Supply and Use,matrix4,,EU-27+UK,World Soybean Meal Supply and Use,Soybean Meal,EU-27+UK,20,1.0
+World Soybean Meal Supply and Use,matrix4,,European Union,World Soybean Meal Supply and Use,Soybean Meal,European Union,272,1.0
+World Soybean Meal Supply and Use,matrix4,,India,World Soybean Meal Supply and Use,Soybean Meal,India,260,1.0
+World Soybean Meal Supply and Use,matrix4,,Major Exporters,World Soybean Meal Supply and Use,Soybean Meal,Major Exporters,291,1.0
+World Soybean Meal Supply and Use,matrix4,,Major Importers,World Soybean Meal Supply and Use,Soybean Meal,Major Importers,289,1.0
+World Soybean Meal Supply and Use,matrix4,,Mexico,World Soybean Meal Supply and Use,Soybean Meal,Mexico,189,1.0
+World Soybean Meal Supply and Use,matrix4,,Southeast Asia,World Soybean Meal Supply and Use,Soybean Meal,Southeast Asia,271,1.0
+World Soybean Meal Supply and Use,matrix4,,Total Foreign,World Soybean Meal Supply and Use,Soybean Meal,Total Foreign,311,1.0
+World Soybean Meal Supply and Use,matrix4,,United States,World Soybean Meal Supply and Use,Soybean Meal,United States,288,1.0
+World Soybean Meal Supply and Use,matrix4,,World,World Soybean Meal Supply and Use,Soybean Meal,World,254,1.0
+World Soybean Meal Supply and Use,matrix4,,World Less China,World Soybean Meal Supply and Use,Soybean Meal,World Less China,253,1.0
+World Soybean Meal Supply and Use,matrix5,,Argentina,World Soybean Meal Supply and Use,Soybean Meal,Argentina,255,1.0
+World Soybean Meal Supply and Use,matrix5,,Brazil,World Soybean Meal Supply and Use,Soybean Meal,Brazil,250,1.0
+World Soybean Meal Supply and Use,matrix5,,China,World Soybean Meal Supply and Use,Soybean Meal,China,243,1.0
+World Soybean Meal Supply and Use,matrix5,,EU-27+UK,World Soybean Meal Supply and Use,Soybean Meal,EU-27+UK,20,1.0
+World Soybean Meal Supply and Use,matrix5,,European Union,World Soybean Meal Supply and Use,Soybean Meal,European Union,247,1.0
+World Soybean Meal Supply and Use,matrix5,,India,World Soybean Meal Supply and Use,Soybean Meal,India,237,1.0
+World Soybean Meal Supply and Use,matrix5,,Major Exporters,World Soybean Meal Supply and Use,Soybean Meal,Major Exporters,292,1.0
+World Soybean Meal Supply and Use,matrix5,,Major Importers,World Soybean Meal Supply and Use,Soybean Meal,Major Importers,277,1.0
+World Soybean Meal Supply and Use,matrix5,,Mexico,World Soybean Meal Supply and Use,Soybean Meal,Mexico,198,1.0
+World Soybean Meal Supply and Use,matrix5,,Southeast Asia,World Soybean Meal Supply and Use,Soybean Meal,Southeast Asia,282,1.0
+World Soybean Meal Supply and Use,matrix5,,Total Foreign,World Soybean Meal Supply and Use,Soybean Meal,Total Foreign,315,1.0
+World Soybean Meal Supply and Use,matrix5,,United States,World Soybean Meal Supply and Use,Soybean Meal,United States,293,1.0
+World Soybean Meal Supply and Use,matrix5,,World,World Soybean Meal Supply and Use,Soybean Meal,World,253,1.0
+World Soybean Meal Supply and Use,matrix5,,World Less China,World Soybean Meal Supply and Use,Soybean Meal,World Less China,252,1.0
+World Soybean Meal Supply and Use,matrix6,,Argentina,World Soybean Meal Supply and Use,Soybean Meal,Argentina,239,1.0
+World Soybean Meal Supply and Use,matrix6,,Brazil,World Soybean Meal Supply and Use,Soybean Meal,Brazil,249,1.0
+World Soybean Meal Supply and Use,matrix6,,China,World Soybean Meal Supply and Use,Soybean Meal,China,214,1.0
+World Soybean Meal Supply and Use,matrix6,,EU-27+UK,World Soybean Meal Supply and Use,Soybean Meal,EU-27+UK,20,1.0
+World Soybean Meal Supply and Use,matrix6,,European Union,World Soybean Meal Supply and Use,Soybean Meal,European Union,252,1.0
+World Soybean Meal Supply and Use,matrix6,,India,World Soybean Meal Supply and Use,Soybean Meal,India,221,1.0
+World Soybean Meal Supply and Use,matrix6,,Major Exporters,World Soybean Meal Supply and Use,Soybean Meal,Major Exporters,299,1.0
+World Soybean Meal Supply and Use,matrix6,,Major Importers,World Soybean Meal Supply and Use,Soybean Meal,Major Importers,294,1.0
+World Soybean Meal Supply and Use,matrix6,,Mexico,World Soybean Meal Supply and Use,Soybean Meal,Mexico,214,1.0
+World Soybean Meal Supply and Use,matrix6,,Southeast Asia,World Soybean Meal Supply and Use,Soybean Meal,Southeast Asia,282,1.0
+World Soybean Meal Supply and Use,matrix6,,Total Foreign,World Soybean Meal Supply and Use,Soybean Meal,Total Foreign,315,1.0
+World Soybean Meal Supply and Use,matrix6,,United States,World Soybean Meal Supply and Use,Soybean Meal,United States,274,1.0
+World Soybean Meal Supply and Use,matrix6,,World,World Soybean Meal Supply and Use,Soybean Meal,World,254,1.0
+World Soybean Meal Supply and Use,matrix6,,World Less China,World Soybean Meal Supply and Use,Soybean Meal,World Less China,253,1.0
+World Soybean Oil Supply and Use,matrix4,,Argentina,World Soybean Oil Supply and Use,Soybean Oil,Argentina,274,1.0
+World Soybean Oil Supply and Use,matrix4,,Brazil,World Soybean Oil Supply and Use,Soybean Oil,Brazil,250,1.0
+World Soybean Oil Supply and Use,matrix4,,China,World Soybean Oil Supply and Use,Soybean Oil,China,275,1.0
+World Soybean Oil Supply and Use,matrix4,,EU-27+UK,World Soybean Oil Supply and Use,Soybean Oil,EU-27+UK,18,1.0
+World Soybean Oil Supply and Use,matrix4,,European Union,World Soybean Oil Supply and Use,Soybean Oil,European Union,265,1.0
+World Soybean Oil Supply and Use,matrix4,,India,World Soybean Oil Supply and Use,Soybean Oil,India,231,1.0
+World Soybean Oil Supply and Use,matrix4,,Major Exporters,World Soybean Oil Supply and Use,Soybean Oil,Major Exporters,265,1.0
+World Soybean Oil Supply and Use,matrix4,,Major Importers,World Soybean Oil Supply and Use,Soybean Oil,Major Importers,294,1.0
+World Soybean Oil Supply and Use,matrix4,,North Africa,World Soybean Oil Supply and Use,Soybean Oil,North Africa,265,1.0
+World Soybean Oil Supply and Use,matrix4,,Total Foreign,World Soybean Oil Supply and Use,Soybean Oil,Total Foreign,310,1.0
+World Soybean Oil Supply and Use,matrix4,,United States,World Soybean Oil Supply and Use,Soybean Oil,United States,258,1.0
+World Soybean Oil Supply and Use,matrix4,,World,World Soybean Oil Supply and Use,Soybean Oil,World,310,1.0
+World Soybean Oil Supply and Use,matrix4,,World Less China,World Soybean Oil Supply and Use,Soybean Oil,World Less China,316,1.0
+World Soybean Oil Supply and Use,matrix5,,Argentina,World Soybean Oil Supply and Use,Soybean Oil,Argentina,255,1.0
+World Soybean Oil Supply and Use,matrix5,,Brazil,World Soybean Oil Supply and Use,Soybean Oil,Brazil,237,1.0
+World Soybean Oil Supply and Use,matrix5,,China,World Soybean Oil Supply and Use,Soybean Oil,China,262,1.0
+World Soybean Oil Supply and Use,matrix5,,EU-27+UK,World Soybean Oil Supply and Use,Soybean Oil,EU-27+UK,19,1.0
+World Soybean Oil Supply and Use,matrix5,,European Union,World Soybean Oil Supply and Use,Soybean Oil,European Union,258,1.0
+World Soybean Oil Supply and Use,matrix5,,India,World Soybean Oil Supply and Use,Soybean Oil,India,217,1.0
+World Soybean Oil Supply and Use,matrix5,,Major Exporters,World Soybean Oil Supply and Use,Soybean Oil,Major Exporters,280,1.0
+World Soybean Oil Supply and Use,matrix5,,Major Importers,World Soybean Oil Supply and Use,Soybean Oil,Major Importers,285,1.0
+World Soybean Oil Supply and Use,matrix5,,North Africa,World Soybean Oil Supply and Use,Soybean Oil,North Africa,255,1.0
+World Soybean Oil Supply and Use,matrix5,,Total Foreign,World Soybean Oil Supply and Use,Soybean Oil,Total Foreign,312,1.0
+World Soybean Oil Supply and Use,matrix5,,United States,World Soybean Oil Supply and Use,Soybean Oil,United States,257,1.0
+World Soybean Oil Supply and Use,matrix5,,World,World Soybean Oil Supply and Use,Soybean Oil,World,314,1.0
+World Soybean Oil Supply and Use,matrix5,,World Less China,World Soybean Oil Supply and Use,Soybean Oil,World Less China,316,1.0
+World Soybean Oil Supply and Use,matrix6,,Argentina,World Soybean Oil Supply and Use,Soybean Oil,Argentina,234,1.0
+World Soybean Oil Supply and Use,matrix6,,Brazil,World Soybean Oil Supply and Use,Soybean Oil,Brazil,247,1.0
+World Soybean Oil Supply and Use,matrix6,,China,World Soybean Oil Supply and Use,Soybean Oil,China,224,1.0
+World Soybean Oil Supply and Use,matrix6,,EU-27+UK,World Soybean Oil Supply and Use,Soybean Oil,EU-27+UK,22,1.0
+World Soybean Oil Supply and Use,matrix6,,European Union,World Soybean Oil Supply and Use,Soybean Oil,European Union,244,1.0
+World Soybean Oil Supply and Use,matrix6,,India,World Soybean Oil Supply and Use,Soybean Oil,India,230,1.0
+World Soybean Oil Supply and Use,matrix6,,Major Exporters,World Soybean Oil Supply and Use,Soybean Oil,Major Exporters,274,1.0
+World Soybean Oil Supply and Use,matrix6,,Major Importers,World Soybean Oil Supply and Use,Soybean Oil,Major Importers,267,1.0
+World Soybean Oil Supply and Use,matrix6,,North Africa,World Soybean Oil Supply and Use,Soybean Oil,North Africa,266,1.0
+World Soybean Oil Supply and Use,matrix6,,Total Foreign,World Soybean Oil Supply and Use,Soybean Oil,Total Foreign,304,1.0
+World Soybean Oil Supply and Use,matrix6,,United States,World Soybean Oil Supply and Use,Soybean Oil,United States,266,1.0
+World Soybean Oil Supply and Use,matrix6,,World,World Soybean Oil Supply and Use,Soybean Oil,World,311,1.0
+World Soybean Oil Supply and Use,matrix6,,World Less China,World Soybean Oil Supply and Use,Soybean Oil,World Less China,308,1.0
+World Soybean Supply and Use,matrix3,,Argentina,World Soybean Supply and Use,"Oilseed, Soybean",Argentina,333,1.0
+World Soybean Supply and Use,matrix3,,Brazil,World Soybean Supply and Use,"Oilseed, Soybean",Brazil,335,1.0
+World Soybean Supply and Use,matrix3,,China,World Soybean Supply and Use,"Oilseed, Soybean",China,340,1.0
+World Soybean Supply and Use,matrix3,,EU-27+UK,World Soybean Supply and Use,"Oilseed, Soybean",EU-27+UK,27,1.0
+World Soybean Supply and Use,matrix3,,European Union,World Soybean Supply and Use,"Oilseed, Soybean",European Union,285,1.0
+World Soybean Supply and Use,matrix3,,Major Exporters,World Soybean Supply and Use,"Oilseed, Soybean",Major Exporters,371,1.0
+World Soybean Supply and Use,matrix3,,Major Importers,World Soybean Supply and Use,"Oilseed, Soybean",Major Importers,367,1.0
+World Soybean Supply and Use,matrix3,,Mexico,World Soybean Supply and Use,"Oilseed, Soybean",Mexico,246,1.0
+World Soybean Supply and Use,matrix3,,Paraguay,World Soybean Supply and Use,"Oilseed, Soybean",Paraguay,268,1.0
+World Soybean Supply and Use,matrix3,,Southeast Asia,World Soybean Supply and Use,"Oilseed, Soybean",Southeast Asia,295,1.0
+World Soybean Supply and Use,matrix3,,Total Foreign,World Soybean Supply and Use,"Oilseed, Soybean",Total Foreign,370,1.0
+World Soybean Supply and Use,matrix3,,United States,World Soybean Supply and Use,"Oilseed, Soybean",United States,354,1.0
+World Soybean Supply and Use,matrix3,,World,World Soybean Supply and Use,"Oilseed, Soybean",World,370,1.0
+World Soybean Supply and Use,matrix3,,World Less China,World Soybean Supply and Use,"Oilseed, Soybean",World Less China,371,1.0
+World Soybean Supply and Use,matrix4,,Argentina,World Soybean Supply and Use,"Oilseed, Soybean",Argentina,371,1.0
+World Soybean Supply and Use,matrix4,,Brazil,World Soybean Supply and Use,"Oilseed, Soybean",Brazil,359,1.0
+World Soybean Supply and Use,matrix4,,China,World Soybean Supply and Use,"Oilseed, Soybean",China,359,1.0
+World Soybean Supply and Use,matrix4,,EU-27+UK,World Soybean Supply and Use,"Oilseed, Soybean",EU-27+UK,28,1.0
+World Soybean Supply and Use,matrix4,,European Union,World Soybean Supply and Use,"Oilseed, Soybean",European Union,333,1.0
+World Soybean Supply and Use,matrix4,,Major Exporters,World Soybean Supply and Use,"Oilseed, Soybean",Major Exporters,369,1.0
+World Soybean Supply and Use,matrix4,,Major Importers,World Soybean Supply and Use,"Oilseed, Soybean",Major Importers,358,1.0
+World Soybean Supply and Use,matrix4,,Mexico,World Soybean Supply and Use,"Oilseed, Soybean",Mexico,263,1.0
+World Soybean Supply and Use,matrix4,,Paraguay,World Soybean Supply and Use,"Oilseed, Soybean",Paraguay,314,1.0
+World Soybean Supply and Use,matrix4,,Southeast Asia,World Soybean Supply and Use,"Oilseed, Soybean",Southeast Asia,301,1.0
+World Soybean Supply and Use,matrix4,,Total Foreign,World Soybean Supply and Use,"Oilseed, Soybean",Total Foreign,371,1.0
+World Soybean Supply and Use,matrix4,,United States,World Soybean Supply and Use,"Oilseed, Soybean",United States,362,1.0
+World Soybean Supply and Use,matrix4,,World,World Soybean Supply and Use,"Oilseed, Soybean",World,371,1.0
+World Soybean Supply and Use,matrix4,,World Less China,World Soybean Supply and Use,"Oilseed, Soybean",World Less China,371,1.0
+World Soybean Supply and Use,matrix5,,Argentina,World Soybean Supply and Use,"Oilseed, Soybean",Argentina,360,1.0
+World Soybean Supply and Use,matrix5,,Brazil,World Soybean Supply and Use,"Oilseed, Soybean",Brazil,353,1.0
+World Soybean Supply and Use,matrix5,,China,World Soybean Supply and Use,"Oilseed, Soybean",China,350,1.0
+World Soybean Supply and Use,matrix5,,EU-27+UK,World Soybean Supply and Use,"Oilseed, Soybean",EU-27+UK,28,1.0
+World Soybean Supply and Use,matrix5,,European Union,World Soybean Supply and Use,"Oilseed, Soybean",European Union,329,1.0
+World Soybean Supply and Use,matrix5,,Major Exporters,World Soybean Supply and Use,"Oilseed, Soybean",Major Exporters,371,1.0
+World Soybean Supply and Use,matrix5,,Major Importers,World Soybean Supply and Use,"Oilseed, Soybean",Major Importers,350,1.0
+World Soybean Supply and Use,matrix5,,Mexico,World Soybean Supply and Use,"Oilseed, Soybean",Mexico,262,1.0
+World Soybean Supply and Use,matrix5,,Paraguay,World Soybean Supply and Use,"Oilseed, Soybean",Paraguay,289,1.0
+World Soybean Supply and Use,matrix5,,Southeast Asia,World Soybean Supply and Use,"Oilseed, Soybean",Southeast Asia,288,1.0
+World Soybean Supply and Use,matrix5,,Total Foreign,World Soybean Supply and Use,"Oilseed, Soybean",Total Foreign,370,1.0
+World Soybean Supply and Use,matrix5,,United States,World Soybean Supply and Use,"Oilseed, Soybean",United States,368,1.0
+World Soybean Supply and Use,matrix5,,World,World Soybean Supply and Use,"Oilseed, Soybean",World,371,1.0
+World Soybean Supply and Use,matrix5,,World Less China,World Soybean Supply and Use,"Oilseed, Soybean",World Less China,371,1.0
+World Wheat Supply and Use,matrix1,,Argentina,World Wheat Supply and Use,Wheat,Argentina,487,1.0
+World Wheat Supply and Use,matrix1,,Australia,World Wheat Supply and Use,Wheat,Australia,633,1.0
+World Wheat Supply and Use,matrix1,,Bangladesh,World Wheat Supply and Use,Wheat,Bangladesh,547,1.0
+World Wheat Supply and Use,matrix1,,Brazil,World Wheat Supply and Use,Wheat,Brazil,623,1.0
+World Wheat Supply and Use,matrix1,,Canada,World Wheat Supply and Use,Wheat,Canada,673,1.0
+World Wheat Supply and Use,matrix1,,China,World Wheat Supply and Use,Wheat,China,683,1.0
+World Wheat Supply and Use,matrix1,,EU-27+UK,World Wheat Supply and Use,Wheat,EU-27+UK,51,1.0
+World Wheat Supply and Use,matrix1,,European Union,World Wheat Supply and Use,Wheat,European Union,654,1.0
+World Wheat Supply and Use,matrix1,,India,World Wheat Supply and Use,Wheat,India,612,1.0
+World Wheat Supply and Use,matrix1,,Japan,World Wheat Supply and Use,Wheat,Japan,583,1.0
+World Wheat Supply and Use,matrix1,,Kazakhstan,World Wheat Supply and Use,Wheat,Kazakhstan,620,1.0
+World Wheat Supply and Use,matrix1,,Major Exporters,World Wheat Supply and Use,Wheat,Major Exporters,739,1.0
+World Wheat Supply and Use,matrix1,,Major Importers,World Wheat Supply and Use,Wheat,Major Importers,738,1.0
+World Wheat Supply and Use,matrix1,,N. Africa,World Wheat Supply and Use,Wheat,N. Africa,703,1.0
+World Wheat Supply and Use,matrix1,,Nigeria,World Wheat Supply and Use,Wheat,Nigeria,580,1.0
+World Wheat Supply and Use,matrix1,,Russia,World Wheat Supply and Use,Wheat,Russia,704,1.0
+World Wheat Supply and Use,matrix1,,Sel. Mideast,World Wheat Supply and Use,Wheat,Sel. Mideast,737,1.0
+World Wheat Supply and Use,matrix1,,Southeast Asia,World Wheat Supply and Use,Wheat,Southeast Asia,617,1.0
+World Wheat Supply and Use,matrix1,,Total Foreign,World Wheat Supply and Use,Wheat,Total Foreign,636,1.0
+World Wheat Supply and Use,matrix1,,Ukraine,World Wheat Supply and Use,Wheat,Ukraine,661,1.0
+World Wheat Supply and Use,matrix1,,United Kingdom,World Wheat Supply and Use,Wheat,United Kingdom,554,1.0
+World Wheat Supply and Use,matrix1,,United States,World Wheat Supply and Use,Wheat,United States,627,1.0
+World Wheat Supply and Use,matrix1,,World,World Wheat Supply and Use,Wheat,World,635,1.0
+World Wheat Supply and Use,matrix1,,World Less China,World Wheat Supply and Use,Wheat,World Less China,741,1.0
+World Wheat Supply and Use,matrix2,,Argentina,World Wheat Supply and Use,Wheat,Argentina,224,1.0
+World Wheat Supply and Use,matrix2,,Australia,World Wheat Supply and Use,Wheat,Australia,327,1.0
+World Wheat Supply and Use,matrix2,,Bangladesh,World Wheat Supply and Use,Wheat,Bangladesh,249,1.0
+World Wheat Supply and Use,matrix2,,Brazil,World Wheat Supply and Use,Wheat,Brazil,305,1.0
+World Wheat Supply and Use,matrix2,,Canada,World Wheat Supply and Use,Wheat,Canada,349,1.0
+World Wheat Supply and Use,matrix2,,China,World Wheat Supply and Use,Wheat,China,363,1.0
+World Wheat Supply and Use,matrix2,,EU-27+UK,World Wheat Supply and Use,Wheat,EU-27+UK,28,1.0
+World Wheat Supply and Use,matrix2,,European Union,World Wheat Supply and Use,Wheat,European Union,334,1.0
+World Wheat Supply and Use,matrix2,,India,World Wheat Supply and Use,Wheat,India,330,1.0
+World Wheat Supply and Use,matrix2,,Japan,World Wheat Supply and Use,Wheat,Japan,299,1.0
+World Wheat Supply and Use,matrix2,,Kazakhstan,World Wheat Supply and Use,Wheat,Kazakhstan,315,1.0
+World Wheat Supply and Use,matrix2,,Major Exporters,World Wheat Supply and Use,Wheat,Major Exporters,367,1.0
+World Wheat Supply and Use,matrix2,,Major Importers,World Wheat Supply and Use,Wheat,Major Importers,371,1.0
+World Wheat Supply and Use,matrix2,,N. Africa,World Wheat Supply and Use,Wheat,N. Africa,344,1.0
+World Wheat Supply and Use,matrix2,,Nigeria,World Wheat Supply and Use,Wheat,Nigeria,280,1.0
+World Wheat Supply and Use,matrix2,,Russia,World Wheat Supply and Use,Wheat,Russia,359,1.0
+World Wheat Supply and Use,matrix2,,Sel. Mideast,World Wheat Supply and Use,Wheat,Sel. Mideast,359,1.0
+World Wheat Supply and Use,matrix2,,Southeast Asia,World Wheat Supply and Use,Wheat,Southeast Asia,300,1.0
+World Wheat Supply and Use,matrix2,,Total Foreign,World Wheat Supply and Use,Wheat,Total Foreign,318,1.0
+World Wheat Supply and Use,matrix2,,Ukraine,World Wheat Supply and Use,Wheat,Ukraine,339,1.0
+World Wheat Supply and Use,matrix2,,United Kingdom,World Wheat Supply and Use,Wheat,United Kingdom,283,1.0
+World Wheat Supply and Use,matrix2,,United States,World Wheat Supply and Use,Wheat,United States,310,1.0
+World Wheat Supply and Use,matrix2,,World,World Wheat Supply and Use,Wheat,World,317,1.0
+World Wheat Supply and Use,matrix2,,World Less China,World Wheat Supply and Use,Wheat,World Less China,371,1.0
+World and U.S Supply and Use for Grains,matrix1,Coarse Grains,World,World and U.S Supply and Use for Grains,Coarse Grains,World,312,1.0
+World and U.S Supply and Use for Grains,matrix1,"Rice, milled",World,World and U.S Supply and Use for Grains,"Rice, milled",World,312,1.0
+World and U.S Supply and Use for Grains,matrix1,Total Grains,World,World and U.S Supply and Use for Grains,Total Grains,World,390,1.0
+World and U.S Supply and Use for Grains,matrix1,Wheat,World,World and U.S Supply and Use for Grains,Wheat,World,312,1.0
+World and U.S Supply and Use for Grains,matrix2,Coarse Grains,United States,World and U.S Supply and Use for Grains,Coarse Grains,United States,312,1.0
+World and U.S Supply and Use for Grains,matrix2,"Rice, milled",United States,World and U.S Supply and Use for Grains,"Rice, milled",United States,312,1.0
+World and U.S Supply and Use for Grains,matrix2,Total Grains,United States,World and U.S Supply and Use for Grains,Total Grains,United States,390,1.0
+World and U.S Supply and Use for Grains,matrix2,Wheat,United States,World and U.S Supply and Use for Grains,Wheat,United States,311,1.0
+World and U.S. Supply and Use for Cotton,matrix1,Coarse Grains,Foreign,World and U.S. Supply and Use for Grains,Coarse Grains,Foreign,636,1.0
+World and U.S. Supply and Use for Cotton,matrix1,"Rice, milled",Foreign,World and U.S. Supply and Use for Grains,"Rice, milled",Foreign,636,1.0
+World and U.S. Supply and Use for Cotton,matrix1,Total Grains,Foreign,World and U.S. Supply and Use for Grains,Total Grains,Foreign,795,1.0
+World and U.S. Supply and Use for Cotton,matrix1,Wheat,Foreign,World and U.S. Supply and Use for Grains,Wheat,Foreign,636,1.0
+World and U.S. Supply and Use for Cotton,matrix2,,Foreign,World and U.S. Supply and Use for Cotton,Cotton,Foreign,636,1.0
+World and U.S. Supply and Use for Cotton,matrix2,,United States,World and U.S. Supply and Use for Cotton,Cotton,United States,636,1.0
+World and U.S. Supply and Use for Cotton,matrix2,,World,World and U.S. Supply and Use for Cotton,Cotton,World,636,1.0
+World and U.S. Supply and Use for Grains,matrix1,Coarse Grains,World,World and U.S. Supply and Use for Grains,Coarse Grains,World,324,1.0
+World and U.S. Supply and Use for Grains,matrix1,"Rice, milled",World,World and U.S. Supply and Use for Grains,"Rice, milled",World,324,1.0
+World and U.S. Supply and Use for Grains,matrix1,Total Grains,World,World and U.S. Supply and Use for Grains,Total Grains,World,405,1.0
+World and U.S. Supply and Use for Grains,matrix1,Wheat,World,World and U.S. Supply and Use for Grains,Wheat,World,324,1.0
+World and U.S. Supply and Use for Grains,matrix2,Coarse Grains,United States,World and U.S. Supply and Use for Grains,Coarse Grains,United States,324,1.0
+World and U.S. Supply and Use for Grains,matrix2,"Rice, milled",United States,World and U.S. Supply and Use for Grains,"Rice, milled",United States,324,1.0
+World and U.S. Supply and Use for Grains,matrix2,Total Grains,United States,World and U.S. Supply and Use for Grains,Total Grains,United States,404,1.0
+World and U.S. Supply and Use for Grains,matrix2,Wheat,United States,World and U.S. Supply and Use for Grains,Wheat,United States,324,1.0
+World and U.S. Supply and Use for Oilseeds,matrix1,Oilmeals,World,World and U.S. Supply and Use for Oilseeds,Oilmeals,World,793,1.0
+World and U.S. Supply and Use for Oilseeds,matrix1,Oilseeds,World,World and U.S. Supply and Use for Oilseeds,Oilseeds,World,794,1.0
+World and U.S. Supply and Use for Oilseeds,matrix1,Vegetable Oils,World,World and U.S. Supply and Use for Oilseeds,Vegetable Oils,World,795,1.0
+World and U.S. Supply and Use for Oilseeds,matrix2,Oilmeals,United States,World and U.S. Supply and Use for Oilseeds,Oilmeals,United States,765,1.0
+World and U.S. Supply and Use for Oilseeds,matrix2,Oilseeds,United States,World and U.S. Supply and Use for Oilseeds,Oilseeds,United States,794,1.0
+World and U.S. Supply and Use for Oilseeds,matrix2,Vegetable Oils,United States,World and U.S. Supply and Use for Oilseeds,Vegetable Oils,United States,754,1.0
+World and U.S. Supply and Use for Oilseeds,matrix3,Oilmeals,Foreign,World and U.S. Supply and Use for Oilseeds,Oilmeals,Foreign,793,1.0
+World and U.S. Supply and Use for Oilseeds,matrix3,Oilseeds,Foreign,World and U.S. Supply and Use for Oilseeds,Oilseeds,Foreign,795,1.0
+World and U.S. Supply and Use for Oilseeds,matrix3,Vegetable Oils,Foreign,World and U.S. Supply and Use for Oilseeds,Vegetable Oils,Foreign,793,1.0

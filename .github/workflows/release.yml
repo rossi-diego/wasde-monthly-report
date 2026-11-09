@@ -1,0 +1,205 @@
+name: WASDE release
+
+# Release day: detect a new WASDE report, rebuild bronze → silver → gold, deploy the site,
+# verify it live, and only then publish the versioned data release (the commit point).
+# Anything that fails before that point is retried automatically by the next scheduled run.
+#
+# Modes
+#   new      a new report (or a revised edition) was ingested
+#   rebuild  code/config changed, or the live site is behind main / the latest data release
+#   none     nothing to do (most scheduled runs; they still run the watchdogs)
+
+on:
+  # Schedule paused until the first manual deploy under the new name is verified live.
+  # schedule:
+  #   # Every 30 min, 16:05–21:35 UTC. WASDE is out at 12:00 ET (16:00 UTC summer, 17:00 winter).
+  #   - cron: "5,35 16-21 * * *"
+  workflow_dispatch:
+    inputs:
+      force_month:
+        description: "Re-ingest this report month (YYYY-MM)"
+        required: false
+  push:
+    branches: [main]
+    paths: ["web/**", "src/**", "dbt/**", "config/**", ".github/workflows/release.yml"]
+
+concurrency:
+  group: wasde-release
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+env:
+  WASDE_LOG_JSON: "true"
+  VERCEL_PROJECT: usda-reports
+  SITE_URL: ${{ vars.SITE_URL || 'https://usda-reports.vercel.app' }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+          activate-environment: true
+      - run: uv pip install -e ".[dbt]"
+
+      - name: Restore manifest + bronze from the latest data release (source of truth)
+        id: prev
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag=$(gh release list --exclude-drafts --limit 50 --json tagName -q '[.[] | select(.tagName | startswith("data-"))][0].tagName')
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          if [ -z "$tag" ]; then
+            echo "No data release yet: full backfill from USDA/ESMIS"
+            wasde backfill
+            exit 0
+          fi
+          gh release download "$tag" --pattern manifest.json --pattern bronze.tar.gz --dir /tmp/prev --clobber
+          cp /tmp/prev/manifest.json data/manifest.json
+          wasde unpack-bronze /tmp/prev/bronze.tar.gz
+
+      - name: Refresh official release calendar
+        # A changed page layout must not block ingestion; the detect watchdog fails the run
+        # if the calendar runs out of future dates.
+        continue-on-error: true
+        run: wasde refresh-calendar
+
+      - name: Detect (new report, revised edition, watchdogs)
+        id: detect
+        if: github.event_name != 'push'
+        run: wasde detect ${{ inputs.force_month && format('--force-month {0}', inputs.force_month) || '' }}
+
+      - name: Is the live site current? (code commit and data tag)
+        id: live
+        if: always() && github.event_name == 'schedule'
+        run: |
+          live=$(curl -fsS -m 20 "$SITE_URL/build.json" || echo '{}')
+          echo "Live build: $live"
+          sha=$(echo "$live" | python -c "import json,sys;print(json.load(sys.stdin).get('sha',''))")
+          tag=$(echo "$live" | python -c "import json,sys;print(json.load(sys.stdin).get('tag',''))")
+          if [ "$sha" != "$GITHUB_SHA" ] || [ "$tag" != "${{ steps.prev.outputs.tag }}" ]; then
+            echo "behind=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Decide
+        id: plan
+        if: always()
+        run: |
+          if [ "${{ steps.detect.outputs.new_report }}" = "true" ]; then mode=new
+          elif [ "${{ github.event_name }}" != "schedule" ] || [ "${{ steps.live.outputs.behind }}" = "true" ]; then mode=rebuild
+          else mode=none; fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "Mode: $mode" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Build silver → gold → publish
+        id: build
+        if: always() && steps.plan.outputs.mode != 'none' && steps.prev.outcome == 'success'
+        run: |
+          month=$(python -c "import json;print(max(json.load(open('data/manifest.json'))['reports']))")
+          echo "tag=data-$month" >> "$GITHUB_OUTPUT"
+          echo "month=$month" >> "$GITHUB_OUTPUT"
+          wasde run --tag "data-$month"
+          wasde pack-bronze data/publish/bronze.tar.gz
+          cp data/manifest.json data/publish/manifest.json
+          echo "{\"sha\":\"$GITHUB_SHA\",\"tag\":\"data-$month\",\"built_at\":\"$(date -u +%FT%TZ)\"}" > web/public/build.json
+          tar -czf data/publish/web-data.tar.gz -C web/public data
+
+      - uses: actions/setup-node@v4
+        if: always() && steps.build.outcome == 'success'
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build and deploy to Vercel (prebuilt static site)
+        id: deploy
+        if: always() && steps.build.outcome == 'success'
+        working-directory: web
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_SCOPE: ${{ vars.VERCEL_SCOPE }}
+        run: |
+          if [ -z "$VERCEL_TOKEN" ]; then echo "::error::Repository secret VERCEL_TOKEN is not set"; exit 1; fi
+          npm ci
+          scope=${VERCEL_SCOPE:+--scope $VERCEL_SCOPE}
+          npx vercel@latest link --yes --project "$VERCEL_PROJECT" $scope --token "$VERCEL_TOKEN"
+          npx vercel@latest pull --yes --environment=production $scope --token "$VERCEL_TOKEN"
+          npx vercel@latest build --prod $scope --token "$VERCEL_TOKEN"
+          npx vercel@latest deploy --prebuilt --prod $scope --token "$VERCEL_TOKEN" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify the live site serves this build
+        id: verify
+        if: always() && steps.deploy.outcome == 'success'
+        working-directory: web
+        env:
+          E2E_BASE_URL: ${{ env.SITE_URL }}
+        run: |
+          for i in 1 2 3 4 5 6; do
+            live=$(curl -fsS -m 20 "$SITE_URL/build.json" || true)
+            echo "$live" | grep -q "$GITHUB_SHA" && echo "$live" | grep -q "${{ steps.build.outputs.tag }}" && break
+            echo "waiting for the new deployment to be served ($i)"; sleep 20
+          done
+          echo "$live" | grep -q "$GITHUB_SHA" || { echo "::error::live site does not serve this build"; exit 1; }
+          export EXPECTED_REPORT_LABEL=$(python -c "import json;print(json.load(open('public/data/meta.json'))['latest']['label'])")
+          npx playwright install --with-deps chromium
+          npx playwright test --project=desktop
+
+      - name: Publish the versioned data release (commit point)
+        if: always() && steps.verify.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ steps.build.outputs.tag }}"
+          label=$(python -c "import json;print(json.load(open('web/public/data/meta.json'))['latest']['label'])")
+          python - > /tmp/notes.md <<'PY'
+          import json
+          o = json.load(open("web/public/data/overview.json", encoding="utf-8"))
+          print("Automated WASDE data release.\n\n### Headlines\n" + "\n".join(f"- {h['sentence']}" for h in o["highlights"]))
+          PY
+          if gh release view "$tag" >/dev/null 2>&1; then
+            gh release upload "$tag" data/publish/* --clobber
+            gh release edit "$tag" --notes-file /tmp/notes.md
+          else
+            gh release create "$tag" --draft --title "WASDE $label" --notes-file /tmp/notes.md
+            gh release upload "$tag" data/publish/*
+            gh release edit "$tag" --draft=false --latest
+          fi
+
+      - name: Record manifest and calendar in git (audit trail + repository activity)
+        if: always() && steps.plan.outputs.mode == 'new' && steps.verify.outcome == 'success'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/manifest.json config/release_calendar.yaml
+          git diff --staged --quiet || git commit -m "data: WASDE ${{ steps.build.outputs.month }}"
+          git pull --rebase --autostash origin main && git push || echo "::warning::audit commit not pushed"
+
+      - name: Heartbeat
+        if: always() && github.event_name == 'schedule'
+        env:
+          HC: ${{ secrets.HEALTHCHECK_URL }}
+        run: |
+          [ -z "$HC" ] && exit 0
+          if [ "${{ job.status }}" = "success" ]; then curl -fsS -m 10 "$HC" >/dev/null; else curl -fsS -m 10 "$HC/fail" >/dev/null; fi
+
+      - name: Open the pipeline-alert issue (once; scheduled retries stay quiet)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          body="Run ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} failed (event: ${{ github.event_name }}). Watchdogs: ${{ steps.detect.outputs.problems || 'none' }}."
+          gh label create pipeline-alert --color B60205 --force >/dev/null
+          num=$(gh issue list --label pipeline-alert --state open --json number -q '.[0].number')
+          if [ -z "$num" ]; then
+            gh issue create --title "WASDE pipeline needs attention" --label pipeline-alert --body "$body"
+          elif [ "${{ github.event_name }}" != "schedule" ]; then
+            gh issue comment "$num" --body "$body"
+          fi

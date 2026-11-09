@@ -1,0 +1,64 @@
+version: 2
+
+models:
+  - name: dim_reports
+    description: One row per WASDE report, in publication order.
+    columns:
+      - name: report_month
+        description: Report month (YYYY-MM). WASDE is published once per month at 12:00 ET.
+        data_tests: [unique, not_null]
+      - name: report_seq
+        description: 1-based publication order; consecutive reports differ by 1.
+        data_tests: [unique, not_null]
+      - name: n_rows
+        description: Values published in the report.
+
+  - name: fct_wasde
+    description: >
+      The complete harmonized WASDE dataset — every table, region, attribute and marketing
+      year of every report since July 2010 (ESMIS XML until 2020, USDA CSV from 2021).
+    columns:
+      - name: series_key
+        description: table|commodity|region|attribute — one estimate line across reports.
+        data_tests: [not_null]
+      - name: value
+        data_tests: [not_null]
+      - name: source
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [usda_csv, esmis_xml]
+
+  - name: fct_revisions
+    description: >
+      Revision path of each annual estimate (series × marketing year) across reports, with
+      month-over-month delta, change vs. first projection and cycle_month
+      (0 = first projection in May of the marketing-year start).
+    columns:
+      - name: delta
+        description: Change vs. the immediately preceding report (null if the MY was absent).
+      - name: cycle_month
+        description: Months since the May first projection; aligns marketing years for comparison.
+
+  - name: fct_balance_sheet
+    description: Wide balance sheet per report, table, commodity, region and marketing year.
+    columns:
+      - name: stocks_to_use_pct
+        description: >
+          Ending stocks / use × 100. World & World-less-China: use = domestic use (trade nets
+          out). U.S. tables and countries: total use (domestic + exports).
+      - name: balance_residual
+        description: Ending − (beginning + production + imports − domestic − exports).
+
+  - name: fct_ending_stocks_drivers
+    description: >
+      Month-over-month ending-stocks revision split into beginning stocks, production
+      (area and yield effects for U.S. tables), imports, domestic use, exports and other.
+
+  - name: fct_changes
+    description: >
+      Every month-over-month revision with a seasonal materiality score and the length of
+      the current same-direction streak. Input for the monthly highlights.
+    columns:
+      - name: seasonal_score
+        description: "|Δ| divided by the median |Δ| of the same series in the same calendar report month."

@@ -1,46 +1,27 @@
+# Full stack with one command:  docker compose up
+#   1. pipeline: downloads every WASDE report since 2010-07 (first run ~10 min), builds
+#      silver/gold and writes the site data + Excel files
+#   2. web: builds the static Next.js site from that data and serves it on :3000
 services:
-
-  # ── FastAPI + static frontend ─────────────────────────────────────────
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-    ports:
-      - "8000:8000"
+  pipeline:
+    build: .
+    entrypoint: ["sh", "-c", "wasde backfill && wasde run"]
     volumes:
-      - ./data:/app/data        # shares DuckDB Gold layer with Airflow output
-    environment:
-      - USDA_PSD_KEY=${USDA_PSD_KEY}
-      - DATA_DIR=/app/data
-    restart: unless-stopped
+      - ./data:/app/data
+      - ./web/public/data:/app/web/public/data
+    env_file:
+      - path: .env
+        required: false
 
-  # ── Airflow (LocalExecutor, single container) ─────────────────────────
-  airflow:
-    image: apache/airflow:2.9.0-python3.11
-    environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: sqlite:////opt/airflow/airflow.db
-      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
-      AIRFLOW__WEBSERVER__SECRET_KEY: "change-me-in-production"
-      USDA_PSD_KEY: ${USDA_PSD_KEY}
-      DATA_DIR: /opt/airflow/data
-    volumes:
-      - ./dags:/opt/airflow/dags
-      - ./src:/opt/airflow/src           # DAG imports from wasde package
-      - ./data:/opt/airflow/data         # shared data volume
-      - airflow_logs:/opt/airflow/logs
+  web:
+    image: node:22-alpine
+    working_dir: /web
+    command: ["sh", "-c", "npm ci && npm run build && npx --yes serve@14 out -l 3000"]
     ports:
-      - "8080:8080"
-    command: >
-      bash -c "
-        pip install -e /opt/airflow/src/.. --quiet &&
-        airflow db migrate &&
-        airflow users create --username admin --password admin
-          --firstname Admin --lastname User --role Admin --email admin@local.dev &&
-        airflow webserver &
-        airflow scheduler
-      "
-    restart: unless-stopped
-
-volumes:
-  airflow_logs:
+      - "3000:3000"
+    volumes:
+      - ./web:/web
+      - /web/node_modules
+    depends_on:
+      pipeline:
+        condition: service_completed_successfully
