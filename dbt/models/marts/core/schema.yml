@@ -1,0 +1,51 @@
+version: 2
+
+models:
+  - name: dim_release
+    description: >
+      Every release of every report: report_id, release_key, release instant (UTC, from the
+      configured ET release time), edition and the sha256 of the bronze file it was parsed from.
+    columns:
+      - name: report_id
+        data_tests: [not_null]
+      - name: release_key
+        data_tests: [not_null]
+      - name: release_ts_utc
+        data_tests: [not_null]
+      - name: vintage_quality
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [as_published, captured, latest_only]
+
+  - name: dim_calendar
+    description: Scheduled releases of every enabled report and whether each was ingested.
+    columns:
+      - name: report_id
+        data_tests: [not_null]
+      - name: release_ts_utc
+        data_tests: [not_null]
+
+seeds:
+  - name: dim_unit
+    description: >
+      Unit conversions to metric tons. Bushel units are commodity-specific (corn 39.3679 bu/t,
+      soybeans and wheat 36.7437 bu/t). `from_mt` is the published factor (units per MT),
+      `to_mt` its inverse; the round-trip test checks to_mt × from_mt = 1 on every row.
+    columns:
+      - name: unit_id
+        data_tests: [not_null]
+      - name: to_mt
+        data_tests: [not_null]
+      - name: from_mt
+        data_tests: [not_null]
+  - name: dim_commodity
+    description: >
+      Canonical commodities across reports: WASDE label, FAS ESR commodity code (verified
+      against /api/esr/commodities before Export Sales is enabled), NASS commodity_desc and
+      the U.S. marketing-year start month.
+    columns:
+      - name: commodity_id
+        data_tests: [unique, not_null]
+      - name: my_start_month
+        data_tests: [not_null]

@@ -1,4 +1,4 @@
-// Shapes of the JSON written by the Python publisher (src/wasde/publish/web_json.py).
+// Shapes of the JSON written by the Python publisher (src/usda_reports/publish/web_json.py).
 
 export type Download = {
   file: string;

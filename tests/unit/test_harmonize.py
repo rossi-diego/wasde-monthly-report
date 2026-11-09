@@ -1,13 +1,18 @@
 import pandas as pd
 import pytest
 
-from wasde.silver.build import CORE_SERIES, SilverContractError, validate
-from wasde.silver.harmonize import SILVER_COLUMNS, RepeatedKeyError, Vocabulary, harmonize
+from usda_reports.reports.wasde.harmonize import (
+    SILVER_COLUMNS,
+    RepeatedKeyError,
+    Vocabulary,
+    harmonize,
+)
+from usda_reports.reports.wasde.silver import SilverContractError, load_contract, validate
 
 
 @pytest.fixture
 def vocab(config_dir):
-    return Vocabulary.load(config_dir / "mappings.yaml")
+    return Vocabulary.load(config_dir / "reports" / "wasde" / "mappings.yaml")
 
 
 def _raw(rows):
@@ -105,9 +110,10 @@ def test_unexpected_repeats_fail(vocab):
         harmonize(_raw([{**row, "value": 1.0}, {**row, "value": 2.0}]), vocab)
 
 
-def test_validate_flags_missing_core_series_and_small_reports(vocab):
+def test_validate_flags_missing_core_series_and_small_reports(vocab, config_dir):
     rows = []
-    for table, com, region, attr in CORE_SERIES:
+    core_series = load_contract(config_dir).required_per_release.tuples()
+    for table, com, region, attr in core_series:
         rows.append(
             {
                 "report_month": "2024-05",

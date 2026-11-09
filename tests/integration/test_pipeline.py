@@ -1,63 +1,20 @@
 """End-to-end on a mini dataset: silver → dbt gold → publish (JSON, Excel, Parquet).
 
-Two reports are built from the trimmed 2024-05 CSV fixture: an "April" copy and the real
-May file, with U.S. corn ending stocks moved so that drivers and highlights have a revision
-to explain. Only U.S./World corn exist, which also checks that publishing degrades
-gracefully when a focus commodity has no data.
+The mini build itself is the session fixture ``built`` in ``conftest.py``.
 """
 
 from __future__ import annotations
 
 import json
 import shutil
-from pathlib import Path
 
 import duckdb
 import pandas as pd
 import pytest
 
-from wasde.config import PROJECT_ROOT, Settings
-from wasde.gold import run_dbt
-from wasde.manifest import Manifest
-from wasde.publish.run import publish_all
-from wasde.silver.harmonize import SILVER_COLUMNS, Vocabulary, harmonize
-from wasde.silver.parse_csv import parse_csv
+from usda_reports.core.config import PROJECT_ROOT, Settings
 
 pytest.importorskip("dbt")
-
-
-@pytest.fixture(scope="module")
-def built(tmp_path_factory, request) -> Settings:
-    root = tmp_path_factory.mktemp("wasde")
-    fixtures = Path(request.config.rootpath) / "tests" / "fixtures"
-    settings = Settings(
-        data_dir=root / "data", web_data_dir=root / "web", config_dir=PROJECT_ROOT / "config"
-    )
-
-    may = parse_csv(fixtures / "wasde_2024-05.csv", "2024-05")
-    april = may.copy()
-    april["report_month"] = "2024-04"
-    april["wasde_number"] = 647
-    corn_es = (
-        (april.report_title.str.startswith("U.S. Feed"))
-        & (april.commodity == "Corn")
-        & (april.attribute == "Ending Stocks")
-    )
-    corn_prod = (
-        (april.report_title.str.startswith("U.S. Feed"))
-        & (april.commodity == "Corn")
-        & (april.attribute == "Production")
-    )
-    april.loc[corn_es, "value"] += 100  # May "cut" ending stocks by 100 ...
-    april.loc[corn_prod, "value"] += 100  # ... explained entirely by production
-    raw = pd.concat([april, may], ignore_index=True)
-    silver, _ = harmonize(raw, Vocabulary.load(settings.config_dir / "mappings.yaml"))
-    settings.silver_dir.mkdir(parents=True)
-    silver[SILVER_COLUMNS].to_parquet(settings.silver_dir / "wasde.parquet", index=False)
-
-    assert run_dbt(settings, command="run") == 0
-    publish_all(settings, Manifest(), tag="data-2024-05")
-    return settings
 
 
 def test_gold_drivers_explain_the_revision(built: Settings):
@@ -104,6 +61,20 @@ def test_publish_outputs(built: Settings):
     assert {c["id"] for c in catalog} == {"us_feed_grains_corn", "world_corn"}
     full = pd.read_parquet(web / "downloads" / "wasde_full.parquet")
     assert full.report_month.nunique() == 2
+
+    # Multi-report meta map + versioned catalogue with a byte-identical legacy alias.
+    assert meta["reports"]["wasde"]["latest_release_key"] == "2024-05"
+    assert meta["reports"]["wasde"]["release_ts_utc"] == "2024-05-10T16:00:00Z"
+    pub = built.publish_dir
+    for name in ("values", "balance_sheets", "revisions", "changes"):
+        assert (pub / f"wasde__{name}__v1.parquet").stat().st_size > 0
+    alias = (pub / "wasde_full.parquet").read_bytes()
+    assert alias == (pub / "wasde__values__v1.parquet").read_bytes()
+    assert alias == (web / "downloads" / "wasde_full.parquet").read_bytes()
+    datasets = json.loads((pub / "datasets.json").read_text(encoding="utf-8"))
+    alias_entry = next(d for d in datasets if d["file"] == "wasde_full.parquet")
+    assert alias_entry["legacy_alias_of"] == "wasde__values__v1.parquet"
+    assert alias_entry["rows"] == len(full)
 
 
 def test_excel_latest_report_layout(built: Settings):

@@ -1,0 +1,66 @@
+# Report registry. One entry per USDA report; only enabled reports are ingested and built.
+# Release times are Eastern Time and always come from here / config/calendars, never from
+# source metadata (ESMIS stamps many files with a dummy 12:00Z).
+#
+#   cadence          monthly | weekly | quarterly
+#   release_time_et  publication time on release day (HH:MM, America/New_York)
+#   window_h         hours after release_time_et during which `detect` keeps polling
+#   grace_days       insight cards go stale after cadence + grace
+#   key_env          env var holding the API key (null = no key needed)
+#   spec             import path of the ReportSpec implementation
+reports:
+  wasde:
+    enabled: true
+    title: World Agricultural Supply and Demand Estimates
+    agency: USDA OCE / WAOB
+    cadence: monthly
+    release_time_et: "12:00"
+    window_h: 6
+    grace_days: 45
+    key_env: null
+    licence: "US Government work, public domain; cite USDA OCE/WAOB (WASDE)"
+    min_rows: 3500
+    history_start: "2010-07"
+    spec: usda_reports.reports.wasde.spec:WasdeSpec
+
+  # Planned (plan §3). Kept disabled until their stage lands.
+  export_sales:
+    enabled: false
+    title: Export Sales (ESR)
+    agency: USDA FAS
+    cadence: weekly
+    release_time_et: "08:30"
+    window_h: 6
+    grace_days: 10
+    key_env: FAS_API_KEY
+    licence: "US Government work, public domain; cite USDA FAS"
+  oilseed_crush:
+    enabled: false
+    title: Fats & Oils — Oilseed Crushings
+    agency: USDA NASS
+    cadence: monthly
+    release_time_et: "15:00"
+    window_h: 6
+    grace_days: 45
+    key_env: null
+    licence: "US Government work, public domain; cite USDA NASS"
+  crop_progress:
+    enabled: false
+    title: Crop Progress
+    agency: USDA NASS
+    cadence: weekly
+    release_time_et: "16:00"
+    window_h: 6
+    grace_days: 10
+    key_env: null
+    licence: "US Government work, public domain; cite USDA NASS"
+  grain_stocks:
+    enabled: false
+    title: Grain Stocks
+    agency: USDA NASS
+    cadence: quarterly
+    release_time_et: "12:00"
+    window_h: 6
+    grace_days: 100
+    key_env: null
+    licence: "US Government work, public domain; cite USDA NASS"

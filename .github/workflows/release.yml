@@ -31,7 +31,8 @@ permissions:
   issues: write
 
 env:
-  WASDE_LOG_JSON: "true"
+  USDA_LOG_JSON: "true"
+  BRONZE_STORE: bronze-store
   VERCEL_PROJECT: usda-reports
   SITE_URL: ${{ vars.SITE_URL || 'https://usda-reports.vercel.app' }}
 
@@ -49,7 +50,7 @@ jobs:
           activate-environment: true
       - run: uv pip install -e ".[dbt]"
 
-      - name: Restore manifest + bronze from the latest data release (source of truth)
+      - name: Restore manifest + bronze (manifest from the latest data release; bronze from bronze-store shards)
         id: prev
         env:
           GH_TOKEN: ${{ github.token }}
@@ -58,23 +59,41 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           if [ -z "$tag" ]; then
             echo "No data release yet: full backfill from USDA/ESMIS"
-            wasde backfill
+            usda-reports backfill
             exit 0
           fi
-          gh release download "$tag" --pattern manifest.json --pattern bronze.tar.gz --dir /tmp/prev --clobber
+          gh release download "$tag" --pattern manifest.json --dir /tmp/prev --clobber
           cp /tmp/prev/manifest.json data/manifest.json
-          wasde unpack-bronze /tmp/prev/bronze.tar.gz
+          # Preferred: the append-only shards this manifest names (v2 manifests only).
+          shards=$(usda-reports required-shards)
+          if [ -n "$shards" ] && gh release view "$BRONZE_STORE" >/dev/null 2>&1; then
+            mkdir -p /tmp/shards
+            ok=true
+            for s in $shards; do
+              gh release download "$BRONZE_STORE" --pattern "$s" --dir /tmp/shards --clobber || ok=false
+            done
+            if $ok && usda-reports unpack-shards /tmp/shards; then
+              echo "Bronze restored from $BRONZE_STORE: $shards" >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
+            echo "::warning::bronze-store restore failed; falling back to $tag/bronze.tar.gz"
+          fi
+          # Fallback: the single bronze archive of the data release (v1 manifests, before the
+          # first bronze-store shard exists).
+          echo "Bronze restored from $tag/bronze.tar.gz (legacy archive)" >> "$GITHUB_STEP_SUMMARY"
+          gh release download "$tag" --pattern bronze.tar.gz --dir /tmp/prev --clobber
+          usda-reports unpack-bronze /tmp/prev/bronze.tar.gz
 
       - name: Refresh official release calendar
         # A changed page layout must not block ingestion; the detect watchdog fails the run
         # if the calendar runs out of future dates.
         continue-on-error: true
-        run: wasde refresh-calendar
+        run: usda-reports refresh-calendar
 
       - name: Detect (new report, revised edition, watchdogs)
         id: detect
         if: github.event_name != 'push'
-        run: wasde detect ${{ inputs.force_month && format('--force-month {0}', inputs.force_month) || '' }}
+        run: usda-reports detect ${{ inputs.force_month && format('--force-month {0}', inputs.force_month) || '' }}
 
       - name: Is the live site current? (code commit and data tag)
         id: live
@@ -102,11 +121,13 @@ jobs:
         id: build
         if: always() && steps.plan.outputs.mode != 'none' && steps.prev.outcome == 'success'
         run: |
-          month=$(python -c "import json;print(max(json.load(open('data/manifest.json'))['reports']))")
+          month=$(usda-reports latest-key wasde)
           echo "tag=data-$month" >> "$GITHUB_OUTPUT"
           echo "month=$month" >> "$GITHUB_OUTPUT"
-          wasde run --tag "data-$month"
-          wasde pack-bronze data/publish/bronze.tar.gz
+          usda-reports run --tag "data-$month"
+          # New/changed bronze files → one new append-only shard (sets output `shards`);
+          # the manifest copied into the release records which shard holds each file.
+          usda-reports pack-shards --out-dir data/shards
           cp data/manifest.json data/publish/manifest.json
           echo "{\"sha\":\"$GITHUB_SHA\",\"tag\":\"data-$month\",\"built_at\":\"$(date -u +%FT%TZ)\"}" > web/public/build.json
           tar -czf data/publish/web-data.tar.gz -C web/public data
@@ -163,6 +184,15 @@ jobs:
           o = json.load(open("web/public/data/overview.json", encoding="utf-8"))
           print("Automated WASDE data release.\n\n### Headlines\n" + "\n".join(f"- {h['sentence']}" for h in o["highlights"]))
           PY
+          # Bronze shards first: the manifest in the data release points at them.
+          shards="${{ steps.build.outputs.shards }}"
+          if [ -n "$shards" ]; then
+            if ! gh release view "$BRONZE_STORE" >/dev/null 2>&1; then
+              gh release create "$BRONZE_STORE" --prerelease --latest=false --title "Bronze store (append-only)" \
+                --notes "Raw USDA files as delta shards (bronze__<report>__base / __<YYYY-MM>). Never edited or pruned: every data-* manifest names the shards it was built from."
+            fi
+            for s in $shards; do gh release upload "$BRONZE_STORE" "data/shards/$s" --clobber; done
+          fi
           if gh release view "$tag" >/dev/null 2>&1; then
             gh release upload "$tag" data/publish/* --clobber
             gh release edit "$tag" --notes-file /tmp/notes.md
@@ -177,7 +207,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/manifest.json config/release_calendar.yaml
+          git add data/manifest.json config/calendars/wasde.yaml
           git diff --staged --quiet || git commit -m "data: WASDE ${{ steps.build.outputs.month }}"
           git pull --rebase --autostash origin main && git push || echo "::warning::audit commit not pushed"
 

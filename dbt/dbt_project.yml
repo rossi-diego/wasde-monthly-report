@@ -1,22 +1,45 @@
-name: wasde
-version: "2.0.0"
+name: usda_reports
+version: "2.1.0"
 config-version: 2
-profile: wasde
+profile: usda_reports
 
 model-paths: ["models"]
 test-paths: ["tests"]
 macro-paths: ["macros"]
+seed-paths: ["seeds"]
 target-path: "../data/gold/dbt_target"
 log-path: "../data/gold/dbt_logs"
 clean-targets: ["../data/gold/dbt_target"]
 
 vars:
-  silver_path: "../data/silver/wasde.parquet"
+  # Folder with data/silver/<report_id>.parquet and calendar.parquet (set by `usda-reports build-gold`).
+  silver_dir: "../data/silver"
 
 models:
-  wasde:
+  usda_reports:
     +persist_docs: {relation: true, columns: true}
     staging:
       +materialized: view
     marts:
       +materialized: table
+
+seeds:
+  usda_reports:
+    dim_unit:
+      +column_types:
+        unit_id: varchar
+        commodity_id: varchar
+        label: varchar
+        from_mt: double
+        to_mt: double
+        bu_per_unit: double
+        note: varchar
+    dim_commodity:
+      +column_types:
+        commodity_id: varchar
+        label: varchar
+        wasde_label: varchar
+        esr_code: varchar
+        nass_commodity_desc: varchar
+        my_start_month: integer
+        bushel_lb: double

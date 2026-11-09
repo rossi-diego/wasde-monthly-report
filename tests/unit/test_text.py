@@ -1,6 +1,6 @@
 import pytest
 
-from wasde.silver.text import (
+from usda_reports.reports.wasde.text import (
     clean_label,
     flag_from_text,
     label_key,

@@ -1,0 +1,22 @@
+# Canonical commodity ids shared by every report (plan §3/§5). Ids match WASDE silver's
+# commodity_id. Aliases are labels used by other reports (FAS ESR, NASS commodity_desc).
+kind: commodity
+items:
+  corn:
+    label: Corn
+    aliases: [CORN]
+  soybeans:
+    label: Soybeans
+    aliases: [SOYBEANS]
+  wheat:
+    label: Wheat
+    aliases: [WHEAT, "All Wheat", "Wheat - All Classes"]
+  soybean_meal:
+    label: Soybean Meal
+    aliases: ["CAKE & MEAL, SOYBEAN", "Soybean Cake & Meal"]
+  soybean_oil:
+    label: Soybean Oil
+    aliases: ["OIL, SOYBEAN", "Soybean Oil, Crude"]
+  cotton:
+    label: Cotton
+    aliases: [COTTON, "All Upland Cotton"]

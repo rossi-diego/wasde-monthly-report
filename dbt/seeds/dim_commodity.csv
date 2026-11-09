@@ -1,0 +1,7 @@
+commodity_id,label,wasde_label,esr_code,nass_commodity_desc,my_start_month,bushel_lb
+corn,Corn,Corn,401,CORN,9,56
+soybeans,Soybeans,Soybeans,801,SOYBEANS,9,60
+wheat,Wheat,Wheat,107,WHEAT,6,60
+soybean_meal,Soybean Meal,Soybean Meal,901,"CAKE & MEAL, SOYBEAN",10,
+soybean_oil,Soybean Oil,Soybean Oil,902,"OIL, SOYBEAN",10,
+cotton,Cotton,Cotton,,COTTON,8,

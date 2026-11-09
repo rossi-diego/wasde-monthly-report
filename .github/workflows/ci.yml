@@ -69,5 +69,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t wasde-pipeline .
-      - run: docker run --rm wasde-pipeline --help
+      - run: docker build -t usda-reports-pipeline .
+      - run: docker run --rm usda-reports-pipeline --help

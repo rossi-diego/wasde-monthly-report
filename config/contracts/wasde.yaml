@@ -1,0 +1,29 @@
+# Silver contract for WASDE (checked by usda_reports.core.contracts on every build).
+report_id: wasde
+release_column: report_month
+release_label: reports
+key:
+  - report_month
+  - table_id
+  - commodity_id
+  - region_id
+  - attribute_id
+  - market_year
+  - period
+  - reliability_stat
+not_null: [report_month, table_id, commodity_id, region_id, attribute_id, value]
+# May/June reports carry ~3,980 rows; normal ~4,000-5,000. USDA_MIN_ROWS_PER_REPORT overrides.
+min_rows_per_release: 3500
+# Series that must exist in every report.
+required_per_release:
+  label: core series
+  filter: {period: annual}
+  columns: [table_id, commodity_id, region_id, attribute_id]
+  rows:
+    - [us_feed_grains_corn, corn, united_states, ending_stocks]
+    - [us_soybeans_products, soybeans, united_states, ending_stocks]
+    - [us_wheat, wheat, united_states, ending_stocks]
+    - [world_corn, corn, world, production]
+    - [world_soybeans, soybeans, world, production]
+    - [world_wheat, wheat, world, ending_stocks]
+envelope: true
