@@ -206,6 +206,58 @@ def test_ingest_weekly_pull_stores_one_snapshot(cfg, esr_fx, bundle, tmp_path, m
         assert again.ingested == [] and exports.call_count == 7
 
 
+@respx.mock
+@pytest.mark.parametrize("country", [5700, 99999])
+def test_ingest_rejects_unseen_country_before_bronze(
+    cfg, esr_fx, bundle, tmp_path, monkeypatch, config_dir, country
+):
+    """The spec's check parses and contract-checks the pull before storing it: an unseen
+    destination code raises EsrError (detect fails, alert issue) and bronze is untouched."""
+    from usda_reports.core.registry import load_registry
+
+    monkeypatch.setattr("time.sleep", lambda s: None)
+    rd = json.loads((esr_fx / "datareleasedates.json").read_text())
+    respx.get("https://api.fas.usda.gov/api/esr/datareleasedates").mock(
+        return_value=httpx.Response(200, json=rd)
+    )
+    rec = {
+        "countryCode": country,
+        "weeklyExports": 1.0,
+        "accumulatedExports": 2.0,
+        "outstandingSales": 3.0,
+        "grossNewSales": 0,
+        "currentMYNetSales": 4.0,
+        "currentMYTotalCommitment": 5.0,
+        "nextMYOutstandingSales": 0,
+        "nextMYNetSales": 0,
+        "unitId": 1,
+        "weekEndingDate": "2026-10-29T00:00:00",
+    }
+    respx.get(url__regex=r".*/api/esr/exports/.*").mock(
+        side_effect=lambda req: httpx.Response(
+            200, json=[dict(rec, commodityCode=int(req.url.path.split("/")[5]))]
+        )
+    )
+    spec = load_registry(config_dir).spec(
+        "export_sales", Settings(_env_file=None, config_dir=config_dir)
+    )
+    manifest = Manifest()
+    store = BronzeStore(tmp_path, manifest, "export_sales", "08:30")
+    store.put("2026-10-29", encode_bundle(bundle), source="fas_esr_api", url="x")
+    with httpx.Client() as c:
+        esr = EsrClient(c, cfg, FAKE_KEY)
+        now = datetime(2026, 11, 9, tzinfo=UTC)
+        check = spec.check_bundle  # type: ignore[attr-defined]
+        if country == 5700:
+            res = esr_ingest.ingest(esr, store, now, check=check)
+            assert res.ingested == ["2026-11-05"]
+            return
+        with pytest.raises(EsrError, match="99999"):
+            esr_ingest.ingest(esr, store, now, check=check)
+    assert set(manifest.releases("export_sales")) == {"2026-10-29"}
+    assert sorted(p.name for p in (tmp_path / "export_sales").iterdir()) == ["2026-10-29.json.gz"]
+
+
 def test_bundle_bytes_are_deterministic(bundle):
     a = encode_bundle(bundle)
     b = encode_bundle(json.loads(json.dumps(bundle)))

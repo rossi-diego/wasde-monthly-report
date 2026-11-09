@@ -11,9 +11,11 @@ type Hist = { market_year: string; stocks_to_use_pct: number | null; status: "fi
 async function expectedRank(page: Page, commodity: string) {
   const s = await (await page.request.get(`/data/commodities/${commodity}/united_states.json`)).json();
   const hist = (s.stocks_to_use_history as Hist[]).filter((h) => h.stocks_to_use_pct !== null);
-  const finals = hist.filter((h) => h.status === "final").map((h) => h.stocks_to_use_pct as number);
+  const finalRows = hist.filter((h) => h.status === "final");
+  const finals = finalRows.map((h) => h.stocks_to_use_pct as number);
   const now = hist.filter((h) => h.status === "current").at(-1)!.stocks_to_use_pct as number;
-  return `${finals.filter((v) => v < now).length} of ${finals.length} past seasons were tighter`;
+  const span = `${finalRows[0].market_year}–${finalRows.at(-1)!.market_year}`;
+  return `${finals.filter((v) => v < now).length} of ${finals.length} final seasons (${span}) were tighter`;
 }
 
 test("home shows the latest report, KPI tiles and the data-derived rank", async ({ page }) => {

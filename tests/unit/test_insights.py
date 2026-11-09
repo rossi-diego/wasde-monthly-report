@@ -169,3 +169,49 @@ def test_committed_json_schema_matches_models():
         (PROJECT_ROOT / "docs" / "schemas" / "insights.schema.json").read_text(encoding="utf-8")
     )
     assert committed == json_schema(), "run `usda-reports insights-schema` and commit"
+
+
+def _w3_con(months_since_prev: int):
+    import duckdb
+
+    con = duckdb.connect()
+    con.execute(
+        """create table fct_balance_sheet as select * from (values
+             ('2025-11', 'us_soybeans_products', 'soybeans', 'united_states', '2025/26'))
+           t(report_month, table_id, commodity_id, region_id, market_year)"""
+    )
+    con.execute(
+        """create table fct_revisions (report_month varchar, table_id varchar,
+             commodity_id varchar, region_id varchar, attribute_id varchar, market_year varchar,
+             my_start int, delta double, cycle_month int, series_key varchar, unit_id varchar,
+             months_since_prev int)"""
+    )
+    rows = [("2025-11", "2025/26", 2025, -50.0, months_since_prev)]
+    rows += [
+        (f"{y + 1}-11", f"{y}/{(y + 1) % 100:02d}", y, float(10 + y % 7), 1)
+        for y in range(2010, 2025)
+    ]
+    for m, my, start, d, gap in rows:
+        con.execute(
+            "insert into fct_revisions values (?, 'us_soybeans_products', 'soybeans',"
+            " 'united_states', 'ending_stocks', ?, ?, ?, 6, 'soy_es', 'm_bu', ?)",
+            [m, my, start, d, gap],
+        )
+    return con
+
+
+def test_w3_suppressed_after_a_cancelled_wasde():
+    """A Δ spanning two months (the report before it was cancelled) is not ranked against
+    one-month revisions; a normal one-month Δ is ranked k of n."""
+    from usda_reports.insights.rules.wasde import w3_revision_rank
+
+    ts = "2025-11-14T17:00:00Z"
+    gap = {i.id: i for i in w3_revision_rank(_w3_con(2), "2025-11", ts)}
+    soy = gap["W3:soybeans"]
+    assert soy.suppressed_reason == "gap_after_cancelled_report"
+    assert soy.params["months_since_prev"] == 2 and soy.n is None
+    ok = {i.id: i for i in w3_revision_rank(_w3_con(1), "2025-11", ts)}
+    assert ok["W3:soybeans"].suppressed_reason is None
+    assert (
+        ok["W3:soybeans"].params["k"] == 1 and ok["W3:soybeans"].n == 16
+    )  # n counts the current season

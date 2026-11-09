@@ -63,7 +63,7 @@ function HBars({ rows, color, ariaLabel }: { rows: { key: string; label: string;
   return (
     <ul aria-label={ariaLabel} className="m-0 flex list-none flex-col gap-1.5 p-0">
       {rows.map((r) => (
-        <li key={r.key} className="grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)_8.5rem] items-center gap-2 text-[13px]">
+        <li key={r.key} className="grid grid-cols-[minmax(0,9rem)_minmax(0,1fr)_10rem] items-center gap-2 text-[13px]">
           <span className={`truncate ${r.strong ? "font-semibold" : ""}`}>{r.label}</span>
           <span aria-hidden="true" className="h-3 overflow-hidden rounded-[3px] bg-grid">
             <span className="block h-3 rounded-[3px]" style={{ width: `${(Math.max(r.value, 0) / max) * 100}%`, background: r.strong ? color : "var(--bar-est)" }} />
@@ -151,10 +151,14 @@ export default function EsrView({
   const china = dest.rows.find((r) => r.country_id === "china");
   const unknown = dest.rows.find((r) => r.country_id === "unknown");
   const hist = dest.china_unknown_history.filter((h) => h.china_share !== null);
+  // China absent from the destination rows while there are commitments = a 0% share.
+  const chinaShare = china?.share ?? ((dest.total_commitment_mt ?? 0) > 0 ? 0 : null);
   const shareBars = [
     ...hist.map((h) => ({ label: h.market_year, value: (h.china_share ?? 0) * 100, kind: "past" as const })),
-    ...(china?.share !== null && china?.share !== undefined ? [{ label: d.market_year, value: china.share * 100, kind: "current" as const }] : []),
+    ...(chinaShare !== null ? [{ label: d.market_year, value: chinaShare * 100, kind: "current" as const }] : []),
   ];
+  const noChina = shareBars.length > 0 && shareBars.every((b) => b.value === 0);
+  const nOther = Math.max(dest.n_destinations - dest.rows.length, 0);
   const unk = dest.china_unknown_history.map((h) => h.unknown_share).filter((v): v is number => v !== null);
   const destRows = [
     ...dest.rows.map((r) => ({
@@ -168,7 +172,7 @@ export default function EsrView({
       ? [
           {
             key: "other",
-            label: t("esr.c2.other", { n: Math.max(dest.n_destinations - dest.rows.length, 0) }),
+            label: t(nOther === 1 ? "esr.c2.other1" : "esr.c2.other", { n: nOther }),
             value: dest.other_mt,
             text: `${tonnes(dest.other_mt, lang)} · ${share(dest.other_mt / (dest.total_commitment_mt || 1), 0)}`,
           },
@@ -298,18 +302,24 @@ export default function EsrView({
 
       <div className="grid-fit-380">
         <Chapter n={2} id="h-esr-buyers" eyebrow="esr.c2.eb" title="esr.c2">
-          {shareBars.length > 0 && (
+          {noChina && (
+            <p className="m-0 rounded-xl bg-bg px-3 py-2 text-[13px] text-muted" data-testid="no-china">
+              {t("esr.c2.noChina", { n: hist.length })}
+            </p>
+          )}
+          {shareBars.length > 0 && !noChina && (
             <>
               <div className="flex flex-wrap items-baseline justify-between gap-2">
                 <span className="text-[13px] font-semibold">{t("esr.c2.share")}</span>
                 <span className="mono text-xl font-semibold" data-testid="china-share">
-                  {share(china?.share)}
+                  {share(chinaShare)}
                 </span>
               </div>
               <Bar
                 items={shareBars}
                 height={170}
                 currentColor={TEAL}
+                minTop={10}
                 format={(v) => `${num(v, 0)}%`}
                 ariaLabel={t("esr.c2.aria", {
                   what: whatLower,
@@ -375,7 +385,7 @@ export default function EsrView({
                   reference={req}
                   referenceLabel={t("esr.c3.ref", { v: tonnes(req, lang) })}
                   color={TEAL}
-                  format={tonnesAxis}
+                  format={(v) => tonnesAxis(v, lang)}
                   ariaLabel={t("esr.c3.weeklyAria", {
                     my: d.market_year,
                     req: tonnes(req, lang),

@@ -32,7 +32,7 @@ function GroupLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function Sidebar({ reports, rows }: { reports: number; rows: number }) {
+export default function Sidebar({ reports, rows, esrReleases = null }: { reports: number; rows: number; esrReleases?: number | null }) {
   const path = usePathname() ?? "/";
   const t = useT();
   const is = (p: string) => (p === "/" ? path === "/" : path.startsWith(p));
@@ -133,6 +133,11 @@ export default function Sidebar({ reports, rows }: { reports: number; rows: numb
         <div>
           <T k="pipeline.counts" v={{ reports: num(reports), rows: num(rows) }} />
         </div>
+        {esrReleases ? (
+          <div>
+            <T k="pipeline.esr" v={{ releases: num(esrReleases) }} />
+          </div>
+        ) : null}
         <div>
           <T k="pipeline.auto" />
         </div>

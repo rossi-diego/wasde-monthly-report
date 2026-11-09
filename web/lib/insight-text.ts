@@ -63,7 +63,7 @@ export type HeroView = { kind: Hero["kind"]; text: string; clauses: string[]; su
 export function heroView(h: Hero, lang: Lang): HeroView {
   const since = shortDate(h.since, true, lang) ?? "—";
   if (h.kind === "fallback" || h.clauses.length === 0) {
-    return { kind: "fallback", text: translate(lang, "hero.fallback", { n: h.n_reports, date: since }), clauses: [], sub: null };
+    return { kind: "fallback", text: translate(lang, h.n_reports === 1 ? "hero.fallback1" : "hero.fallback", { n: h.n_reports, date: since }), clauses: [], sub: null };
   }
   const clauses = h.clauses.map((c) => heroClauseText(c, lang));
   const joined =
@@ -137,6 +137,7 @@ export function cardView(i: Insight, lang: Lang): CardView | null {
           nth: ordinalIn(p(i, "k"), lang),
           n: i.n ?? 0,
           first: p<string>(i, "first_market_year"),
+          last: p<string>(i, "market_year"),
         }),
       ];
       const pct = p<number | null>(i, "percentile_tighter_than");

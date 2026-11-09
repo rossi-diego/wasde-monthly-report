@@ -1,6 +1,7 @@
 -- U.S. export sales per commodity × marketing year × week × destination (metric tons),
 -- latest known value of every metric (the API revises history; silver keeps every vintage).
---   vintage_quality: 'captured' when the week was first seen by a weekly pull (as published),
+--   vintage_quality: 'captured' when the week was first seen by a weekly pull (tracked since
+--   capture: the value shown is the latest revision, every vintage stays in silver),
 --   'latest_only' when it comes from the one-time backfill (values as revised by then).
 with ranked as (
     select

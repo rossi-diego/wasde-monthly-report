@@ -70,4 +70,23 @@ cross card (the E1 furthest outside its 5-yr range).
 * Export Sales weeks without a WASDE publish an **immutable prerelease**
   `weekly-YYYY-MM-DD` (`.2`, `.3`… for a second change the same day) with `--latest=false`,
   only when ESR content changed. It carries the same file set.
+* A code-only rebuild whose newest release is an (immutable) `weekly-*` compares the new
+  `datasets.json` hashes with that release's (`usda-reports datasets-changed`); when any file
+  was added, removed or changed bytes it publishes a new `weekly-*` tag, so the catalogue never
+  points at assets whose sha256 differs.
 * `catalog.json.data_tag` / `build.json.tag` name the release the site was built from.
+
+## Export Sales envelope and isolation
+
+* `release_ts_source`: `api` (the API's own `releaseTimeStamp` for the newest week of a pull),
+  `calendar_override` (a week published late after a government shutdown, pinned to its actual
+  FAS catch-up release date in `config/calendars/export_sales.yaml`: 2013, 2018–19, 2025), or
+  `calendar_rule` (the Thursday 08:30 ET rule with the federal-holiday shift).
+* `vintage_quality`: `latest_only` = backfilled, values as revised by the backfill day;
+  `captured` = tracked by weekly pulls since first capture. The marts and the published
+  datasets carry the **latest revision**; every vintage stays in silver.
+* Isolation: a pulled ESR bundle is parsed and contract-checked before it reaches bronze (an
+  unseen destination code fails `detect --report export_sales`). If bronze still holds a bad
+  snapshot, silver falls back to the last good ESR state, `data/silver/build_status.json`
+  records the failure, `build.json.reports.export_sales.status` is `failed`, and WASDE gold,
+  publish and the `data-*` release proceed.

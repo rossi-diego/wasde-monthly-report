@@ -21,6 +21,8 @@ from usda_reports.core.registry import Registry
 from usda_reports.publish.catalogue import ALL_DATASETS, Dataset
 
 PROFILE = "tabular-data-package"
+# The tabular package profile requires every resource to declare the tabular resource profile.
+RESOURCE_PROFILE = "tabular-data-resource"
 MEDIATYPE = {"parquet": "application/vnd.apache.parquet", "csv": "text/csv"}
 
 # DuckDB → Table Schema field types.
@@ -114,6 +116,7 @@ def build_datapackage(
         )
         fmt = e["format"]
         res: dict[str, Any] = {
+            "profile": RESOURCE_PROFILE,
             "name": e["file"].replace(".", "_").replace("-", "_").lower(),
             "path": e["file"],
             "title": f"{stem} ({fmt})",

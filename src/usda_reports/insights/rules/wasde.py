@@ -250,6 +250,26 @@ def w3_revision_rank(con: duckdb.DuckDBPyConnection, month: str, ts: str) -> lis
             )
             continue
         delta, cycle, series, unit = float(cur[0]), int(cur[1]), cur[2], cur[3]
+        gap = cur[4]
+        if gap is not None and not pd.isna(gap) and int(gap) != 1:
+            # The previous WASDE was cancelled (e.g. Oct 2025): this Δ spans 2+ months and
+            # would be ranked against 1-month revisions only, which inflates its rank.
+            out.append(
+                Insight(
+                    id=f"W3:{cid}",
+                    params={
+                        "market_year": my,
+                        "attribute_id": "ending_stocks",
+                        "months_since_prev": int(gap),
+                    },
+                    n=None,
+                    window="same_cycle_month_my_2010_11_on",
+                    robustness="robust",
+                    suppressed_reason="gap_after_cancelled_report",
+                    **base,
+                )
+            )
+            continue
         hist = con.execute(
             """select market_year, delta from fct_revisions
                where series_key = ? and cycle_month = ? and market_year < ? and my_start >= ?

@@ -25,7 +25,8 @@ export default function WeeklyBars({
   const ticks = niceTicks(Math.min(0, ...vals), Math.max(0, reference ?? 0, ...vals), 4);
   const lo = ticks[0];
   const hi = ticks[ticks.length - 1];
-  const m = { l: 52, r: 8, t: 14, b: 24 };
+  // Room for unit-bearing ticks such as "250 thou. t" (same units as the text around it).
+  const m = { l: 72, r: 8, t: 14, b: 24 };
   const y = (v: number) => height - m.b - ((v - lo) / (hi - lo || 1)) * (height - m.b - m.t);
   const slot = (width - m.l - m.r) / Math.max(items.length, 1);
   const bw = Math.max(2, Math.min(28, slot * 0.68));

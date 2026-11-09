@@ -360,11 +360,17 @@ def build_silver_cmd(
 ) -> None:
     """Full reparse of bronze into data/silver/<report_id>.parquet for every enabled report."""
     from usda_reports.core.manifest import Manifest
-    from usda_reports.silver.build import build_all
+    from usda_reports.silver.build import build_all, write_status
 
     s = get_settings()
     manifest = Manifest.load(s.manifest_path)
     result = build_all(s, manifest, only=report)
+    write_status(s, result)
+    # Isolated reports (Export Sales) that failed were rebuilt from their last good bronze
+    # state; the run carries on so WASDE still publishes, and build-info marks them failed.
+    _gh_output(silver_failed=" ".join(sorted(result.failed)))
+    for rid, err in result.failed.items():
+        typer.echo(f"::error::{rid}: silver fell back to the last good state: {err}", err=True)
     if result.alerts:
         for rid, labels in result.alerts.items():
             log.error("silver.new_labels", report=rid, labels=labels)
@@ -431,12 +437,13 @@ def build_info(
 
     from usda_reports.core.registry import load_registry
     from usda_reports.insights.gates import make_gates
+    from usda_reports.silver.build import failed_reports
 
     s = get_settings()
     meta = _json.loads((s.web_data_dir / "meta.json").read_text(encoding="utf-8"))
     stale_after = make_gates(load_registry(s.config_dir)).stale_after_days
     now = datetime.now(UTC)
-    bad = set(failed.split())
+    bad = set(failed.split()) | failed_reports(s)
     reports = {}
     for rid, m in (meta.get("reports") or {}).items():
         ts = datetime.fromisoformat(str(m["release_ts_utc"]).replace("Z", "+00:00"))
@@ -482,6 +489,23 @@ def release_tag(
     if kind != "weekly":
         raise typer.BadParameter("kind must be data or weekly")
     typer.echo(weekly_tag(datetime.now(UTC).date(), set(existing.split())))
+
+
+@app.command("datasets-changed")
+def datasets_changed_cmd(
+    old: Annotated[Path, typer.Argument(help="datasets.json of the existing release")],
+    new: Annotated[Path, typer.Argument(help="datasets.json of this build")],
+) -> None:
+    """Print ``true`` when any dataset file was added, removed or changed bytes (sha256)."""
+    import json as _json
+
+    from usda_reports.publish.contract import datasets_changed
+
+    diff = datasets_changed(
+        _json.loads(old.read_text(encoding="utf-8")), _json.loads(new.read_text(encoding="utf-8"))
+    )
+    log.info("datasets.compared", changed=diff)
+    typer.echo("true" if diff else "false")
 
 
 @app.command("insights-schema")

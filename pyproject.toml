@@ -28,6 +28,7 @@ dependencies = [
 [project.optional-dependencies]
 dbt = ["dbt-duckdb>=1.8"]
 dev = [
+    "frictionless>=5.18",
     "mypy>=1.11",
     "pytest>=8.3",
     "pytest-cov>=5.0",

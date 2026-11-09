@@ -77,6 +77,14 @@ class ReportSpec(ABC):
     def build_silver(self, manifest: Manifest) -> pd.DataFrame:
         """Full reparse of bronze into ``data/silver/<report_id>.parquet`` (envelope included)."""
 
+    #: When True, a failed silver build of this report must not stop the other reports:
+    #: ``build_all`` falls back to :meth:`build_silver_last_good` and records the failure.
+    isolated: bool = False
+
+    def build_silver_last_good(self, manifest: Manifest) -> pd.DataFrame:
+        """Silver from the last good bronze state after :meth:`build_silver` failed."""
+        raise NotImplementedError(f"{self.report_id} has no last-good silver fallback")
+
     def silver_alerts(self, silver: pd.DataFrame) -> list[str]:
         """Problems that must fail the run after silver was written (e.g. new labels)."""
         return []

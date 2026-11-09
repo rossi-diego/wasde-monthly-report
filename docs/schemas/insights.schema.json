@@ -282,7 +282,8 @@
                 "asof_missing",
                 "weeks_remaining_below_min",
                 "no_data",
-                "first_projection"
+                "first_projection",
+                "gap_after_cancelled_report"
               ],
               "type": "string"
             },

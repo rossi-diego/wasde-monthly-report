@@ -17,6 +17,7 @@ export default function Bar({
   height = 230,
   format = (v) => String(v),
   currentColor,
+  minTop = 0,
 }: {
   items: BarItem[];
   ariaLabel: string;
@@ -24,10 +25,12 @@ export default function Bar({
   format?: (v: number) => string;
   /** Colour of the highlighted bar (default: the WASDE blue). */
   currentColor?: string;
+  /** Smallest axis maximum, so tiny values do not produce repeated rounded tick labels. */
+  minTop?: number;
 }) {
   const [ref, width] = useWidth<HTMLDivElement>();
   const m = { l: 40, r: 8, t: 12, b: 26 };
-  const max = Math.max(0, ...items.map((i) => i.value));
+  const max = Math.max(0, minTop, ...items.map((i) => i.value));
   const ticks = niceTicks(0, max || 1, 4);
   const top = ticks[ticks.length - 1];
   const x0 = m.l;

@@ -125,7 +125,7 @@ export default function CommodityView({
   const activeMy = drvMy && drvYears.includes(drvMy) ? drvMy : drvYears[drvYears.length - 1];
   const wf = waterfallView(series, activeMy, series.previous_report_month, lang);
   const dim = loading ? "opacity-60" : "";
-  const stuRank = stu.now !== null && stu.n >= 5 ? t("tight.rank", { k: stu.k, n: stu.n }) : null;
+  const stuRank = stu.now !== null && stu.n >= 5 ? t("tight.rank", { k: stu.k, n: stu.n, from: stu.finalFrom, to: stu.finalTo }) : null;
   const isWorld = series.region === "world" || series.region === "world_less_china";
 
   return (

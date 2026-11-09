@@ -6,8 +6,9 @@ import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
 import { EsrLatestText, FreshnessChip, StaleBanner } from "@/components/Freshness";
 import Upcoming from "@/components/home/Upcoming";
 import { commodityPills, releaseInfo } from "@/lib/dashboard";
-import { getEsrIndex, getInsights, getMeta, getMetaReports } from "@/lib/data";
+import { getEsrIndex, getInsights, getMeta, getMetaReports, getReleaseCatalog } from "@/lib/data";
 import { num } from "@/lib/format";
+import type { Key } from "@/lib/i18n";
 
 export const metadata: Metadata = { title: "Reports · USDA Reports Dashboard" };
 
@@ -23,9 +24,9 @@ function Row({ label, children }: { label: React.ReactNode; children: React.Reac
   );
 }
 
-function LiveChip() {
+function LiveChip({ color = "var(--pill-active)" }: { color?: string }) {
   return (
-    <span className="rounded-full px-3 py-1 text-xs font-semibold text-white" style={{ background: "var(--pill-active)" }}>
+    <span className="rounded-full px-3 py-1 text-xs font-semibold text-white" style={{ background: color }}>
       <T k="reports.live" />
     </span>
   );
@@ -39,6 +40,10 @@ export default function ReportsPage() {
   const wasdeTs = reports.wasde?.release_ts_utc ?? meta.latest.release_date;
   const esrMeta = reports.export_sales;
   const esrTs = esrMeta?.release_ts_utc ?? esr?.latest.release_ts_utc ?? null;
+  // Rows of the published ESR datasets (one entry per dataset; the Parquet file's count).
+  const esrDatasetRows = (getReleaseCatalog()?.files ?? []).filter(
+    (f) => f.report_id === "export_sales" && f.format === "parquet" && !f.legacy_alias_of,
+  );
   return (
     <>
       <TopBar title={<T k="reports.title" />} release={releaseInfo(meta)}>
@@ -113,7 +118,7 @@ export default function ReportsPage() {
                   U.S. Export Sales (ESR) · USDA FAS
                 </h2>
               </div>
-              <LiveChip />
+              <LiveChip color="var(--pill-esr)" />
             </div>
             <dl className="m-0 grid">
               <Row label={<T k="reports.latest" />}>
@@ -128,6 +133,17 @@ export default function ReportsPage() {
               {esrMeta && (
                 <Row label={<T k="reports.history" />}>
                   <T k="reports.releasesRows" v={{ releases: num(esrMeta.releases), rows: num(esrMeta.rows) }} />
+                  {esrDatasetRows.length > 0 && (
+                    <div className="text-xs font-normal text-muted" data-testid="esr-published-rows">
+                      <T k="reports.publishedRows" />{" "}
+                      {esrDatasetRows.map((r, i) => (
+                        <span key={r.dataset}>
+                          {i > 0 ? " · " : ""}
+                          <T k={`ds.${r.dataset}` as Key} /> {num(r.rows)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </Row>
               )}
             </dl>

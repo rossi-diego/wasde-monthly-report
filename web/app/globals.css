@@ -27,6 +27,7 @@
   /* report colours (sidebar dots, placeholder borders, eyebrows) */
   --r-wasde: #2563eb;
   --r-esr: #0f766e;
+  --pill-esr: #0f766e;
   --r-crush: #b45309;
   --r-progress: #15803d;
   --r-stocks: #6d28d9;
@@ -61,6 +62,7 @@
     --neutral: #52668a;
     --r-wasde: #5b8def;
     --r-esr: #2dd4bf;
+    --pill-esr: #0f766e; /* white text stays >= 4.5:1 */
     --r-crush: #f59e0b;
     --r-progress: #4ade80;
     --r-stocks: #a78bfa;
@@ -94,6 +96,7 @@
   --neutral: #52668a;
   --r-wasde: #5b8def;
   --r-esr: #2dd4bf;
+  --pill-esr: #0f766e; /* white text stays >= 4.5:1 */
   --r-crush: #f59e0b;
   --r-progress: #4ade80;
   --r-stocks: #a78bfa;

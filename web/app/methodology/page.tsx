@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { T } from "@/components/chrome/I18n";
+import { EnglishOnlyNote, T } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills } from "@/components/chrome/TopBar";
 import { commodityPills, releaseInfo } from "@/lib/dashboard";
 import { getInsights, getMeta } from "@/lib/data";
@@ -25,7 +25,9 @@ export default function Methodology() {
       <TopBar title={<T k="nav.methodology" />} release={releaseInfo(meta)}>
         <CommodityPills pills={commodityPills()} />
       </TopBar>
-      {/* Long-form copy is English only for now: marked so screen readers keep EN pronunciation in PT mode. */}
+      {/* Long-form copy is English only (by design, see lib/i18n.ts): PT readers get a notice, and
+          the block is marked lang="en" so screen readers keep EN pronunciation. */}
+      <EnglishOnlyNote />
       <div lang="en" className="flex flex-col gap-5">
       <p className="m-0 max-w-3xl text-muted">
         How the numbers on this site are collected, harmonized and turned into insight. Everything is open source and
@@ -126,7 +128,14 @@ export default function Methodology() {
         </p>
         <p>
           Vintages: the API serves only the latest revision of past weeks, so history before the first capture is
-          latest-only; every pull is stored as an immutable snapshot from then on.
+          latest-only; every pull is stored as an immutable snapshot from then on (silver keeps every vintage, the
+          published datasets show the latest revision).
+        </p>
+        <p>
+          Release times: the newest week of each pull carries the API&apos;s own release timestamp. Backfilled history is
+          dated with the Thursday 8:30 ET rule (holidays move it to Friday), except for the weeks published late after the
+          2013, 2018–19 and 2025 government shutdowns, which are pinned to their actual FAS catch-up release dates. A week
+          is therefore always compared with the WASDE that was public when FAS actually released it.
         </p>
       </Block>
 
@@ -149,11 +158,18 @@ export default function Methodology() {
 
       <Block title="Automation">
         <p>
-          A scheduled GitHub Actions workflow reads the official release calendar and polls USDA from 12:00 ET on
-          release day. When the new report appears it rebuilds bronze → silver → gold (dbt + DuckDB, with data tests such
-          as the U.S. balance-sheet identity), publishes a versioned GitHub release with all files, and redeploys this site.
-          An external heartbeat and an auto-updated GitHub issue alert the maintainer if a report is late or a check
-          fails.
+          A scheduled GitHub Actions workflow runs every 30 minutes on weekdays. A light gate checks the release
+          calendars first and stops in seconds when nothing is due. WASDE is polled from 12:00 ET on release day; Export
+          Sales from 8:30 ET every Thursday (Friday after a holiday week). When a new report appears it rebuilds bronze →
+          silver → gold (dbt + DuckDB, with data tests such as the U.S. balance-sheet identity and a no-look-ahead check),
+          redeploys this site, verifies it live and only then publishes the versioned GitHub release.
+        </p>
+        <p>
+          A new WASDE becomes the <code>data-YYYY-MM</code> release, always marked Latest. A week with only new Export
+          Sales data publishes an immutable prerelease <code>weekly-YYYY-MM-DD</code> that is never marked Latest. Export
+          Sales is isolated from WASDE: a failed or invalid ESR pull keeps the last good ESR data, is flagged on the
+          Reports page and never blocks the WASDE release. An external heartbeat and an auto-updated GitHub issue alert the
+          maintainer if a report is late or a check fails.
         </p>
       </Block>
       </div>

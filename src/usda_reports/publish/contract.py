@@ -31,6 +31,14 @@ def weekly_tag(day: date, existing: set[str]) -> str:
     return f"{base}.{n}"
 
 
+def datasets_changed(old: list[dict[str, Any]], new: list[dict[str, Any]]) -> list[str]:
+    """Files whose sha256 differs between two ``datasets.json`` (added and removed files
+    included). Empty = the catalogue may keep pointing at the old, immutable release."""
+    a = {str(e["file"]): e.get("sha256") for e in old}
+    b = {str(e["file"]): e.get("sha256") for e in new}
+    return sorted(f for f in a.keys() | b.keys() if a.get(f) != b.get(f))
+
+
 def is_release_tag(tag: str) -> bool:
     return bool(DATA_TAG_RE.match(tag) or WEEKLY_TAG_RE.match(tag))
 

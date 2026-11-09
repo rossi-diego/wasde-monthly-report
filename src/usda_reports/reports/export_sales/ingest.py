@@ -7,10 +7,15 @@
 * **Weekly**: when ``/api/esr/datareleasedates`` shows a release newer than the manifest, pull
   the current MY (plus the previous one early in a new MY) — ``kind: weekly``, ``captured``.
   Re-pulling the same release only stores a new edition when the bytes changed.
+
+A pulled bundle is parsed and contract-checked (``check``) *before* it reaches bronze: an
+unseen destination code or a contract break fails the ingest with :class:`EsrError` and
+leaves bronze and the manifest as they were, so the last good ESR state keeps building.
 """
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime
 from typing import Any
@@ -79,8 +84,11 @@ def ingest(
     store: BronzeStore,
     now: datetime | None = None,
     force: bool = False,
+    check: Callable[[dict[str, Any]], None] | None = None,
 ) -> IngestResult:
-    """Backfill when bronze has no ESR snapshot yet, else pull the newest release if new."""
+    """Backfill when bronze has no ESR snapshot yet, else pull the newest release if new.
+
+    ``check(bundle)`` validates the pull before it is stored (raises :class:`EsrError`)."""
     now = now or datetime.now(UTC)
     result = IngestResult()
     have = {k for k, e in store.entries.items() if e.status == "ok"}
@@ -104,6 +112,8 @@ def ingest(
             f"release {release.release_key}: newest week {week} is {lag} days earlier "
             "(expected the week that ended the previous Thursday)"
         )
+    if check is not None:
+        check(bundle)  # raises EsrError: nothing is written to bronze
     changed, key = _store(store, release, bundle, esr.config.api_base)
     if changed:
         result.ingested.append(key)

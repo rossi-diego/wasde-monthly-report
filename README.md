@@ -179,7 +179,8 @@ The site's [/data](https://usda-reports.vercel.app/data/) page renders `catalog.
 by report (or by commodity), one row per dataset with rows, coverage, latest release, CSV /
 Parquet links (site copy when served, otherwise the release asset), schema version and a
 copyable sha256, the Excel workbooks, the `datapackage.json` link, the licence and the ESR
-vintage note (latest-only before the first capture, captured as published after it).
+vintage note (latest-only before the first capture; tracked since capture after it, with the
+latest revision shown and every vintage kept in silver).
 
 `wasde_full.parquet` / `wasde_full.csv.gz` remain as byte-identical aliases of
 `wasde__values__v1` for existing users.

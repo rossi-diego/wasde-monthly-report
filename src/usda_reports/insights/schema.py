@@ -38,6 +38,7 @@ SuppressedReason = Literal[
     "weeks_remaining_below_min",  # E2: fewer than gates.e2_min_weeks_remaining weeks left
     "no_data",  # the inputs needed are absent
     "first_projection",  # W3: a first projection has no revision to rank
+    "gap_after_cancelled_report",  # W3: Δ spans 2+ months (a WASDE was cancelled)
 ]
 Caveat = Literal[
     "small_sample",  # n < 10

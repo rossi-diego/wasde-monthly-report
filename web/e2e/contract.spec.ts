@@ -23,7 +23,8 @@ test("hero sentence and subline render insights.json hero", async ({ page }) => 
   if (h.sub) await expect(page.getByTestId("hero-sub")).toHaveText(h.sub);
   // The numbers inside the copy are the JSON's: n_reports and the since date.
   const sinceText = shortDate(doc!.hero.since, true, "en")!;
-  await expect(hero).toContainText(String(doc!.hero.n_reports) + (h.kind === "story" ? " reports since " : " USDA reports released since "));
+  const fallbackTail = doc!.hero.n_reports === 1 ? " USDA report released since " : " USDA reports released since ";
+  await expect(hero).toContainText(String(doc!.hero.n_reports) + (h.kind === "story" ? " reports since " : fallbackTail));
   await expect(hero).toContainText(sinceText);
   for (const c of doc!.hero.clauses) {
     for (const id of c.insight_ids) expect(doc!.insights.find((i) => i.id === id)?.suppressed_reason, id).toBeNull();

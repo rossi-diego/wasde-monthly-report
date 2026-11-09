@@ -83,3 +83,25 @@ def test_watchdogs_overdue_and_stale():
     assert any("going stale" in p for p in stale.problems)
     empty = weekly_due([date(2026, 1, 1)], datetime(2026, 11, 9, tzinfo=UTC), set(), "08:30")
     assert any("no future date" in p for p in empty.problems)
+
+
+def test_shutdown_catch_up_weeks_are_pinned_to_their_real_release(config_dir):
+    """Catch-up releases after a funding lapse come out later than the Thursday rule; the
+    overrides pin them (FAS catch-up schedule) so ASOF joins see the WASDE public then."""
+    from usda_reports.reports.export_sales.parse import release_ts_source_for
+
+    raw = load_calendar_raw(config_dir / "calendars" / "export_sales.yaml")
+    # Week ending 2025-10-30: the rule says 2025-11-06, FAS released it on 2025-12-04
+    # (after the 2025-11 WASDE of 2025-11-14).
+    assert weekly_release_for(raw, date(2025, 10, 30)) == date(2025, 12, 4)
+    assert release_ts_source_for(raw, date(2025, 10, 30)) == "calendar_override"
+    assert weekly_release_for(raw, date(2025, 9, 25)) == date(2025, 11, 13)
+    assert weekly_release_for(raw, date(2018, 12, 20)) == date(2019, 1, 31)
+    assert weekly_release_for(raw, date(2013, 9, 26)) == date(2013, 10, 18)
+    # The last on-time week before the lapse and the first regular week after it.
+    assert weekly_release_for(raw, date(2025, 9, 18)) == date(2025, 9, 25)
+    assert release_ts_source_for(raw, date(2025, 9, 18)) == "calendar_rule"
+    assert weekly_release_for(raw, date(2026, 1, 1)) == date(2026, 1, 8)
+    # An override never moves a release earlier than its scheduled date.
+    for scheduled, actual in raw["overrides"].items():
+        assert date.fromisoformat(str(actual)) >= date.fromisoformat(str(scheduled))

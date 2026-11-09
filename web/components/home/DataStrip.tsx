@@ -12,7 +12,7 @@ export default function DataStrip({
   history,
 }: {
   links: { excel: string | null; csv: string | null; parquet: string | null };
-  history: { first: string; reports: string; rows: string; tag: string | null };
+  history: { first: string; reports: string; rows: string; tag: string | null; esrReleases: string | null };
 }) {
   const t = useT();
   return (
@@ -26,10 +26,16 @@ export default function DataStrip({
           <T k="data.eyebrow" />
         </div>
         <h2 id="h-data" className="m-0 text-lg font-bold">
-          <T k="data.title" v={{ first: history.first }} />
+          <T k={history.esrReleases ? "data.titleEsr" : "data.title"} v={{ first: history.first }} />
         </h2>
         <div className="text-[13px]">
           <T k="data.sub" v={{ reports: history.reports, rows: history.rows, tag: history.tag ?? t("footer.local") }} />
+          {history.esrReleases && (
+            <>
+              {" · "}
+              <T k="data.subEsr" v={{ releases: history.esrReleases }} />
+            </>
+          )}
         </div>
       </div>
       <div className="flex flex-wrap gap-2">

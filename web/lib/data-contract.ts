@@ -23,7 +23,8 @@ export type SuppressedReason =
   | "asof_missing"
   | "weeks_remaining_below_min"
   | "no_data"
-  | "first_projection";
+  | "first_projection"
+  | "gap_after_cancelled_report";
 export type Caveat =
   | "small_sample"
   | "esr_not_census"
@@ -172,7 +173,7 @@ export type EsrIndex = {
 export type EsrLatest = {
   release_key: string;
   release_ts_utc: string | null;
-  release_ts_source: "api" | "calendar_rule";
+  release_ts_source: "api" | "calendar_override" | "calendar_rule";
   week_ending: string;
   week_of_my: number;
   vintage_quality: "captured" | "latest_only";

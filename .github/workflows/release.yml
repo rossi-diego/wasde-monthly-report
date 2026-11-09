@@ -194,7 +194,14 @@ jobs:
         id: detect_esr
         # Per-report isolation: an ESR failure keeps the last good ESR data (restored bronze)
         # and must not block WASDE; it is flagged in build.json and opens the alert issue.
-        if: always() && github.event_name != 'push' && steps.prev.outcome == 'success'
+        # The pull is parsed and contract-checked before it reaches bronze, and the silver
+        # build falls back to the last good ESR snapshot if bronze still holds a bad one.
+        # On push it runs only when the gate says Export Sales is due (e.g. the first merge,
+        # whose restored manifest has no ESR yet): the backfill then ships with that deploy
+        # (mode weekly) instead of waiting for the next scheduled weekday run.
+        if: >-
+          always() && steps.prev.outcome == 'success' &&
+          (github.event_name != 'push' || contains(needs.gate.outputs.due, 'export_sales'))
         continue-on-error: true
         run: usda-reports detect --report export_sales ${{ inputs.force_export_sales && '--force' || '' }}
 
@@ -224,12 +231,29 @@ jobs:
       - name: Build silver → gold → publish
         id: build
         if: always() && steps.plan.outputs.mode != 'none' && steps.prev.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           tag="${{ steps.plan.outputs.tag }}"
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "month=$(usda-reports latest-key wasde)" >> "$GITHUB_OUTPUT"
           echo "esr=$(usda-reports latest-key export_sales || true)" >> "$GITHUB_OUTPUT"
+          # Sets output `silver_failed` (isolated reports rebuilt from their last good state).
           usda-reports run --tag "$tag"
+          # Weekly releases are immutable. A code-only rebuild on top of weekly-X must not
+          # point the catalogue at weekly-X assets whose bytes differ from this build's: when
+          # any dataset hash differs (or weekly-X has no datasets.json), cut a new weekly tag.
+          if [ "${{ steps.plan.outputs.mode }}" = "rebuild" ] && [[ "$tag" == weekly-* ]]; then
+            rm -rf /tmp/rel && mkdir -p /tmp/rel
+            if gh release download "$tag" --pattern datasets.json --dir /tmp/rel --clobber \
+              && [ "$(usda-reports datasets-changed /tmp/rel/datasets.json data/publish/datasets.json)" = "false" ]; then
+              echo "Datasets identical to $tag: the catalogue keeps pointing at it." >> "$GITHUB_STEP_SUMMARY"
+            else
+              tag=$(usda-reports release-tag weekly --existing "$(gh release list --limit 100 --json tagName -q '.[].tagName' | tr '\n' ' ')")
+              echo "Datasets differ from the immutable ${{ steps.plan.outputs.tag }}: publishing $tag." >> "$GITHUB_STEP_SUMMARY"
+              usda-reports publish --tag "$tag"
+            fi
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
           # New/changed bronze files → one new append-only shard per report (sets output
           # `shards`); the manifest copied into the release records which shard holds each file.
           usda-reports pack-shards --out-dir data/shards
@@ -345,11 +369,11 @@ jobs:
           if [ "${{ job.status }}" = "success" ]; then curl -fsS -m 10 "$HC" >/dev/null; else curl -fsS -m 10 "$HC/fail" >/dev/null; fi
 
       - name: Open the pipeline-alert issue (once; scheduled retries stay quiet)
-        if: failure() || steps.detect_esr.outcome == 'failure'
+        if: failure() || steps.detect_esr.outcome == 'failure' || steps.build.outputs.silver_failed != ''
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          body="Run ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} needs attention (event: ${{ github.event_name }}). WASDE watchdogs: ${{ steps.detect.outputs.problems || 'none' }}. Export Sales: ${{ steps.detect_esr.outcome }} ${{ steps.detect_esr.outputs.export_sales_problems }}."
+          body="Run ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} needs attention (event: ${{ github.event_name }}). WASDE watchdogs: ${{ steps.detect.outputs.problems || 'none' }}. Export Sales: ${{ steps.detect_esr.outcome }} ${{ steps.detect_esr.outputs.export_sales_problems }}. Silver fell back to the last good state for: ${{ steps.build.outputs.silver_failed || 'none' }}."
           gh label create pipeline-alert --color B60205 --force >/dev/null
           num=$(gh issue list --label pipeline-alert --state open --json number -q '.[0].number')
           if [ -z "$num" ]; then

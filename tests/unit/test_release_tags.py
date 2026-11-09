@@ -14,6 +14,7 @@ from usda_reports.publish.catalogue import (
 from usda_reports.publish.contract import (
     DATA_TAG_RE,
     WEEKLY_TAG_RE,
+    datasets_changed,
     is_release_tag,
     release_contract_problems,
     weekly_tag,
@@ -58,3 +59,12 @@ def test_catalogue_names_follow_the_convention():
     for d in ALL_DATASETS:
         assert d.stem == f"{d.report_id}__{d.dataset}__v{d.major}"
         assert d.coverage and d.release_column
+
+
+def test_datasets_changed_detects_bytes_new_and_removed_files():
+    """A rebuild on top of an immutable weekly-* release cuts a new tag when any hash moved."""
+    old = [{"file": "a.parquet", "sha256": "1"}, {"file": "b.csv.gz", "sha256": "2"}]
+    assert datasets_changed(old, [dict(e) for e in old]) == []
+    assert datasets_changed(old, [old[0], {"file": "b.csv.gz", "sha256": "3"}]) == ["b.csv.gz"]
+    assert datasets_changed(old, [*old, {"file": "c.parquet", "sha256": "4"}]) == ["c.parquet"]
+    assert datasets_changed(old, old[:1]) == ["b.csv.gz"]

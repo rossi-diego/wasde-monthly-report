@@ -175,6 +175,20 @@ def test_catalogue_datapackage_and_catalog(built: Settings):
     assert (web / "datapackage.json").exists()
 
 
+def test_datapackage_is_valid_frictionless(built: Settings):
+    """The descriptor loads under its tabular-data-package profile and every CSV resource
+    validates against its Table Schema (Parquet needs a plugin, so only its descriptor)."""
+    frictionless = pytest.importorskip("frictionless")
+    path = built.publish_dir / "datapackage.json"
+    pkg = frictionless.Package(str(path))
+    assert pkg.resources and all(r.profile == "tabular-data-resource" for r in pkg.resources)
+    csvs = [r for r in pkg.resources if r.format == "csv"]
+    assert csvs
+    for res in csvs:
+        report = res.validate()
+        assert report.valid, (res.name, report.flatten(["type", "note"])[:5])
+
+
 def test_meta_reports_map_extended_without_removing_keys(built: Settings):
     meta = json.loads((built.publish_dir / "meta.json").read_text(encoding="utf-8"))
     for key in ("data_release_tag", "next_release", "latest", "history", "downloads"):

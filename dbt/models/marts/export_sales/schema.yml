@@ -50,18 +50,20 @@ models:
     - not_null
   - name: release_ts_source
     data_type: varchar
-    description: api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history
-      (never earlier than the real publication).
+    description: api = the API's releaseTimeStamp; calendar_override = a shutdown catch-up week pinned
+      to its actual FAS release date; calendar_rule = the weekly Thursday rule for backfilled history.
     data_tests: &id005
     - accepted_values:
         arguments:
           values:
           - api
+          - calendar_override
           - calendar_rule
   - name: vintage_quality
     data_type: varchar
-    description: captured = first seen by a weekly pull (as published); latest_only = backfilled with
-      values as revised by the backfill day.
+    description: captured = tracked by weekly pulls since first capture (the latest revision is
+      shown; every vintage is kept in silver); latest_only = backfilled with values as revised by the
+      backfill day.
     data_tests: &id006
     - accepted_values:
         arguments:
@@ -139,13 +141,14 @@ models:
     data_tests: *id004
   - name: release_ts_source
     data_type: varchar
-    description: api = the API's releaseTimeStamp; calendar_rule = weekly rule for backfilled history
-      (never earlier than the real publication).
+    description: api = the API's releaseTimeStamp; calendar_override = a shutdown catch-up week pinned
+      to its actual FAS release date; calendar_rule = the weekly Thursday rule for backfilled history.
     data_tests: *id005
   - name: vintage_quality
     data_type: varchar
-    description: captured = first seen by a weekly pull (as published); latest_only = backfilled with
-      values as revised by the backfill day.
+    description: captured = tracked by weekly pulls since first capture (the latest revision is
+      shown; every vintage is kept in silver); latest_only = backfilled with values as revised by the
+      backfill day.
     data_tests: *id006
   - name: n_destinations
     data_type: integer

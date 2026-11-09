@@ -39,7 +39,7 @@ function Swatch({ color }: { color: string }) {
 function TightOrLoose({ p }: { p: CommodityPanel }) {
   const t = useT();
   const s = p.stu;
-  const rank = s.now !== null && s.n >= 5 ? t("tight.rank", { k: s.k, n: s.n }) : null;
+  const rank = s.now !== null && s.n >= 5 ? t("tight.rank", { k: s.k, n: s.n, from: s.finalFrom, to: s.finalTo }) : null;
   const aria = t("stu.aria", {
     what: p.what,
     from: s.from,

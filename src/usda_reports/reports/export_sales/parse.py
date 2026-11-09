@@ -10,8 +10,11 @@ Envelope semantics per row:
 
 * ``release_key`` / ``release_ts_utc``: the ESR release that first published that week —
   the API's ``releaseTimeStamp`` when a pull saw it as the newest week, otherwise the weekly
-  calendar rule (``config/calendars/export_sales.yaml``), which never precedes the real
-  publication. ``release_ts_source`` says which (``api`` | ``calendar_rule``).
+  calendar (``config/calendars/export_sales.yaml``). ``release_ts_source`` says which:
+  ``api``, ``calendar_override`` (a shutdown catch-up week pinned to its actual FAS release
+  date) or ``calendar_rule`` (the plain Thursday rule). Catch-up weeks come out *later* than
+  the rule, so without the overrides the rule would date them too early and ASOF-join an
+  older WASDE than the one public at the real publication.
 * ``vintage_quality``: ``latest_only`` for the one-time backfill (values as of the backfill
   day), ``captured`` for every weekly pull from launch on.
 """
@@ -235,6 +238,14 @@ def release_map(
     return truth
 
 
+def release_ts_source_for(calendar_raw: dict[str, Any], week_ending: date) -> str:
+    """``calendar_override`` when the calendar pins this week to a special (catch-up) date."""
+    lag = int((calendar_raw.get("rule") or {}).get("lag_days", 7))
+    overrides = {str(k) for k in (calendar_raw.get("overrides") or {})}
+    scheduled = (week_ending + timedelta(days=lag)).isoformat()
+    return "calendar_override" if scheduled in overrides else "calendar_rule"
+
+
 def build_frame(
     snapshots: list[Snapshot],
     cfg: SourceConfig,
@@ -271,7 +282,7 @@ def build_frame(
         assert d is not None
         ts = release_ts_utc(d, release_time_et)
         assert ts is not None
-        rel[w] = (d.isoformat(), ts, "calendar_rule")
+        rel[w] = (d.isoformat(), ts, release_ts_source_for(calendar_raw, w))
     by_seq = {s.seq: s for s in snapshots}
 
     df["report_id"] = REPORT_ID

@@ -41,20 +41,17 @@ def build_export_sales_silver(settings: Settings, manifest: Manifest, fixtures: 
     spec.build_silver(manifest)
 
 
-@pytest.fixture(scope="session")
-def built(tmp_path_factory, request) -> Settings:
-    pytest.importorskip("dbt")
-    from usda_reports.gold import run_dbt
-    from usda_reports.publish.run import publish_all
+def mini_settings(root: Path) -> Settings:
+    return Settings(
+        data_dir=root / "data", web_data_dir=root / "web", config_dir=PROJECT_ROOT / "config"
+    )
+
+
+def write_wasde_silver(settings: Settings, fixtures: Path) -> Manifest:
+    """WASDE silver of the mini build (2024-04 copy + real 2024-05); returns the manifest."""
     from usda_reports.reports.wasde.harmonize import SILVER_COLUMNS, Vocabulary, harmonize
     from usda_reports.reports.wasde.parse_csv import parse_csv
     from usda_reports.silver.envelope import add_envelope
-
-    root = tmp_path_factory.mktemp("wasde")
-    fixtures = Path(request.config.rootpath) / "tests" / "fixtures"
-    settings = Settings(
-        data_dir=root / "data", web_data_dir=root / "web", config_dir=PROJECT_ROOT / "config"
-    )
 
     may = parse_csv(fixtures / "wasde_2024-05.csv", "2024-05")
     april = may.copy()
@@ -90,6 +87,18 @@ def built(tmp_path_factory, request) -> Settings:
     )
     settings.silver_dir.mkdir(parents=True)
     silver.to_parquet(settings.silver_dir / "wasde.parquet", index=False)
+    return manifest
+
+
+@pytest.fixture(scope="session")
+def built(tmp_path_factory, request) -> Settings:
+    pytest.importorskip("dbt")
+    from usda_reports.gold import run_dbt
+    from usda_reports.publish.run import publish_all
+
+    settings = mini_settings(tmp_path_factory.mktemp("wasde"))
+    fixtures = Path(request.config.rootpath) / "tests" / "fixtures"
+    manifest = write_wasde_silver(settings, fixtures)
     build_export_sales_silver(settings, manifest, fixtures)
 
     assert run_dbt(settings, command="run") == 0
