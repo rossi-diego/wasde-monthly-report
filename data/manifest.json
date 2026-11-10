@@ -1,7 +1,7 @@
 {
   "schema_version": 2,
-  "updated_at": "2026-11-09T23:09:32+00:00",
-  "data_release_tag": "weekly-2026-11-09.5",
+  "updated_at": "2026-11-10T19:40:07+00:00",
+  "data_release_tag": "data-2026-11",
   "reports": {
     "crop_progress": {
       "latest_release_key": "2026-11-09",
@@ -10237,11 +10237,12 @@
       }
     },
     "wasde": {
-      "latest_release_key": "2026-10",
-      "latest_number": 676,
-      "total_rows": 852915,
+      "latest_release_key": "2026-11",
+      "latest_number": 677,
+      "total_rows": 857965,
       "shards_written": [
-        "bronze__wasde__base.tar.gz"
+        "bronze__wasde__base.tar.gz",
+        "bronze__wasde__2026-11.tar.gz"
       ],
       "releases": {
         "2010-07": {
@@ -12752,6 +12753,19 @@
           "fetched_at": "2026-11-07T02:30:22+00:00",
           "status": "ok",
           "shard": "bronze__wasde__base.tar.gz"
+        },
+        "2026-11": {
+          "source": "usda_csv",
+          "file": "usda_csv/2026-11.csv",
+          "url": "https://www.usda.gov/sites/default/files/documents/oce-wasde-report-data-2026-11.csv",
+          "sha256": "1a28972ac0c727ce974e0f8217b3cae9e892f6e974f6927033eaffbd5890a8da",
+          "bytes": 1004365,
+          "release_date": "2026-11-10",
+          "release_ts_utc": "2026-11-10T17:00:00+00:00",
+          "edition": 1,
+          "fetched_at": "2026-11-10T19:38:12+00:00",
+          "status": "ok",
+          "shard": "bronze__wasde__2026-11.tar.gz"
         }
       }
     }
