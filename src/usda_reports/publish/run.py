@@ -69,19 +69,20 @@ def _downloads(
 
 
 def next_releases(settings: Settings, registry: Registry, now: datetime) -> dict[str, str | None]:
-    """Next scheduled release date per enabled report.
+    """Next scheduled release date per enabled report: the first calendar date whose release
+    instant (``release_time_et`` in ET) is still in the future.
 
-    WASDE keeps its historical rule (first date after today) because ``meta.next_release`` is
-    part of the Soy Outlook contract; other reports use the release instant (time in ET).
+    WASDE used "first date after today", which was right while builds only ran after the
+    release-day publication. Builds now run every weekday, so a build before 12:00 ET on a
+    WASDE day skipped that day (2026-11-10 00:22 UTC said Dec 10). ``meta.next_release`` is in
+    the Soy Outlook contract (it refreshes when the date equals today in Chicago); for builds
+    after the release instant both rules agree, so ``data-*`` releases are unchanged.
     """
     out: dict[str, str | None] = {}
     for cfg in registry.enabled():
         dates = load_calendar(settings.calendars_dir / f"{cfg.id}.yaml")
-        if cfg.id == REPORT_ID:
-            nxt = next((d for d in dates if d > now.date()), None)
-        else:
-            at = parse_time_et(cfg.release_time_et)
-            nxt = next((d for d in dates if release_datetime_utc(d, at) > now), None)
+        at = parse_time_et(cfg.release_time_et)
+        nxt = next((d for d in dates if release_datetime_utc(d, at) > now), None)
         out[cfg.id] = nxt.isoformat() if nxt else None
     return out
 

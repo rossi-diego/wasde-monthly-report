@@ -60,3 +60,24 @@ def test_focus_config_is_consistent(config_dir):
     assert focus.highlights.floor("us", "corn", "ending_stocks") == 50
     assert focus.highlights.floor("world", "wheat", "ending_stocks") == 2.0  # default
     assert focus.highlights.floor("us", "corn", "unknown") is None
+
+
+@pytest.mark.parametrize(
+    ("now", "expected"),
+    [
+        # Regression: a build at 00:22 UTC on WASDE day said Dec 10 (old "date after today").
+        ("2026-11-10T00:22:00+00:00", "2026-11-10"),
+        ("2026-11-10T17:01:00+00:00", "2026-12-10"),  # 12:01 ET (EST = UTC-5)
+        ("2026-11-10T16:00:00+00:00", "2026-11-10"),  # 11:00 ET, still before release
+    ],
+)
+def test_wasde_next_release_uses_release_instant(config_dir, now, expected):
+    from datetime import datetime
+
+    from usda_reports.core.config import Settings
+    from usda_reports.core.registry import load_registry
+    from usda_reports.publish.run import next_releases
+
+    settings = Settings(config_dir=config_dir)
+    out = next_releases(settings, load_registry(config_dir), datetime.fromisoformat(now))
+    assert out["wasde"] == expected
