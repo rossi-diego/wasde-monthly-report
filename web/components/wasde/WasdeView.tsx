@@ -7,10 +7,12 @@ import { ChartTable } from "@/components/charts/common";
 import { CommodityName, T, useLang, useT } from "@/components/chrome/I18n";
 import TopBar, { CommodityPills, type Pill, type ReleaseInfo } from "@/components/chrome/TopBar";
 import { InsightCard } from "@/components/home/InsightCards";
+import BiggestRevisions from "@/components/wasde/BiggestRevisions";
+import type { RevisionsData } from "@/lib/dashboard";
 import type { Insight, InsightsDoc } from "@/lib/data-contract";
 import { monthYear, num } from "@/lib/format";
 import { cardView, changeView, type CardView } from "@/lib/insight-text";
-import type { Key } from "@/lib/i18n";
+import type { Key, Lang } from "@/lib/i18n";
 
 function Chapter({ n, id, eyebrow, title, children }: { n: number; id: string; eyebrow: Key; title: Key; children: React.ReactNode }) {
   return (
@@ -34,10 +36,13 @@ export default function WasdeView({
   insights,
   release,
   pills,
+  revisions,
 }: {
   insights: InsightsDoc | null;
   release: ReleaseInfo;
   pills: Pill[];
+  /** overview.json highlights per language: the full "Biggest revisions" list. */
+  revisions?: Record<Lang, RevisionsData>;
 }) {
   const t = useT();
   const { lang } = useLang();
@@ -45,6 +50,7 @@ export default function WasdeView({
   const w1 = all.filter((i) => i.rule === "W1" && ok(i)).sort((a, b) => Number(Boolean(b.params.headline)) - Number(Boolean(a.params.headline)));
   const w2 = all.filter((i) => i.rule === "W2" && ok(i));
   const w34 = all.filter((i) => (i.rule === "W3" || i.rule === "W4") && ok(i));
+  const rev = revisions ? (revisions[lang] ?? revisions.en) : null;
   const views = (xs: Insight[]) => xs.map((i) => ({ i, v: cardView(i, lang) })).filter((x): x is { i: Insight; v: CardView } => x.v !== null);
 
   return (
@@ -87,6 +93,8 @@ export default function WasdeView({
           </ol>
         </Chapter>
       )}
+
+      {rev && <BiggestRevisions changes={rev.changes} prevMonth={rev.prevMonth} excel={rev.excel} />}
 
       {w2.length > 0 && (
         <Chapter n={2} id="h-w-tight" eyebrow="wasde.c2.eb" title="wasde.c2">

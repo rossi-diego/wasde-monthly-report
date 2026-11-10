@@ -92,7 +92,7 @@ test("the home crush card prints the insight params (amber, n, source date)", as
   await expect(card.getByTestId("card-source")).toContainText(`NASS crush ${shortDate(c!.idx.latest.release_key, true, "en")}`);
   await expect(card.getByTestId("small-sample")).toHaveCount(i.caveats.includes("small_sample") ? 1 : 0);
   await expect(card).toContainText("2015-10+");
-  await expect(card.getByRole("link", { name: /Open the chart/ })).toHaveAttribute("href", "/reports/oilseed-crush/");
+  await expect(card.getByRole("link", { name: /Open report/ })).toHaveAttribute("href", "/reports/oilseed-crush/");
   await page.getByRole("button", { name: "Português" }).click();
   await expect(card.locator("[data-param]")).toHaveText(formatParam(i, v.valueParam, "pt"));
   await expect(card).not.toContainText("crude oil per bushel");

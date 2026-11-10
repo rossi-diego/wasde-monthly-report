@@ -71,6 +71,16 @@ export const REPORT_COLOR: Record<string, string> = {
   cross: "var(--r-esr)",
 };
 
+/** Solid tile background by published report_id (deep in both themes: white text >= 5:1). */
+export const REPORT_TILE: Record<string, string> = {
+  wasde: "var(--tile-wasde)",
+  export_sales: "var(--tile-esr)",
+  oilseed_crush: "var(--tile-crush)",
+  crop_progress: "var(--tile-progress)",
+  grain_stocks: "var(--tile-stocks)",
+  cross: "var(--tile-esr)",
+};
+
 /** Report name key by published report_id. */
 export const REPORT_NAME: Record<string, Key> = {
   wasde: "report.wasde",

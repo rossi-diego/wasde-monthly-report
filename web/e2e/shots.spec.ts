@@ -56,12 +56,12 @@ test("@shots pt", async ({ page }, info) => {
 
 test("@shots mobile", async ({ page }, info) => {
   if (info.project.name !== "desktop") test.skip();
-  await page.setViewportSize({ width: 390, height: 844 });
+  await page.setViewportSize({ width: 360, height: 780 });
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
   await page.waitForTimeout(800);
-  // First ~2 screens: stacked sidebar, top bar, hero, KPI tiles and the report cards.
-  await page.screenshot({ path: `${OUT}/home-mobile.png`, fullPage: true, clip: { x: 0, y: 0, width: 390, height: 1800 } });
+  // First screens: stacked sidebar, top bar, hero, evidence card and the report tiles.
+  await page.screenshot({ path: `${OUT}/home-mobile.png`, fullPage: true, clip: { x: 0, y: 0, width: 360, height: 2200 } });
   if (process.env.SHOTS_ALL) {
     await page.goto("/reports/export-sales/");
     await page.waitForTimeout(800);

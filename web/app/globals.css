@@ -2,7 +2,7 @@
 
 /* Design tokens of the approved card-grid dashboard (docs: PR S2b).
    Every text/background pair below was checked for WCAG AA (>= 4.5:1):
-   muted on card/bg/side in both themes, white on each KPI tile colour,
+   muted on card/bg/side in both themes, white on each report tile colour,
    report colours used as eyebrow text on the card background. */
 :root {
   color-scheme: light;
@@ -34,11 +34,12 @@
   --pill-stocks: #6d28d9; /* white text 7:1 */
   --r-progress: #15803d;
   --r-stocks: #6d28d9;
-  /* KPI tiles: white text >= 5:1 on each */
-  --tile-1: #2563eb;
-  --tile-2: #0f766e;
-  --tile-3: #6d28d9;
-  --tile-4: #b45309;
+  /* Report tiles (home): solid report colour, white text >= 5:1 on each */
+  --tile-wasde: #2563eb; /* 5.2:1 */
+  --tile-esr: #0f766e; /* 5.5:1 */
+  --tile-crush: #b45309; /* 5.0:1 */
+  --tile-progress: #15803d; /* 5.0:1 */
+  --tile-stocks: #6d28d9; /* 7.1:1 */
   --shadow: 0 1px 2px rgba(20, 32, 48, 0.04);
 }
 
@@ -72,10 +73,12 @@
     --pill-stocks: #6d28d9;
     --r-progress: #4ade80;
     --r-stocks: #a78bfa;
-    --tile-1: #1d4ed8;
-    --tile-2: #0f766e;
-    --tile-3: #6d28d9;
-    --tile-4: #b45309;
+    /* solid tiles keep the deep colours: white text needs them */
+    --tile-wasde: #1d4ed8;
+    --tile-esr: #0f766e;
+    --tile-crush: #b45309;
+    --tile-progress: #15803d;
+    --tile-stocks: #6d28d9;
     --shadow: none;
   }
 }
@@ -109,10 +112,12 @@
   --pill-stocks: #6d28d9;
   --r-progress: #4ade80;
   --r-stocks: #a78bfa;
-  --tile-1: #1d4ed8;
-  --tile-2: #0f766e;
-  --tile-3: #6d28d9;
-  --tile-4: #b45309;
+  /* solid tiles keep the deep colours: white text needs them */
+  --tile-wasde: #1d4ed8;
+  --tile-esr: #0f766e;
+  --tile-crush: #b45309;
+  --tile-progress: #15803d;
+  --tile-stocks: #6d28d9;
   --shadow: none;
 }
 

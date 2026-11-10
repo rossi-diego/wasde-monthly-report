@@ -2,7 +2,8 @@ import { expect, test, type Page } from "@playwright/test";
 
 import type { EsrCommodity, EsrIndex, Insight, InsightsDoc } from "../lib/data-contract";
 import { share, shortDate, tonnes } from "../lib/format";
-import { formatParam, heroView } from "../lib/insight-text";
+import { cardView, formatParam, heroView } from "../lib/insight-text";
+import { heroEvidence, homeTiles } from "../lib/lens";
 
 // Copy-vs-JSON contract (plan §6): every number the hero, the home cards and the Export Sales
 // header print must equal the published params. Skipped for a data release built before cut A.
@@ -35,12 +36,16 @@ test("hero sentence and subline render insights.json hero", async ({ page }) => 
   await page.getByRole("button", { name: "English" }).click();
 });
 
-test("home cards print exactly the insight params, n and the small-sample chip", async ({ page }) => {
+test("home tiles and the hero evidence print exactly the insight params, n and the small-sample chip", async ({ page }) => {
   const doc = await json<InsightsDoc>(page, "/data/insights.json");
   test.skip(!doc, "no insights.json in this build");
   await page.goto("/");
-  const shown = doc!.home_cards.map((id) => doc!.insights.find((i) => i.id === id)).filter((i): i is Insight => Boolean(i) && i!.suppressed_reason === null);
-  await expect(page.getByTestId("insight-card")).toHaveCount(shown.length);
+  const evidence = heroEvidence(doc!);
+  const tiles = homeTiles(doc!);
+  // One tile per report (the hero evidence is not repeated), plus the evidence card.
+  await expect(page.getByTestId("insight-card")).toHaveCount(tiles.length + (evidence ? 1 : 0));
+  expect(new Set(tiles.map((x) => x.insight.report_id)).size).toBe(tiles.length);
+  const shown: Insight[] = [...(evidence ? [evidence] : []), ...tiles.map((x) => x.insight)];
   for (const i of shown) {
     const card = page.locator(`[data-insight-id="${i.id}"]`);
     await expect(card).toBeVisible();
@@ -50,12 +55,26 @@ test("home cards print exactly the insight params, n and the small-sample chip",
     await expect(valueEl).toHaveText(formatParam(i, param));
     await expect(card.getByTestId("n")).toHaveText(`n = ${i.n}`);
     await expect(card.getByTestId("small-sample")).toHaveCount(i.caveats.includes("small_sample") ? 1 : 0);
+    await expect(card.getByTestId("card-source")).toHaveText(`Source: ${cardView(i, "en")!.source}`);
     if (i.rule === "E1") {
       await expect(card).toContainText(share(i.params.hist_min as number));
       await expect(card).toContainText(share(i.params.hist_max as number));
     }
     // Never a percentile below n = 10.
     if ((i.n ?? 0) < 10) await expect(card).not.toContainText(/percentile|tighter than \d/);
+  }
+  if (evidence) {
+    // The evidence card keeps the range strip (the page's only chart); caveats sit behind "Notes".
+    const card = page.locator('[data-origin="hero"]');
+    await expect(card).toHaveAttribute("data-insight-id", evidence.id);
+    if (cardView(evidence, "en")!.range) await expect(card.locator('svg[role="img"]')).toHaveCount(1);
+    const notes = card.getByTestId("card-notes");
+    if (evidence.caveats.length) {
+      await expect(notes).not.toHaveAttribute("open");
+      await notes.locator("summary").focus();
+      await page.keyboard.press("Enter");
+      await expect(notes).toHaveAttribute("open", "");
+    }
   }
   // Suppressed insights never appear as findings.
   for (const i of doc!.insights.filter((x) => x.suppressed_reason !== null)) {
