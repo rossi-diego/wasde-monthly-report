@@ -45,7 +45,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           >
             <T k="skip" />
           </a>
-          <div className="flex min-h-screen flex-wrap">
+          {/* Sidebar beside the page from 1024px; below, a sticky app bar over it. */}
+          <div className="flex min-h-screen flex-col min-[1024px]:flex-row">
             <Sidebar
               reports={meta.history.reports}
               rows={meta.history.rows}
@@ -56,7 +57,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             />
             <main
               id="main"
-              className="box-border flex min-w-0 flex-[999_1_560px] flex-col gap-5 px-4 pb-10 pt-6 sm:px-7"
+              className="box-border flex min-w-0 flex-1 flex-col gap-5 px-4 pb-7 pt-4 min-[560px]:px-5 min-[560px]:pb-8 min-[560px]:pt-[18px] min-[1024px]:px-7 min-[1024px]:pb-10 min-[1024px]:pt-6"
             >
               {children}
               <footer className="mt-auto flex flex-wrap gap-x-5 gap-y-2 pt-4 text-xs text-muted">

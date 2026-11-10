@@ -88,11 +88,11 @@ export default function TopBar({
     return (
       <header className="flex flex-wrap items-center gap-3">
         <div className="min-w-0 flex-[1_1_320px]">
-          <h1 className="m-0 text-2xl font-bold tracking-[-0.01em]">{title}</h1>
-          <p className="m-0 text-muted">{sub}</p>
+          <h1 className="m-0 text-[21px] font-bold leading-[1.2] tracking-[-0.01em] min-[560px]:text-2xl">{title}</h1>
+          <p className="m-0 mt-1 text-[13px] text-muted min-[560px]:text-sm">{sub}</p>
         </div>
         {children}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 max-[1023px]:hidden">
           <ThemeToggle />
           <LangToggle />
         </div>
@@ -101,8 +101,8 @@ export default function TopBar({
   return (
     <header className="flex flex-wrap items-center gap-3">
       <div className="min-w-0 flex-[1_1_320px]">
-        <h1 className="m-0 text-2xl font-bold tracking-[-0.01em]">{title}</h1>
-        <p className="m-0 text-muted">
+        <h1 className="m-0 text-[21px] font-bold leading-[1.2] tracking-[-0.01em] min-[560px]:text-2xl">{title}</h1>
+        <p className="m-0 mt-1 text-[13px] text-muted min-[560px]:text-sm">
           {release.number !== null && released && <T k="top.release" v={{ n: release.number, date: released }} />}
           {next && (
             <>
@@ -113,7 +113,8 @@ export default function TopBar({
         </p>
       </div>
       {children}
-      <div className="flex items-center gap-3">
+      {/* Below 1024px the app bar carries the toggles. */}
+      <div className="flex items-center gap-3 max-[1023px]:hidden">
         <ThemeToggle />
         <LangToggle />
       </div>

@@ -60,7 +60,7 @@ test("@shots mobile", async ({ page }, info) => {
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
   await page.waitForTimeout(800);
-  // First screens: stacked sidebar, top bar, hero, evidence card and the report tiles.
+  // First screens: app bar, title, the report tiles and the lead card.
   await page.screenshot({ path: `${OUT}/home-mobile.png`, fullPage: true, clip: { x: 0, y: 0, width: 360, height: 2200 } });
   if (process.env.SHOTS_ALL) {
     await page.goto("/reports/export-sales/");

@@ -26,7 +26,13 @@ export default function ThemeToggle() {
     sync();
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
     mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
+    // Two toggles exist (header from 1024px, app bar below): follow the other one's choice.
+    const mo = new MutationObserver(sync);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => {
+      mq.removeEventListener("change", sync);
+      mo.disconnect();
+    };
   }, []);
 
   const toggle = () => {

@@ -7,12 +7,13 @@ import { T, useLang, useT } from "@/components/chrome/I18n";
 import ReportTile from "@/components/home/ReportTile";
 import type { InsightsDoc } from "@/lib/data-contract";
 import { cardView, heroView, rangeText, rangeTick, type CardView } from "@/lib/insight-text";
-import { heroEvidence, homeTiles } from "@/lib/lens";
+import { heroEvidence, homeTiles, tileSlots, type TileSlots } from "@/lib/lens";
 
 /** "small sample" chip: shown whenever the insight carries the small_sample caveat (n < 10).
  *  `onColor`: white border and text, for the solid report tiles. */
-export function SmallChip({ tone = "default" }: { tone?: "default" | "onColor" }) {
-  const cls = tone === "onColor" ? "border-white text-white" : "border-current text-down";
+export function SmallChip({ tone = "default" }: { tone?: "default" | "onColor" | "accent" }) {
+  const cls =
+    tone === "onColor" ? "border-white text-white" : tone === "accent" ? "border-[var(--r-crush)] text-[var(--r-crush)]" : "border-current text-down";
   return (
     <span data-testid="small-sample" className={`rounded-full border px-2 py-[1px] text-[11px] font-semibold ${cls}`}>
       <T k="tight.small" />
@@ -133,39 +134,98 @@ export function InsightCard({
   );
 }
 
-/** Home hero band: the insights.json `hero` sentence (deterministic rules; neutral fallback)
- *  and, beside it, the evidence card of its first clause (lib/lens.ts heroEvidence). */
-export function HeroBand({ doc }: { doc: InsightsDoc }) {
+/** Home lead card: the insights.json `hero` sentence as the card's heading (deterministic rules;
+ *  neutral fallback), then the evidence of its first clause (lib/lens.ts heroEvidence) as a
+ *  two-column block (number | range strip, chips and Notes) and a source | link footer pinned to
+ *  the bottom. Without evidence the card is the sentence and its sub line only. */
+export function LeadCard({ doc, className = "" }: { doc: InsightsDoc; className?: string }) {
   const { lang } = useLang();
+  const t = useT();
   const h = heroView(doc.hero, lang);
   const ev = heroEvidence(doc);
   const v = ev ? cardView(ev, lang) : null;
+  const eid = v ? `h-lead-${v.id.replace(/[^a-z0-9]+/gi, "-")}` : undefined;
   return (
-    <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-12 lg:gap-6">
-      <section
-        aria-labelledby="h-hero"
-        className={`flex flex-col gap-1.5 ${v ? "lg:col-span-7 lg:self-center" : "lg:col-span-12"}`}
-        data-testid="hero"
-        data-kind={h.kind}
-      >
-        <div className="eyebrow" style={{ color: "var(--r-esr)" }}>
-          <T k="hero.eyebrow" />
+    <article
+      aria-labelledby="h-hero"
+      data-testid="lead-card"
+      className={`card flex min-w-0 flex-col px-4 pt-4 min-[560px]:px-[22px] min-[560px]:pt-5 ${v ? "" : "pb-5"} ${className}`}
+      style={{ borderTop: "3px solid var(--r-esr)" }}
+    >
+      <div data-testid="hero" data-kind={h.kind} className="flex flex-col gap-1">
+        <div className="eyebrow" style={{ color: "var(--r-esr)" }} data-testid="lead-eyebrow">
+          {h.eyebrow}
         </div>
-        <h2 id="h-hero" className="m-0 max-w-[640px] text-[20px] font-semibold leading-[1.3] sm:text-[22px]" data-testid="hero-text">
+        <h2 id="h-hero" className="m-0 mt-0.5 text-[20px] font-semibold leading-[1.25] tracking-[-0.01em] min-[560px]:text-[22px]" data-testid="hero-text">
           {h.text}
         </h2>
-        {h.sub && (
-          <p className="m-0 text-[13px] text-muted" data-testid="hero-sub">
-            {h.sub}
-          </p>
-        )}
-      </section>
+        <p className="m-0 text-[13px] text-muted" data-testid="hero-sub">
+          {h.sub}
+        </p>
+      </div>
       {v && (
-        <div className="min-w-0 lg:col-span-5">
-          <InsightCard v={v} variant="compact" origin="hero" />
-        </div>
+        <section
+          aria-labelledby={eid}
+          data-testid="insight-card"
+          data-insight-id={v.id}
+          data-origin="hero"
+          className="mt-[18px] flex flex-1 flex-col border-t border-line"
+        >
+          <div className="grid flex-1 grid-cols-1 items-center gap-3 py-4 min-[560px]:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] min-[560px]:gap-6">
+            <div className="min-w-0">
+              <h3 id={eid} className="m-0 mb-1.5 text-[14px] font-semibold">
+                {v.title}
+              </h3>
+              <div className="mono text-[34px] font-semibold leading-[1.1] tracking-[-0.02em]" data-param={v.valueParam} data-testid="lead-value">
+                {v.value}
+              </div>
+              {v.valueNote && <p className="m-0 mt-1.5 text-[13px] text-muted">{v.valueNote}</p>}
+            </div>
+            <div className="flex min-w-0 flex-col gap-2">
+              {v.range && (
+                <RangeBar
+                  lo={v.range.lo}
+                  hi={v.range.hi}
+                  mean={v.range.mean}
+                  value={v.range.value}
+                  color={v.color}
+                  fromZero={v.rangeUnit === "share" || v.rangeUnit === "pct"}
+                  format={(x) => rangeTick(v.rangeUnit, x)}
+                  ariaLabel={t("card.rangeAria", {
+                    min: rangeText(v.rangeUnit, v.range.lo),
+                    max: rangeText(v.rangeUnit, v.range.hi),
+                    v: v.value,
+                  })}
+                />
+              )}
+              {v.context[0] && (
+                <p className="m-0 text-[13px] text-muted" data-testid="card-context">
+                  {v.context[0]}
+                </p>
+              )}
+              <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+                {v.chip && (
+                  <span className="rounded-full bg-nav-active px-2 py-[1px] font-semibold text-ink" data-testid="card-chip">
+                    {v.chip}
+                  </span>
+                )}
+                <span data-testid="n" className="font-semibold text-ink">
+                  {t("card.n", { n: v.n ?? "—" })}
+                </span>
+                {v.small && <SmallChip tone="accent" />}
+                <CardNotes caveats={v.caveats} className="text-muted open:basis-full" />
+              </div>
+            </div>
+          </div>
+          <div className="mt-auto flex min-h-12 flex-wrap items-center justify-between gap-x-3 border-t border-line text-xs text-muted" data-testid="card-footer">
+            <span data-testid="card-source">{t("card.source", { s: v.source })}</span>
+            <Link href={v.href} className="inline-flex min-h-11 items-center font-semibold text-link">
+              <T k="card.open" />
+            </Link>
+          </div>
+        </section>
       )}
-    </div>
+    </article>
   );
 }
 
@@ -173,13 +233,17 @@ export function HeroBand({ doc }: { doc: InsightsDoc }) {
 export default function ReportTiles({ doc }: { doc: InsightsDoc }) {
   const { lang } = useLang();
   const tiles = homeTiles(doc)
-    .map((x) => ({ origin: x.origin, v: cardView(x.insight, lang) }))
-    .filter((x): x is { origin: "home" | "also"; v: CardView } => x.v !== null);
+    .map((x) => {
+      const v = cardView(x.insight, lang);
+      return { origin: x.origin, v, slots: v ? tileSlots(doc, x.insight, v, lang) : null };
+    })
+    .filter((x): x is { origin: "home" | "also"; v: CardView; slots: TileSlots } => x.v !== null && x.slots !== null);
   if (!tiles.length) return null;
+  const l = tileLayout(tiles.length);
   return (
     <section aria-labelledby="h-cards" className="flex flex-col gap-2.5">
       <div className="flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5">
-        <h2 id="h-cards" className="m-0 text-[17px] font-bold">
+        <h2 id="h-cards" className="m-0 text-[16px] font-bold min-[560px]:text-[17px]">
           <T k="cards.title" />
         </h2>
         <span className="text-xs text-muted">
@@ -187,14 +251,25 @@ export default function ReportTiles({ doc }: { doc: InsightsDoc }) {
         </span>
       </div>
       <div
-        className="grid grid-cols-1 gap-4 min-[560px]:grid-cols-2 min-[560px]:[&>*:last-child:nth-child(odd)]:col-span-2 min-[1280px]:grid-cols-[repeat(var(--tiles),minmax(0,1fr))] min-[1280px]:[&>*:last-child:nth-child(odd)]:col-span-1"
-        style={{ "--tiles": Math.min(tiles.length, 5) } as React.CSSProperties}
+        className="report-tiles"
+        style={{ "--tiles": tiles.length, "--rows-sm": l.rowsSm, "--rows-md": l.rowsMd } as React.CSSProperties}
         data-testid="report-tiles"
       >
-        {tiles.map(({ origin, v }) => (
-          <ReportTile key={v.id} v={v} origin={origin} />
+        {tiles.map(({ origin, v, slots }, k) => (
+          <ReportTile key={v.id} v={v} origin={origin} slots={slots} spanSm={l.sm[k]} spanMd={l.md[k]} />
         ))}
       </div>
     </section>
   );
+}
+
+/** Column spans of n tiles below 1280px, without an orphan cell:
+ *  - of 6 columns (768–1279px): rows of 3 (span 2), then a row of 2 (span 3); four tiles are 2 + 2;
+ *  - of 2 columns (560–767px): pairs, with the first tile full width when n is odd. */
+export function tileLayout(n: number): { md: number[]; sm: number[]; rowsMd: number; rowsSm: number } {
+  const rows: number[] = n === 4 ? [2, 2] : [];
+  if (n !== 4) for (let left = n; left > 0; left -= 3) rows.push(Math.min(3, left));
+  const md = rows.flatMap((k) => Array<number>(k).fill(6 / k));
+  const sm = Array.from({ length: n }, (_, k) => (n % 2 === 1 && k === 0 ? 2 : 1));
+  return { md, sm, rowsMd: rows.length, rowsSm: Math.ceil(n / 2) };
 }

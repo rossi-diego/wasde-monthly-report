@@ -197,6 +197,220 @@ details > summary {
   color: var(--wasde);
 }
 
+/* ---- Home: solid report tiles ------------------------------------------------------------
+ * Every tile is a subgrid of five rows (eyebrow, title, value, meta, footer), so the values and
+ * the footers of the tiles in one row share a line whatever the copy length (EN or PT).
+ * Column spans come from ReportTiles as CSS variables: --span-sm (of 2 columns, 560–767px),
+ * --span-md (of 6 columns, 768–1279px: 3 + 2 for five tiles, never an orphan) and the row
+ * counts --rows-sm / --rows-md. From 1280px every tile sits in one row (--tiles columns).
+ * Below 560px a tile is a compact card: title left, value right, meta and footer full width. */
+.report-tiles {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
+}
+.report-tile {
+  display: grid;
+  min-width: 0;
+  box-sizing: border-box;
+  border-radius: 16px;
+  color: #fff;
+  padding: 12px 14px 2px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas: "eb eb" "h3 val" "meta meta" "ft ft";
+  column-gap: 12px;
+  row-gap: 4px;
+}
+.report-tile .rt-eb {
+  grid-area: eb;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  text-transform: uppercase;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+}
+.report-tile .rt-h3 {
+  grid-area: h3;
+  align-self: center;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.report-tile .rt-val {
+  grid-area: val;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+  min-width: 0;
+}
+.report-tile .rt-v {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+.report-tile .rt-u {
+  font-size: 11.5px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+/* The unit suffix of the value ("11.62" + " lb/bu"): under the number on phones. */
+.report-tile .rt-v .rt-u {
+  display: block;
+}
+.report-tile .rt-meta {
+  grid-area: meta;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-self: start;
+  min-width: 0;
+}
+.report-tile .rt-ctx {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.35;
+  /* Two lines, not one: the context carries the comparison (e.g. "vs NASS's 5-yr average"),
+     and touch users cannot reach the title tooltip. The subgrid row absorbs the height. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+/* The verdict chip is never cut: it wraps instead (honesty rule). */
+.report-tile .rt-chip {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.report-tile .rt-ft {
+  grid-area: ft;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+  border-top: 1px solid rgb(255 255 255 / 0.25);
+  font-size: 12px;
+}
+.report-tile .rt-open-short {
+  display: none;
+}
+@media (min-width: 560px) {
+  .report-tiles {
+    gap: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: repeat(var(--rows-sm, 1), auto auto auto 1fr auto);
+  }
+  .report-tile {
+    grid-column: span var(--span-sm, 1);
+    grid-row: span 5;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: subgrid;
+    grid-template-areas: none;
+    row-gap: 4px;
+    padding: 14px 16px 4px;
+  }
+  .report-tile .rt-eb,
+  .report-tile .rt-h3,
+  .report-tile .rt-val,
+  .report-tile .rt-meta,
+  .report-tile .rt-ft {
+    grid-area: auto;
+  }
+  .report-tile .rt-eb,
+  .report-tile .rt-h3 {
+    -webkit-line-clamp: 2;
+    align-self: start;
+  }
+  .report-tile .rt-val {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 6px;
+    margin-top: 2px;
+    text-align: left;
+  }
+  .report-tile .rt-v {
+    font-size: 26px;
+  }
+  .report-tile .rt-u {
+    font-size: 13px;
+  }
+  .report-tile .rt-v .rt-u {
+    display: inline;
+  }
+  .report-tile .rt-meta {
+    gap: 6px;
+  }
+  .report-tile .rt-ft {
+    min-height: 40px;
+  }
+}
+@media (min-width: 768px) {
+  .report-tiles {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-rows: repeat(var(--rows-md, 1), auto auto auto 1fr auto);
+  }
+  .report-tile {
+    grid-column: span var(--span-md, 2);
+  }
+}
+@media (min-width: 1280px) {
+  .report-tiles {
+    grid-template-columns: repeat(var(--tiles, 5), minmax(0, 1fr));
+    grid-template-rows: auto auto auto 1fr auto;
+  }
+  .report-tile {
+    grid-column: span 1;
+  }
+}
+/* From 1280px, Portuguese ("Abrir relatório →" beside "outubro de 2026") takes the short link
+ * at every width, so the release date is never cut. */
+@media (min-width: 1280px) {
+  html[lang="pt-BR"] .report-tile .rt-open-long {
+    display: none;
+  }
+  html[lang="pt-BR"] .report-tile .rt-open-short {
+    display: inline;
+  }
+}
+/* 1280–1439px: five narrow tiles. Titles may take a third line (the subgrid keeps the rows
+ * aligned) and the footer link reads "Open →" (aria-label keeps "Open report"). */
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .report-tile {
+    padding: 12px 12px 2px;
+  }
+  .report-tile .rt-h3 {
+    -webkit-line-clamp: 3;
+  }
+  .report-tile .rt-v {
+    font-size: 23px;
+  }
+  .report-tile .rt-ft {
+    gap: 8px;
+    font-size: 11.5px;
+  }
+  .report-tile .rt-open-long {
+    display: none;
+  }
+  .report-tile .rt-open-short {
+    display: inline;
+  }
+}
+
 /* Auto-fit grids that never overflow a 360px screen. */
 .grid-fit-380 {
   display: grid;

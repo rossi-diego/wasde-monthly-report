@@ -22,11 +22,15 @@ whether stocks surprised USDA. In English and Brazilian Portuguese.**
 
 ## 30-second tour
 
-1. **[Home](https://usda-reports.vercel.app/)** — a one-screen front door: the hero line
-   ("This week: …") next to its evidence card (the only chart on the page, with **n** and the
-   5-year range), one solid tile per report (a number, **n**, a *small sample* chip where it
-   applies and the source release), the top 3 WASDE revisions and the commodity pages. Crop
-   Progress is green, Grain Stocks violet; off-season (December–March) Crop Progress steps aside.
+1. **[Home](https://usda-reports.vercel.app/)** — a one-screen front door, top-anchored: one
+   solid tile per report right under the title (a number, **n**, a *small sample* chip where it
+   applies and the source release; values and footers on one line across the row; context and
+   verdict chips wrap instead of being cut), then two
+   card rows on one 7 | 5 grid: the lead story (this week's sentence with its evidence — the only
+   chart on the page, with **n** and the 5-year range) beside the top 3 WASDE revisions, and the
+   downloads beside the commodity pages. Crop Progress is green, Grain Stocks violet; off-season
+   (December–March) Crop Progress steps aside. Below 1024px the sidebar becomes a 56px app bar
+   with a *Menu* drawer.
 2. **Open a tile** — it lands on the report chapter it comes from, e.g.
    [Crop Progress](https://usda-reports.vercel.app/reports/crop-progress/) (condition vs last year
    and 5 years, stage pace vs NASS's own 5-yr average, season state) or
@@ -102,10 +106,10 @@ and three chapters:
    4-week average (suppressed with fewer than 6 weeks left).
 
 A collapsed *Explore* section holds every week and destination; *Take this report* links the
-Parquet/CSV files. The home page adds a **hero line** built from `insights.json` rules
-("This week: soybean sales ahead of USDA's pace", neutral fallback otherwise) beside the
-cross-report E1 evidence card, then one tile per report, each with n, a *small sample* chip for
-5-year windows and its source release. Every number on these cards is checked against the JSON by a Playwright
+Parquet/CSV files. The home page shows one tile per report, each with n, a *small sample* chip
+for 5-year windows and its source release, then a **lead card** whose heading is built from
+`insights.json` rules ("Soybean sales ahead of USDA's pace.", neutral fallback otherwise) over
+the cross-report E1 evidence. Every number on these cards is checked against the JSON by a Playwright
 contract test (`web/e2e/contract.spec.ts`), in English and Portuguese.
 
 ### Soybean crush on the site
@@ -418,8 +422,10 @@ data/manifest.json   audit trail of every ingested release (schema v2; data live
   `assert_no_lookahead` runs on the WASDE crush, WASDE oil and NASS-vintage timestamps.
 - **Web:** ESLint, TypeScript, Playwright (desktop + mobile): smoke, axe in English and
   Portuguese, light and dark, on every route, 360px no-horizontal-scroll, and a copy-vs-JSON
-  contract test for the hero, its evidence card and the home tiles, a home layout budget (one
-  chart, about one screen at 1440px), the Export Sales header, the crush, Crop Progress
+  contract test for the lead card, its evidence and the home tiles, a home layout budget (one
+  chart, about one screen at 1440px), a home layout contract (`home-layout.spec.ts`: tiles under
+  the title, aligned values/footers and 7 | 5 rows, no half-empty card, 3 + 2 tiles at 1024/768px,
+  app bar and drawer at 360px, verdict chips never cut, light/dark, EN/PT), the Export Sales header, the crush, Crop Progress
   and Grain Stocks pages and the commodity pages, in EN and PT (plus the exact NOPA note and the
   verbatim G2 caveats); the Crop Progress off-season state is tested on a frozen-clock fixture.
   Re-run against the live site after every deploy. Until the first data release that carries

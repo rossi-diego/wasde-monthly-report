@@ -29,6 +29,7 @@ import {
 } from "./format";
 import { translate, type Key, type Lang } from "./i18n";
 import { attrName, commodityName, commodityNounPt, regionName } from "./labels";
+import { REPORT_NAME } from "./reports";
 
 const NOUN_EN: Record<string, string> = {
   soybeans: "soybean",
@@ -103,23 +104,42 @@ export function heroClauseText(c: HeroClause, lang: Lang): string {
   return translate(lang, `hero.${c.direction}` as Key, { c: what });
 }
 
-export type HeroView = { kind: Hero["kind"]; text: string; clauses: string[]; sub: string | null };
+export type HeroView = {
+  kind: Hero["kind"];
+  /** The sentence (the home lead card's h2), capitalized: the eyebrow carries "This week". */
+  text: string;
+  clauses: string[];
+  /** "Computed from 2 reports since Oct 9, 2026 · updated automatically on release day". */
+  sub: string;
+  /** "This week · WASDE × Export Sales" (the reports behind a story); "This week" otherwise. */
+  eyebrow: string;
+};
 
 function heroViewImpl(h: Hero, lang: Lang): HeroView {
   const since = shortDate(h.since, true, lang) ?? "—";
   if (h.kind === "fallback" || h.clauses.length === 0) {
-    return { kind: "fallback", text: translate(lang, h.n_reports === 1 ? "hero.fallback1" : "hero.fallback", { n: h.n_reports, date: since }), clauses: [], sub: null };
+    return {
+      kind: "fallback",
+      text: translate(lang, h.n_reports === 1 ? "hero.fallback1" : "hero.fallback", { n: h.n_reports, date: since }),
+      clauses: [],
+      sub: translate(lang, "lead.auto"),
+      eyebrow: translate(lang, "lead.eyebrowNone"),
+    };
   }
   const clauses = h.clauses.map((c) => heroClauseText(c, lang));
   const joined =
     clauses.length === 1
       ? clauses[0]
       : `${clauses.slice(0, -1).join(", ")}${translate(lang, "hero.and")}${clauses[clauses.length - 1]}`;
+  const reports = [...new Set((h.reports ?? []).map((r) => r.report_id))]
+    .filter((id) => REPORT_NAME[id])
+    .map((id) => translate(lang, REPORT_NAME[id]));
   return {
     kind: "story",
-    text: translate(lang, "hero.story", { clauses: joined }),
+    text: cap(translate(lang, "hero.story", { clauses: joined })),
     clauses,
-    sub: translate(lang, "hero.sub", { n: h.n_reports, date: since }),
+    sub: translate(lang, "lead.sub", { n: h.n_reports, date: since }),
+    eyebrow: reports.length ? translate(lang, "lead.eyebrow", { reports: reports.join(" × ") }) : translate(lang, "lead.eyebrowNone"),
   };
 }
 
