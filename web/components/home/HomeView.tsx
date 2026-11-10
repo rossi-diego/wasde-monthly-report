@@ -46,7 +46,7 @@ export default function HomeView({
   const hasLenses = lenses.length > 0;
 
   return (
-    <div className="flex flex-col gap-5 min-[1024px]:gap-6">
+    <div className="flex flex-col gap-5">
       <TopBar title={<T k="home.title" />} release={release} />
 
       {insights && <ReportTiles doc={insights} />}

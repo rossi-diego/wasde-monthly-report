@@ -206,7 +206,7 @@ test.describe("home layout", () => {
     test.skip(!en.tiles.length, "no report tiles in this build");
     await open(page, 1440, 900, { lang: "pt" });
     const pt = await geometry(page);
-    // One line of 12px copy (about 18px) plus its 6px row gap.
+    // One line of 12px copy (about 18px) plus its 4px row gap.
     expect(Math.abs(pt.tiles[0].height - en.tiles[0].height)).toBeLessThanOrEqual(24);
     expect(Math.abs(pt.rowB[0].height - en.rowB[0].height)).toBeLessThanOrEqual(30);
   });

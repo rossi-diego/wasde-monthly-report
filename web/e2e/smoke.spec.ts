@@ -69,7 +69,8 @@ for (const lang of ["en", "pt"] as const) {
       expect(Math.max(...hs) - Math.min(...hs)).toBeLessThanOrEqual(1);
       // EN about 255px plus one wrapped context line (the context and the verdict chip wrap
       // instead of being cut); pt-BR copy may add one more line (the subgrid keeps rows aligned).
-      expect(Math.max(...hs)).toBeLessThanOrEqual(lang === "pt" ? 300 : 280);
+      // Budgets leave room for Linux CI font metrics (about one 12px line taller than Windows).
+      expect(Math.max(...hs)).toBeLessThanOrEqual(lang === "pt" ? 310 : 290);
       // The tiles sit above the fold at 1440x900.
       expect(Math.max(...boxes.map((b) => b.bottom))).toBeLessThanOrEqual(900);
     }

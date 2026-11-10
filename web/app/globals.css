@@ -320,7 +320,7 @@ details > summary {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: subgrid;
     grid-template-areas: none;
-    row-gap: 6px;
+    row-gap: 4px;
     padding: 14px 16px 4px;
   }
   .report-tile .rt-eb,
