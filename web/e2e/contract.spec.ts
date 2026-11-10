@@ -1,9 +1,10 @@
+import { mainNav } from "./nav";
 import { expect, test, type Page } from "@playwright/test";
 
 import type { EsrCommodity, EsrIndex, Insight, InsightsDoc } from "../lib/data-contract";
-import { share, shortDate, tonnes } from "../lib/format";
+import { num, share, shortDate, tonnes } from "../lib/format";
 import { cardView, formatParam, heroView } from "../lib/insight-text";
-import { heroEvidence, homeTiles } from "../lib/lens";
+import { heroEvidence, homeTiles, tileSlots } from "../lib/lens";
 
 // Copy-vs-JSON contract (plan §6): every number the hero, the home cards and the Export Sales
 // header print must equal the published params. Skipped for a data release built before cut A.
@@ -62,6 +63,26 @@ test("home tiles and the hero evidence print exactly the insight params, n and t
     }
     // Never a percentile below n = 10.
     if ((i.n ?? 0) < 10) await expect(card).not.toContainText(/percentile|tighter than \d/);
+  }
+  // Tile slots: the value is number + unit suffix (exactly formatParam, checked above); the one
+  // context line is the JSON's (W3: prev_value → value of the matching W1 finding).
+  for (const { insight: i } of tiles) {
+    const v = cardView(i, "en")!;
+    const slots = tileSlots(doc!, i, v, "en");
+    const card = page.locator(`[data-insight-id="${i.id}"]`);
+    expect(slots.num + slots.suffix, i.id).toBe(v.value);
+    await expect(card.getByTestId("card-context")).toHaveCount(slots.context ? 1 : 0);
+    if (slots.context) await expect(card.getByTestId("card-context")).toHaveText(slots.context);
+    if (i.rule === "W3") {
+      const w1 = doc!.insights.find(
+        (x) => x.rule === "W1" && x.suppressed_reason === null && x.params.table_id === i.params.table_id && x.params.attribute_id === i.params.attribute_id && x.params.market_year === i.params.market_year,
+      );
+      if (w1) {
+        await expect(card.getByTestId("card-context")).toContainText(num(w1.params.prev_value as number));
+        await expect(card.getByTestId("card-context")).toContainText(num(w1.params.value as number));
+      }
+    }
+    await expect(card.getByTestId("tile-date")).toHaveText(v.sourceDate);
   }
   if (evidence) {
     // The evidence card keeps the range strip (the page's only chart); caveats sit behind "Notes".
@@ -148,6 +169,6 @@ test("reports index shows Export Sales next to WASDE with freshness", async ({ p
   const card = page.locator("#export_sales");
   await expect(card).toContainText(shortDate(idx!.latest.week_ending, true, "en")!);
   await expect(card.getByTestId("freshness")).toBeVisible();
-  const nav = page.getByRole("navigation", { name: "Main" });
+  const nav = await mainNav(page);
   await expect(nav.getByRole("link", { name: /Export Sales/ })).toHaveAttribute("href", "/reports/export-sales/");
 });

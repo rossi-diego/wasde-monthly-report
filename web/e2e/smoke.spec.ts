@@ -1,3 +1,4 @@
+import { mainNav } from "./nav";
 import { expect, test } from "@playwright/test";
 
 // Runs against the static export locally, and against the live URL after each deploy
@@ -59,21 +60,22 @@ for (const lang of ["en", "pt"] as const) {
     await page.goto("/");
     await page.waitForTimeout(300);
     expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(1400);
-    // The only chart on the overview is the hero evidence card's range strip.
+    // The only chart on the overview is the lead card evidence range strip.
     await expect(page.locator('main svg[role="img"]')).toHaveCount(await page.locator('[data-origin="hero"]').count());
     // Tiles in one row have the same height, and stay dense (the full story is on the report pages).
     const boxes = await page.locator('[data-testid="report-tiles"] > *').evaluateAll((els) => els.map((e) => e.getBoundingClientRect()));
     if (boxes.length) {
       const hs = boxes.map((b) => b.height);
       expect(Math.max(...hs) - Math.min(...hs)).toBeLessThanOrEqual(1);
-      expect(Math.max(...hs)).toBeLessThanOrEqual(260);
+      // EN about 255px; pt-BR copy may add one line to the meta slot (the subgrid keeps rows aligned).
+      expect(Math.max(...hs)).toBeLessThanOrEqual(lang === "pt" ? 285 : 260);
       // The tiles sit above the fold at 1440x900.
       expect(Math.max(...boxes.map((b) => b.bottom))).toBeLessThanOrEqual(900);
     }
     await page.setViewportSize({ width: 360, height: 780 });
     await page.goto("/");
     await page.waitForTimeout(300);
-    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(3800); // 3,000 once the mobile drawer ships
+    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(3000); // the nav is a Menu drawer below 1024px
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
   });
 }
@@ -164,7 +166,7 @@ test("Portuguese mode has no English months or chrome on the home page", async (
 
 test("commodity pages keep the WASDE nav item current", async ({ page }) => {
   await page.goto("/commodity/corn/");
-  const nav = page.getByRole("navigation", { name: "Main" });
+  const nav = await mainNav(page);
   await expect(nav.getByRole("link", { name: /WASDE/ })).toHaveAttribute("aria-current", "true");
 });
 

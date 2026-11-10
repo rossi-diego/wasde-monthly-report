@@ -2,10 +2,23 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import { CommodityName, T, useT } from "@/components/chrome/I18n";
+import LangToggle from "@/components/chrome/LangToggle";
+import ThemeToggle from "@/components/chrome/ThemeToggle";
 import { num } from "@/lib/format";
 import { LENSES, REPORTS } from "@/lib/reports";
+
+function LogoMark() {
+  return (
+    <span aria-hidden="true" className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[var(--r-wasde)]">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round">
+        <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
+      </svg>
+    </span>
+  );
+}
 
 const itemBase = "flex min-h-11 items-center gap-2.5 rounded-[10px] px-3 text-ink";
 
@@ -50,17 +63,61 @@ export default function Sidebar({
   const path = usePathname() ?? "/";
   const t = useT();
   const is = (p: string) => (p === "/" ? path === "/" : path.startsWith(p));
+  // Below 1024px the nav is a drawer under the app bar, closed by default.
+  // It remembers the page it was opened on, so following a link closes it.
+  const [openOn, setOpenOn] = useState<string | null>(null);
+  const open = openOn === path;
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpenOn(null);
+        document.getElementById("menu-button")?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
   return (
-    <nav
-      aria-label={t("nav.main")}
-      className="box-border flex max-w-full flex-[1_1_220px] flex-col gap-5 border-b border-line bg-side px-4 py-6 min-[781px]:border-b-0 min-[781px]:border-r"
-    >
-      <Link href="/" className="flex items-center gap-2.5 px-2 hover:no-underline">
-        <span aria-hidden="true" className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[var(--r-wasde)]">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" strokeWidth="2" strokeLinecap="round">
-            <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" />
-          </svg>
+    <>
+    {/* Below 1024px: a 56px sticky app bar (logo, theme, language, Menu) instead of the sidebar. */}
+    <header className="sticky top-0 z-30 box-border flex h-14 shrink-0 items-center justify-between gap-2 border-b border-line bg-side px-4 min-[1024px]:hidden" data-testid="app-bar">
+      <Link href="/" className="flex min-w-0 items-center gap-2.5 hover:no-underline" aria-label={t("brand.title")}>
+        <LogoMark />
+        <span className="min-w-0 max-[559px]:hidden" aria-hidden="true">
+          <span className="block truncate text-[15px] font-bold">
+            <T k="brand.title" />
+          </span>
+          <span className="block truncate text-xs text-muted">
+            <T k="brand.sub" />
+          </span>
         </span>
+      </Link>
+      <div className="flex shrink-0 items-center gap-2">
+        <ThemeToggle />
+        <LangToggle />
+        <button
+          id="menu-button"
+          type="button"
+          aria-expanded={open}
+          aria-controls="site-nav"
+          onClick={() => setOpenOn(open ? null : path)}
+          className="flex h-10 cursor-pointer items-center gap-1.5 whitespace-nowrap rounded-full border border-line bg-card px-3.5 text-[13px] font-semibold text-ink"
+        >
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h16" />}
+          </svg>
+          <T k="nav.menu" />
+        </button>
+      </div>
+    </header>
+    <nav
+      id="site-nav"
+      aria-label={t("nav.main")}
+      className={`box-border flex-col gap-5 bg-side px-4 py-6 max-[1023px]:fixed max-[1023px]:inset-x-0 max-[1023px]:bottom-0 max-[1023px]:top-14 max-[1023px]:z-20 max-[1023px]:overflow-y-auto max-[1023px]:border-b max-[1023px]:border-line min-[1024px]:flex min-[1024px]:w-[220px] min-[1024px]:shrink-0 min-[1024px]:border-r min-[1024px]:border-line ${open ? "flex" : "hidden"}`}
+    >
+      <Link href="/" className="flex items-center gap-2.5 px-2 hover:no-underline max-[1023px]:hidden">
+        <LogoMark />
         <span>
           <span className="block text-[15px] font-bold">
             <T k="brand.title" />
@@ -152,8 +209,8 @@ export default function Sidebar({
         </NavLink>
       </div>
 
-      {/* Hidden when the sidebar stacks on a phone: the data strip and footer repeat it. */}
-      <div className="mt-auto rounded-xl border border-line bg-card px-3 py-3.5 text-xs text-muted max-[780px]:hidden">
+      {/* At the bottom of the sidebar; below 1024px, at the end of the Menu drawer. */}
+      <div className="mt-auto rounded-xl border border-line bg-card px-3 py-3.5 text-xs text-muted">
         <div className="font-semibold text-ink">
           <T k="pipeline.title" />
         </div>
@@ -185,5 +242,6 @@ export default function Sidebar({
         </Link>
       </div>
     </nav>
+    </>
   );
 }

@@ -13,12 +13,17 @@ export default function BiggestRevisions({
   excel,
   limit,
   bars = true,
+  month,
+  className = "",
 }: {
   changes: ChangeRow[];
   prevMonth: string;
   excel: string | null;
   limit?: number;
   bars?: boolean;
+  /** Home: the WASDE month of the source footer ("October 2026"). */
+  month?: string;
+  className?: string;
 }) {
   const t = useT();
   const full = limit === undefined;
@@ -26,13 +31,17 @@ export default function BiggestRevisions({
   const rows = full ? changes : changes.slice(0, limit);
   if (!rows.length) return null;
   return (
-    <section aria-labelledby={id} className="card flex min-w-0 flex-col gap-2.5 p-5" data-testid={full ? "revisions" : "revisions-top"}>
+    <section
+      aria-labelledby={id}
+      className={full ? `card flex min-w-0 flex-col gap-2.5 p-5 ${className}` : `card flex min-w-0 flex-col px-4 pt-4 min-[560px]:px-[22px] min-[560px]:pt-5 ${className}`}
+      data-testid={full ? "revisions" : "revisions-top"}
+    >
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 flex-[1_1_220px]">
           <div className="eyebrow">
             <T k="chg.eyebrow" />
           </div>
-          <h2 id={id} className="m-0 mt-0.5 text-[17px] font-bold">
+          <h2 id={id} className={`m-0 text-[17px] ${full ? "mt-0.5 font-bold" : "mt-1.5 font-semibold"}`}>
             <T k={full ? "chg.title" : "chg.topTitle"} v={{ month: prevMonth }} />
           </h2>
         </div>
@@ -42,9 +51,9 @@ export default function BiggestRevisions({
           </a>
         )}
       </div>
-      <ol className="m-0 list-none p-0">
+      <ol className={`m-0 list-none p-0 ${full ? "" : "mt-3.5 flex-1"}`}>
         {rows.map((c) => (
-          <li key={c.key} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 border-t border-line py-2.5">
+          <li key={c.key} className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 border-t border-line ${full ? "py-2.5" : "py-3"}`}>
             <Link href={`/commodity/${c.commodity}/`} className="font-semibold">
               {c.what}
             </Link>
@@ -69,9 +78,12 @@ export default function BiggestRevisions({
           <T k="chg.bar" />
         </p>
       ) : (
-        <Link href="/reports/wasde/#h-chg" className="mt-auto inline-flex min-h-11 items-center self-start text-[13px] font-semibold text-link" data-testid="all-revisions">
-          <T k="chg.allLink" />
-        </Link>
+        <div className="mt-auto flex min-h-12 flex-wrap items-center justify-between gap-x-3 border-t border-line text-xs text-muted" data-testid="card-footer">
+          {month && <span data-testid="revisions-source">{t("chg.source", { month })}</span>}
+          <Link href="/reports/wasde/#h-chg" className="inline-flex min-h-11 items-center font-semibold text-link" data-testid="all-revisions">
+            <T k="chg.allLink" />
+          </Link>
+        </div>
       )}
     </section>
   );

@@ -3,7 +3,7 @@
 // JSON's; the Playwright contract test calls these same functions.
 
 import type { CommodityLens, Insight, InsightsDoc, LensMetric } from "./data-contract";
-import { bushels, ciText, mbu, monthYear, pctInt, share, shortDate, signedMbu, tonnes, withNumberLang } from "./format";
+import { bushels, ciText, decimals, mbu, monthYear, num, pctInt, qty, share, shortDate, signedMbu, tonnes, withNumberLang } from "./format";
 import { translate, type Key, type Lang } from "./i18n";
 import { cardView, finding, stageName } from "./insight-text";
 
@@ -234,6 +234,58 @@ export function homeTiles(doc: InsightsDoc | null): HomeTile[] {
     out.push(t);
   }
   return out.sort((a, b) => REPORT_ORDER.indexOf(a.insight.report_id) - REPORT_ORDER.indexOf(b.insight.report_id));
+}
+
+export type TileSlots = {
+  /** The number ("11.62", "+282", "52.8%"), then its unit ("lb/bu"), printed smaller. `num` +
+   *  `suffix` is exactly the card value (formatParam); `unit` is a short value note (no digits)
+   *  printed next to the number, outside the value ("mil. bu", "of the acreage"). */
+  num: string;
+  suffix: string;
+  unit: string | null;
+  /** One context line, or null (the tile renders nothing in that slot). */
+  context: string | null;
+};
+
+/** The value and context slots of a home tile, from its card view:
+ *  - the value splits at its first space into number and unit suffix ("11.62" + " lb/bu");
+ *  - a short value note without digits ("mil. bu", "of the acreage") sits next to the number
+ *    when the value has no unit of its own; any other note ("Unknown destinations: 18.5%",
+ *    "+9.0% vs the September 2026 WASDE") is the context line;
+ *  - otherwise the context line is tileContext (W3: the move itself; else the first line). */
+export function tileSlots(doc: InsightsDoc | null, i: Insight, v: { value: string; valueNote: string | null }, lang: Lang): TileSlots {
+  const m = /^(\S+)(\s.*)?$/.exec(v.value);
+  const num = m ? m[1] : v.value;
+  const suffix = m?.[2] ?? "";
+  const note = v.valueNote;
+  if (note && !suffix && !/\d/.test(note)) return { num, suffix, unit: note, context: tileContext(doc, i, lang) };
+  return { num, suffix, unit: null, context: note ?? tileContext(doc, i, lang) };
+}
+
+/** The one context line under a home tile's value. A W3 revision tile shows the move itself
+ *  ("1,567 → 1,849 mil. bu": prev_value → value of the passing W1 finding on the same table,
+ *  attribute and market year); every other tile shows its card's first context line. Null when
+ *  there is none. */
+export function tileContext(doc: InsightsDoc | null, i: Insight, lang: Lang): string | null {
+  return withNumberLang(lang, () => {
+    if (i.rule === "W3" && doc) {
+      const { table_id, attribute_id, market_year } = i.params;
+      const w1 = doc.insights.find(
+        (x) =>
+          x.rule === "W1" &&
+          x.suppressed_reason === null &&
+          x.params.table_id === table_id &&
+          x.params.attribute_id === attribute_id &&
+          x.params.market_year === market_year,
+      );
+      const prev = w1?.params.prev_value;
+      const value = w1?.params.value;
+      const unit = w1?.params.unit_id;
+      if (typeof prev === "number" && typeof value === "number" && typeof unit === "string")
+        return `${num(prev, decimals(unit, prev))} → ${qty(value, unit, lang)}`;
+    }
+    return cardView(i, lang)?.context[0] ?? null;
+  });
 }
 
 /** The overview.json change key ("corn-united_states-2026/27-ending_stocks", as ChangeRow.key) that

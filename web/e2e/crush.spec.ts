@@ -1,3 +1,4 @@
+import { mainNav } from "./nav";
 import { expect, test, type Page } from "@playwright/test";
 
 import type { CrushCommodity, CrushIndex, Insight, InsightsDoc } from "../lib/data-contract";
@@ -103,7 +104,7 @@ test("crush is live in the nav, on /reports and in the data catalogue", async ({
   const c = await crush(page);
   test.skip(!c, "no crush data in this build");
   await page.goto("/reports/");
-  const nav = page.getByRole("navigation", { name: "Main" });
+  const nav = await mainNav(page);
   await expect(nav.getByRole("link", { name: /Crush \(NASS\)/ })).toHaveAttribute("href", "/reports/oilseed-crush/");
   const card = page.locator("#oilseed_crush");
   await expect(card).toContainText(shortDate(c!.idx.latest.release_key, true, "en")!);

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import { fileURLToPath } from "node:url";
 
+import { mainNav } from "./nav";
 import { expect, test, type Page } from "@playwright/test";
 
 import type { CommodityLens, CropProgressCrop, CropProgressIndex, GrainStocksCommodity, GrainStocksIndex, Insight, InsightsDoc, LensIndex } from "../lib/data-contract";
@@ -263,7 +264,7 @@ test("commodity lenses: every report's latest number equals lens JSON, with chap
       if (lang === "pt") await toEn(page);
     }
   }
-  const nav = page.getByRole("navigation", { name: "Main" });
+  const nav = await mainNav(page);
   await expect(nav.getByRole("link", { name: "Soybeans" })).toHaveAttribute("href", "/commodities/soybeans/");
   await expect(nav.getByRole("link", { name: "Corn", exact: true })).toHaveAttribute("href", "/commodities/corn/");
 });
@@ -272,7 +273,7 @@ test("Crop Progress and Grain Stocks are live in the nav, on /reports and in the
   const cp = await json<CropProgressIndex>(page, "/data/reports/crop_progress/index.json");
   test.skip(!cp, "no Crop Progress data in this build");
   await page.goto("/reports/");
-  const nav = page.getByRole("navigation", { name: "Main" });
+  const nav = await mainNav(page);
   await expect(nav.getByRole("link", { name: /Crop Progress/ })).toHaveAttribute("href", "/reports/crop-progress/");
   await expect(nav.getByRole("link", { name: /Grain Stocks/ })).toHaveAttribute("href", "/reports/grain-stocks/");
   await expect(page.locator("#crop_progress").getByTestId("freshness")).toBeVisible();
