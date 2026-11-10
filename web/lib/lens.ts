@@ -235,3 +235,20 @@ export function homeTiles(doc: InsightsDoc | null): HomeTile[] {
   }
   return out.sort((a, b) => REPORT_ORDER.indexOf(a.insight.report_id) - REPORT_ORDER.indexOf(b.insight.report_id));
 }
+
+/** The overview.json change key ("corn-united_states-2026/27-ending_stocks", as ChangeRow.key) that
+ *  a WASDE revision finding (W1/W3 on a U.S. table) already shows, so the home "What changed in
+ *  WASDE" list can skip that row instead of printing the same number twice. Null otherwise. */
+export function changeKeyOf(i: Insight | null | undefined): string | null {
+  if (!i || i.report_id !== "wasde" || (i.rule !== "W1" && i.rule !== "W3")) return null;
+  const { table_id: table, attribute_id: attr, market_year: my } = i.params;
+  if (typeof table !== "string" || !table.startsWith("us_") || typeof attr !== "string" || typeof my !== "string") return null;
+  return `${i.commodity_id}-united_states-${my}-${attr}`;
+}
+
+/** The home tiles' and hero evidence's change keys (see changeKeyOf). */
+export function shownChangeKeys(doc: InsightsDoc | null): Set<string> {
+  if (!doc) return new Set();
+  const keys = [heroEvidence(doc), ...homeTiles(doc).map((x) => x.insight)].map(changeKeyOf);
+  return new Set(keys.filter((k): k is string => k !== null));
+}

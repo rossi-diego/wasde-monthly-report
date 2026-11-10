@@ -83,6 +83,14 @@ export function sourceText(i: Insight, lang: Lang): string {
     .join(" · ");
 }
 
+/** Just the release date of the insight's own report ("Nov 5, 2026" / "October 2026"): the short
+ *  source on the home tiles, whose full source text stays in the title and for screen readers. */
+export function sourceDate(i: Insight, lang: Lang): string {
+  const r = i.inputs.find((x) => x.report_id === i.report_id) ?? i.inputs[0];
+  if (!r) return "";
+  return r.report_id === "wasde" ? monthYear(r.release_key, lang) : (shortDate(r.release_key, true, lang) ?? r.release_key);
+}
+
 /** "corn" / "winter wheat" (lower case), "Corn" / "Winter wheat" (title case). */
 export const cropName = (crop: string, lang: Lang) => translate(lang, `crop.${crop}` as Key);
 export const cropTitle = (crop: string, lang: Lang) => translate(lang, `cropT.${crop}` as Key);
@@ -136,6 +144,8 @@ export type CardView = {
   small: boolean;
   caveats: string[];
   source: string;
+  /** The release date alone (home tiles). */
+  sourceDate: string;
   href: string;
 };
 
@@ -181,6 +191,7 @@ function cardViewImpl(i: Insight, lang: Lang): CardView | null {
     small: isSmall(i),
     caveats: i.caveats.filter((x) => x !== "small_sample").map((x) => caveatText(x, lang, i.rule)),
     source: sourceText(i, lang),
+    sourceDate: sourceDate(i, lang),
     valueNote: null as string | null,
     chip: null as string | null,
     range: null as CardView["range"],

@@ -144,7 +144,7 @@ export function HeroBand({ doc }: { doc: InsightsDoc }) {
     <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-12 lg:gap-6">
       <section
         aria-labelledby="h-hero"
-        className={`flex flex-col gap-1.5 ${v ? "lg:col-span-7" : "lg:col-span-12"} lg:pt-2`}
+        className={`flex flex-col gap-1.5 ${v ? "lg:col-span-7 lg:self-center" : "lg:col-span-12"}`}
         data-testid="hero"
         data-kind={h.kind}
       >

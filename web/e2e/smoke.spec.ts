@@ -51,22 +51,32 @@ test("biggest revisions list on /reports/wasde/ matches overview.json", async ({
     await expect(page.locator('[aria-labelledby="h-chg"]').getByRole("link", { name: /All changes \(Excel\)/ })).toBeVisible();
 });
 
-test("home layout budget: about one screen at 1440px, one chart, no sideways scroll at 360px", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
-  await page.waitForTimeout(300);
-  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(1700);
-  // The only chart on the overview is the hero evidence card's range strip.
-  await expect(page.locator('main svg[role="img"]')).toHaveCount(await page.locator('[data-origin="hero"]').count());
-  // Tiles in one row have the same height.
-  const boxes = await page.locator('[data-testid="report-tiles"] > *').evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height));
-  if (boxes.length) expect(Math.max(...boxes) - Math.min(...boxes)).toBeLessThanOrEqual(1);
-  await page.setViewportSize({ width: 360, height: 780 });
-  await page.goto("/");
-  await page.waitForTimeout(300);
-  expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(4000); // 3,000 once the mobile drawer ships
-  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
-});
+for (const lang of ["en", "pt"] as const) {
+  test(`home layout budget (${lang}): about one screen at 1440px, one chart, no sideways scroll at 360px`, async ({ page }) => {
+    // pt-BR strings run longer: the budget must hold in both languages.
+    if (lang === "pt") await page.addInitScript(() => localStorage.setItem("usda-lang", "pt"));
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/");
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(1400);
+    // The only chart on the overview is the hero evidence card's range strip.
+    await expect(page.locator('main svg[role="img"]')).toHaveCount(await page.locator('[data-origin="hero"]').count());
+    // Tiles in one row have the same height, and stay dense (the full story is on the report pages).
+    const boxes = await page.locator('[data-testid="report-tiles"] > *').evaluateAll((els) => els.map((e) => e.getBoundingClientRect()));
+    if (boxes.length) {
+      const hs = boxes.map((b) => b.height);
+      expect(Math.max(...hs) - Math.min(...hs)).toBeLessThanOrEqual(1);
+      expect(Math.max(...hs)).toBeLessThanOrEqual(260);
+      // The tiles sit above the fold at 1440x900.
+      expect(Math.max(...boxes.map((b) => b.bottom))).toBeLessThanOrEqual(900);
+    }
+    await page.setViewportSize({ width: 360, height: 780 });
+    await page.goto("/");
+    await page.waitForTimeout(300);
+    expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThanOrEqual(3800); // 3,000 once the mobile drawer ships
+    expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+  });
+}
 
 test("commodity page renders charts and switches region", async ({ page }) => {
   await page.goto("/commodity/corn/");
