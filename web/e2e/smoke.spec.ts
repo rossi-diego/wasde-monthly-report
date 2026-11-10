@@ -67,8 +67,9 @@ for (const lang of ["en", "pt"] as const) {
     if (boxes.length) {
       const hs = boxes.map((b) => b.height);
       expect(Math.max(...hs) - Math.min(...hs)).toBeLessThanOrEqual(1);
-      // EN about 255px; pt-BR copy may add one line to the meta slot (the subgrid keeps rows aligned).
-      expect(Math.max(...hs)).toBeLessThanOrEqual(lang === "pt" ? 285 : 260);
+      // EN about 255px plus one wrapped context line (the context and the verdict chip wrap
+      // instead of being cut); pt-BR copy may add one more line (the subgrid keeps rows aligned).
+      expect(Math.max(...hs)).toBeLessThanOrEqual(lang === "pt" ? 300 : 280);
       // The tiles sit above the fold at 1440x900.
       expect(Math.max(...boxes.map((b) => b.bottom))).toBeLessThanOrEqual(900);
     }

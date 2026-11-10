@@ -24,7 +24,8 @@ whether stocks surprised USDA. In English and Brazilian Portuguese.**
 
 1. **[Home](https://usda-reports.vercel.app/)** — a one-screen front door, top-anchored: one
    solid tile per report right under the title (a number, **n**, a *small sample* chip where it
-   applies and the source release; values and footers on one line across the row), then two
+   applies and the source release; values and footers on one line across the row; context and
+   verdict chips wrap instead of being cut), then two
    card rows on one 7 | 5 grid: the lead story (this week's sentence with its evidence — the only
    chart on the page, with **n** and the 5-year range) beside the top 3 WASDE revisions, and the
    downloads beside the commodity pages. Crop Progress is green, Grain Stocks violet; off-season
@@ -424,7 +425,7 @@ data/manifest.json   audit trail of every ingested release (schema v2; data live
   contract test for the lead card, its evidence and the home tiles, a home layout budget (one
   chart, about one screen at 1440px), a home layout contract (`home-layout.spec.ts`: tiles under
   the title, aligned values/footers and 7 | 5 rows, no half-empty card, 3 + 2 tiles at 1024/768px,
-  app bar and drawer at 360px, light/dark, EN/PT), the Export Sales header, the crush, Crop Progress
+  app bar and drawer at 360px, verdict chips never cut, light/dark, EN/PT), the Export Sales header, the crush, Crop Progress
   and Grain Stocks pages and the commodity pages, in EN and PT (plus the exact NOPA note and the
   verbatim G2 caveats); the Crop Progress off-season state is tested on a frozen-clock fixture.
   Re-run against the live site after every deploy. Until the first data release that carries

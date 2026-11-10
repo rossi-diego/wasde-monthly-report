@@ -280,9 +280,20 @@ details > summary {
 .report-tile .rt-ctx {
   margin: 0;
   font-size: 12px;
-  white-space: nowrap;
+  line-height: 1.35;
+  /* Two lines, not one: the context carries the comparison (e.g. "vs NASS's 5-yr average"),
+     and touch users cannot reach the title tooltip. The subgrid row absorbs the height. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+}
+/* The verdict chip is never cut: it wraps instead (honesty rule). */
+.report-tile .rt-chip {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 .report-tile .rt-ft {
   grid-area: ft;

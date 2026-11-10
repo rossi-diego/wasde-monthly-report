@@ -211,6 +211,18 @@ test.describe("home layout", () => {
     expect(Math.abs(pt.rowB[0].height - en.rowB[0].height)).toBeLessThanOrEqual(30);
   });
 
+  test("the verdict chip is never cut, in EN or PT, at any width", async ({ page }) => {
+    for (const lang of ["en", "pt"] as const) {
+      for (const [w, h] of [[1440, 900], [1280, 800], [1024, 768], [768, 1024], [360, 780]] as const) {
+        await open(page, w, h, { lang });
+        const cut = await page.locator('.report-tile [data-testid="card-chip"]').evaluateAll((els) =>
+          els.filter((e) => e.scrollWidth > e.clientWidth + 1 || e.scrollHeight > e.clientHeight + 1).map((e) => e.textContent),
+        );
+        expect(cut, `${lang} ${w}px`).toEqual([]);
+      }
+    }
+  });
+
   // 9 + 11. Honesty and scope: one finding per report with n, chip and dates; nothing removed returns.
   test("one tile per report, one lead, one revisions, one data and one explore card; n, chips and dates on each", async ({ page }) => {
     await open(page, 1440, 900);

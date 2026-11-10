@@ -11,11 +11,11 @@ import { REPORT_TILE } from "@/lib/reports";
 /** A solid report tile on the home page: one finding, its n, small-sample chip, position chip and
  *  release date, and a route to the report page. Charts and the Data link stay on the report pages.
  *
- *  Five slots, in this order: eyebrow · title · value · meta (one context line, then chip · n ·
+ *  Five slots, in this order: eyebrow · title · value · meta (one context line (up to 2 lines), then chip · n ·
  *  small sample · Notes) · footer (release date | Open report). From 560px the tile is a subgrid
  *  of its parent (.report-tiles in globals.css), so the values and footers of a row of tiles share
- *  one line; below 560px it is a compact card (title left, value right). Eyebrow and title are
- *  line-clamped, with the full text in `title`. The full source text ("ESR Nov 5, 2026 · WASDE
+ *  one line; below 560px it is a compact card (title left, value right). Eyebrow, title and context are
+ *  line-clamped; the verdict chip wraps and is never cut, with the full text in `title`. The full source text ("ESR Nov 5, 2026 · WASDE
  *  October 2026") is read out by screen readers next to the release date. */
 export default function ReportTile({
   v,
@@ -72,7 +72,7 @@ export default function ReportTile({
         )}
         <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-xs">
           {v.chip && (
-            <span className="inline-block max-w-full truncate rounded-full bg-black/20 px-2 py-[1px] font-semibold" title={v.chip} data-testid="card-chip">
+            <span className="rt-chip inline-block rounded-xl bg-black/20 px-2 py-[1px] font-semibold" title={v.chip} data-testid="card-chip">
               {v.chip}
             </span>
           )}
